@@ -1,0 +1,3 @@
+[submodule "SciCode"]
+	path = SciCode
+	url = https://github.com/scicode-bench/SciCode.git
