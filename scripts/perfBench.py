@@ -82,6 +82,24 @@ def load_prompts(filepath):
     print(f"[+] Successfully loaded {len(prompts)} prompts from {filepath}.")
     return prompts
 
+
+def select_prompts(prompts, task_limit=None):
+    """
+    Return a reduced prompt subset when task-limited mode is requested.
+    """
+    if task_limit is None:
+        return prompts
+
+    if task_limit <= 0:
+        raise ValueError("task_limit must be a positive integer")
+
+    if task_limit < len(prompts):
+        print(f"[*] Limiting benchmark to first {task_limit} prompt(s) for task mode.")
+        return prompts[:task_limit]
+
+    return prompts
+
+
 def benchmark_single_prompt(service_name, model_name, prompt_info):
     """
     Benchmarks a single prompt on a service-model combination.
@@ -303,6 +321,9 @@ Examples:
   
   # Use 8 concurrent workers for faster benchmarking
   python perfBench.py --models gpt-4-turbo --workers 8
+
+  # Run a quick smoke test with only 3 prompts/tasks
+  python perfBench.py --models gpt-4-turbo --task 3
         """
     )
     parser.add_argument(
@@ -345,9 +366,14 @@ Examples:
         help="Clear the output file before running (forces replace mode, ignores --append)."
     )
     parser.add_argument(
+        "--task",
+        type=int,
+        help="Limit the benchmark to the first N prompts/tasks for quick validation."
+    )
+    parser.add_argument(
         "--test",
         action="store_true",
-        help="Run in test mode: only benchmark first 3 prompts for quick validation."
+        help="Shortcut for --task 3 to run a quick smoke test."
     )
 
     args = parser.parse_args()
@@ -360,6 +386,13 @@ Examples:
 
     # Load prompts
     prompts = load_prompts(args.prompts)
+
+    task_limit = args.task if args.task is not None else (3 if args.test else None)
+    if task_limit is not None and task_limit <= 0:
+        print("[-] Error: --task must be a positive integer.")
+        sys.exit(1)
+
+    prompts = select_prompts(prompts, task_limit=task_limit)
 
     # Determine services to run
     services_to_run = {}
