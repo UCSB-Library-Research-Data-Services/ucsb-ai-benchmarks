@@ -100,6 +100,64 @@ def select_prompts(prompts, task_limit=None):
     return prompts
 
 
+def get_remaining_prompts(prompts, service_name, model_name, completed_keys=None):
+    """
+    Filter out prompts already completed for the same service/model pair.
+    """
+    if not completed_keys:
+        return prompts
+
+    remaining = []
+    for prompt in prompts:
+        prompt_key = (service_name, model_name, prompt.get("id"))
+        if prompt_key in completed_keys:
+            continue
+        remaining.append(prompt)
+
+    return remaining
+
+
+def load_existing_results(output_path):
+    """
+    Load completed results from an existing JSONL file and return the parsed entries.
+    """
+    if not output_path.exists():
+        return []
+
+    results = []
+    with open(output_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                results.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                print(f"[-] Warning: skipping malformed JSON line in {output_path}: {exc}")
+
+    return results
+
+
+def get_completed_keys(results):
+    """
+    Build a set of (service, model, test_id) keys from existing results.
+    """
+    return {
+        (result.get("service"), result.get("model"), result.get("test_id"))
+        for result in results
+        if result.get("service") and result.get("model") and result.get("test_id") is not None
+    }
+
+
+def write_results(output_path, results):
+    """
+    Persist results to disk as JSONL, replacing the file contents each time.
+    """
+    with open(output_path, "w", encoding="utf-8") as handle:
+        for result in results:
+            handle.write(json.dumps(result, ensure_ascii=False) + "\n")
+
+
 def benchmark_single_prompt(service_name, model_name, prompt_info):
     """
     Benchmarks a single prompt on a service-model combination.
@@ -324,6 +382,9 @@ Examples:
 
   # Run a quick smoke test with only 3 prompts/tasks
   python perfBench.py --models gpt-4-turbo --task 3
+
+  # Resume a previous run from an existing JSONL log
+  python perfBench.py --models gpt-4-turbo --resume --append
         """
     )
     parser.add_argument(
@@ -359,6 +420,11 @@ Examples:
         "--append",
         action="store_true",
         help="Append results to existing JSONL log instead of replacing. (default: replace)"
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from an existing output file by skipping prompts already completed for the same service/model pair."
     )
     parser.add_argument(
         "--clear",
@@ -422,27 +488,46 @@ Examples:
     print(f"Output: {Path(args.output).resolve()}")
     print("=" * 100)
 
-    all_results = []
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing_results = []
+    if args.resume or args.append:
+        existing_results = load_existing_results(output_path)
+        if existing_results:
+            print(f"[*] Loaded {len(existing_results)} existing result(s) from {output_path}")
+
+    completed_keys = get_completed_keys(existing_results)
+
+    all_results = list(existing_results)
     
     # Execute benchmark runs
     for idx, (s_name, model) in enumerate(queue, 1):
+        remaining_prompts = get_remaining_prompts(
+            prompts,
+            service_name=s_name,
+            model_name=model,
+            completed_keys=completed_keys,
+        )
+
+        if not remaining_prompts:
+            print(f"\n[{idx}/{len(queue)}] Service: {s_name} | Model: {model}")
+            print("  Skipping: all prompts already completed for this service/model pair.")
+            continue
+
         print(f"\n[{idx}/{len(queue)}] Service: {s_name} | Model: {model}")
-        print(f"  Workers: {args.workers} | Prompts: {len(prompts)}")
-        batch_results = benchmark_service_model(s_name, model, prompts, max_workers=args.workers)
+        print(f"  Workers: {args.workers} | Prompts: {len(remaining_prompts)}")
+        batch_results = benchmark_service_model(s_name, model, remaining_prompts, max_workers=args.workers)
         all_results.extend(batch_results)
+
+        # Persist incrementally after each service-model pair completes.
+        write_results(output_path, all_results)
+
         print(f"  Completed: {len(batch_results)} results")
+        completed_keys.update({(s_name, model, result.get("test_id")) for result in batch_results if result.get("test_id") is not None})
 
     # Save results to output
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Determine write mode
-    write_mode = "w" if (args.clear or not args.append) else "a"
-    
-    # Write results as JSONL (one JSON object per line)
-    with open(output_path, write_mode, encoding="utf-8") as f:
-        for result in all_results:
-            f.write(json.dumps(result, ensure_ascii=False) + "\n")
+    write_results(output_path, all_results)
 
     print("\n" + "=" * 100)
     print("BENCHMARK COMPLETED SUCCESSFULLY!")
