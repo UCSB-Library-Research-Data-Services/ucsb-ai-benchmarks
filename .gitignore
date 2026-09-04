@@ -18,4 +18,3 @@ wheels/
 # temporary files
 tmp/
 temp_*
-tests/*
