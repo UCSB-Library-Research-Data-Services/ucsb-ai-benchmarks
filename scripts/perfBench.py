@@ -149,6 +149,53 @@ def get_completed_keys(results):
     }
 
 
+def partition_results_by_day(existing_results, today_str):
+    """
+    Partition existing results into other_days_results and same_day_results.
+    """
+    other_days_results = []
+    same_day_results = []
+    for r in existing_results:
+        ts = r.get("timestamp")
+        if ts:
+            date_str = ts.split("T")[0]
+            if date_str != today_str:
+                other_days_results.append(r)
+            else:
+                same_day_results.append(r)
+        else:
+            other_days_results.append(r)
+    return other_days_results, same_day_results
+
+
+def configure_run(args, existing_results, today_str):
+    """
+    Given parsed args, existing results, and today's date,
+    return (all_results, completed_keys).
+    """
+    if args.replace:
+        all_results = []
+        completed_keys = set()
+    elif args.replace_same_day:
+        other_days_results, same_day_results = partition_results_by_day(existing_results, today_str)
+
+        if args.resume:
+            all_results = list(existing_results)
+            completed_keys = get_completed_keys(same_day_results)
+        else:
+            all_results = list(other_days_results)
+            completed_keys = set()
+    else:
+        # Default behavior: append everything
+        all_results = list(existing_results)
+        if args.resume:
+            completed_keys = get_completed_keys(existing_results)
+        else:
+            completed_keys = set()
+
+    return all_results, completed_keys
+
+
 def write_results(output_path, results):
     """
     Persist results to disk as JSONL, replacing the file contents each time.
@@ -368,23 +415,26 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Benchmark a single model on all services
+  # Benchmark a single model on all services (appends to log by default)
   python perfBench.py --models gpt-4-turbo
   
   # Benchmark multiple models on a specific service
   python perfBench.py --service GRIT --models gpt-4-turbo,gpt-3.5-turbo,llama-2-70b
   
-  # Append results to existing log instead of replacing
-  python perfBench.py --models gpt-4-turbo --append
+  # Replace/overwrite the entire log instead of appending
+  python perfBench.py --models gpt-4-turbo --replace
+  
+  # Overwrite same-day results, preserving previous days' results
+  python perfBench.py --models gpt-4-turbo --replace-same-day
   
   # Use 8 concurrent workers for faster benchmarking
   python perfBench.py --models gpt-4-turbo --workers 8
-
+ 
   # Run a quick smoke test with only 3 prompts/tasks
   python perfBench.py --models gpt-4-turbo --task 3
-
+ 
   # Resume a previous run from an existing JSONL log
-  python perfBench.py --models gpt-4-turbo --resume --append
+  python perfBench.py --models gpt-4-turbo --resume
         """
     )
     parser.add_argument(
@@ -417,19 +467,19 @@ Examples:
         help="Maximum number of concurrent requests per service-model pair. (default: 4)"
     )
     parser.add_argument(
-        "--append",
+        "--replace",
         action="store_true",
-        help="Append results to existing JSONL log instead of replacing. (default: replace)"
+        help="Completely replace the existing JSONL log instead of appending (default: append)."
+    )
+    parser.add_argument(
+        "--replace-same-day",
+        action="store_true",
+        help="Overwrite existing results from the same day (today) in the JSONL log while preserving other days."
     )
     parser.add_argument(
         "--resume",
         action="store_true",
         help="Resume from an existing output file by skipping prompts already completed for the same service/model pair."
-    )
-    parser.add_argument(
-        "--clear",
-        action="store_true",
-        help="Clear the output file before running (forces replace mode, ignores --append)."
     )
     parser.add_argument(
         "--task",
@@ -492,14 +542,14 @@ Examples:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing_results = []
-    if args.resume or args.append:
+    # Load existing results unless we are completely replacing
+    if not args.replace:
         existing_results = load_existing_results(output_path)
         if existing_results:
             print(f"[*] Loaded {len(existing_results)} existing result(s) from {output_path}")
 
-    completed_keys = get_completed_keys(existing_results)
-
-    all_results = list(existing_results)
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    all_results, completed_keys = configure_run(args, existing_results, today_str)
     
     # Execute benchmark runs
     for idx, (s_name, model) in enumerate(queue, 1):
