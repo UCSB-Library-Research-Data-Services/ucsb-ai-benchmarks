@@ -20,3 +20,4 @@ tmp/
 temp_*
 dashboard/.vscode/extensions.json
 dashboard/.vscode/launch.json
+.DS_Store
