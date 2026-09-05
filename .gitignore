@@ -18,3 +18,5 @@ wheels/
 # temporary files
 tmp/
 temp_*
+dashboard/.vscode/extensions.json
+dashboard/.vscode/launch.json
