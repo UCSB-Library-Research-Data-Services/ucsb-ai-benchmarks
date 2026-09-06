@@ -39,22 +39,22 @@ function providerColor(providers: string[], name: string): string {
   return PROVIDER_PALETTE[idx % PROVIDER_PALETTE.length];
 }
 
-function RankBadge({ rank }: { rank: number }) {
-  if (rank === 1) {
+function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' }) {
+  if (rank === 1 && sortDir === 'desc') {
     return (
       <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="1st place">
         🥇
       </span>
     );
   }
-  if (rank === 2) {
+  if (rank === 2 && sortDir === 'desc') {
     return (
       <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="2nd place">
         🥈
       </span>
     );
   }
-  if (rank === 3) {
+  if (rank === 3 && sortDir === 'desc') {
     return (
       <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="3rd place">
         🥉
@@ -753,7 +753,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       width: '2.5rem',
                     }}
                   >
-                    <RankBadge rank={rank} />
+                    <RankBadge rank={rank} sortDir={sort.dir} />
                   </td>
                   {/* Model name + provider chip */}
                   <td
