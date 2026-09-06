@@ -52,23 +52,6 @@ export interface LeaderboardData {
   allCategories: string[];
 }
 
-function extractProvider(model: string): string {
-  // Extract provider from model string (e.g., "qwen3.5:latest" -> "qwen")
-  const modelLower = model.toLowerCase();
-  
-  if (modelLower.includes('qwen')) return 'qwen';
-  if (modelLower.includes('gpt')) return 'openai';
-  if (modelLower.includes('claude')) return 'anthropic';
-  if (modelLower.includes('llama')) return 'meta';
-  if (modelLower.includes('gemini')) return 'google';
-  if (modelLower.includes('mixtral')) return 'mistral';
-  if (modelLower.includes('deepseek')) return 'deepseek';
-  if (modelLower.includes('groq')) return 'groq';
-  
-  // Default: use first part before version separator
-  return model.split(/[:/\-]/)[0].toLowerCase();
-}
-
 export function parsePerformanceResults(filePath: string): PerformanceResult[] {
   if (!fs.existsSync(filePath)) {
     console.warn(`File not found: ${filePath}`);
@@ -102,6 +85,11 @@ export function aggregatePerformanceData(
 
   // Filter out Dreamlab
   const filteredResults = results.filter(r => !r.service?.toLowerCase().includes('dreamlab'));
+
+  // Collect unique service values as providers
+  for (const result of filteredResults) {
+    providersSet.add(result.service);
+  }
 
   // Group by model
   for (const result of filteredResults) {
@@ -142,7 +130,7 @@ export function aggregatePerformanceData(
   }
 
   for (const [model, results] of modelGrouped.entries()) {
-    const provider = extractProvider(model);
+    const provider = results[0].service;
     providersSet.add(provider);
 
     // Calculate category-level metrics
