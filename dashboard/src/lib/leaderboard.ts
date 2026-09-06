@@ -115,7 +115,7 @@ export function aggregatePerformanceData(
     resultsToProcess = Array.from(latestMap.values());
   }
 
-  totalBenchmarks = filteredResults.length;
+  totalBenchmarks = new Set(filteredResults.map(r => r.test_id)).size;
 
   // Aggregate metrics per model
   const rows: AggregatedMetrics[] = [];
