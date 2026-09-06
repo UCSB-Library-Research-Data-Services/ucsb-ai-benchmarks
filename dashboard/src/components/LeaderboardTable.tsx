@@ -214,6 +214,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
   const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
   const [onlyLatest, setOnlyLatest] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const isAllMode = selectedProviders === null;
 
@@ -356,7 +357,35 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 lineHeight: 1.5,
               }}
             >
-              Comparative inference performance across providers and task categories
+              Inference performance allows users to evaluate how long a model takes to process average prompts from a particular inference provider.{' '}
+              {isDescExpanded ? (
+                <>
+                  <br /><br />
+                  This leaderboard tracks four key metrics:
+                  <ul style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}>
+                    <li><strong>Time to First Token (TTFT):</strong> Duration from sending a prompt until the first token is received.</li>
+                    <li><strong>Inter-Token Latency (ITL):</strong> Average time between consecutive generated tokens.</li>
+                    <li><strong>Generation Tokens per Second (Gen TPS):</strong> Speed of generating new text, excluding initial prompt processing time.</li>
+                    <li><strong>Total Tokens per Second (Total TPS):</strong> Overall speed of the round-trip interaction.</li>
+                  </ul>
+                  A high-performing model minimizes TTFT and ITL while maximizing average tokens per second. High performance and low latency are especially relevant for products that rely on real-time user experience (like chat interfaces), whereas less performant models can still be highly valuable for asynchronous or iterative tasks (like cron jobs and batch processing). Note that these metrics measure speed and latency, not model intelligence or output quality.{' '}
+                  <button 
+                    onClick={() => setIsDescExpanded(false)}
+                    style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                  >
+                    [see less]
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setIsDescExpanded(true)}
+                    style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                  >
+                    [see more]
+                  </button>
+                </>
+              )}
             </p>
           </div>
         </div>
