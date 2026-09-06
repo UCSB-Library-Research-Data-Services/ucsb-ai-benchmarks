@@ -217,6 +217,12 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
 
   const isAllMode = selectedProviders === null;
 
+  // When metric changes, reset sort to Overall and pick the natural "best first" direction
+  const handleMeasurementChange = (m: Measurement) => {
+    setMeasurement(m);
+    setSort({ col: null, dir: higherIsBetter[m] ? 'desc' : 'asc' });
+  };
+
   // Cycle sort: clicking active col toggles asc↔desc; clicking a new col sets desc first
   const handleColSort = (col: string | null) => {
     setSort(prev => {
@@ -292,14 +298,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
         bVal = b.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
       }
 
-      // desc = best first; for "lower is better" metrics, best = smallest value
-      const naturallyDesc = sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
-      // When hiBetter=false, "desc" should still mean "best first" (lowest value first)
-      if (sort.col === null) {
-        // Overall column always sorts "best first" regardless of dir state
-        return hiBetter ? bVal - aVal : aVal - bVal;
-      }
-      return naturallyDesc;
+      return sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
     });
   }, [filteredRows, measurement, hiBetter, sort]);
 
@@ -477,7 +476,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           </div>
           <select
             value={measurement}
-            onChange={e => setMeasurement(e.target.value as Measurement)}
+            onChange={e => handleMeasurementChange(e.target.value as Measurement)}
             style={{
               padding: '0.35rem 2rem 0.35rem 0.75rem',
               borderRadius: '6px',
@@ -645,6 +644,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               </th>
               {/* Overall metric */}
               <th
+                onClick={() => handleColSort(null)}
                 style={{
                   padding: '0.7rem 1rem',
                   textAlign: 'left',
@@ -652,42 +652,55 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   fontSize: '0.65rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  color: ACCENT,
+                  color: sort.col === null ? ACCENT : '#64748b',
                   minWidth: '110px',
                   borderRight: '2px solid #cbd5e1',
-                  background: '#eff6ff',
+                  background: sort.col === null ? '#eff6ff' : '#f1f5f9',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 Overall
+                <SortIcon dir={sort.dir} active={sort.col === null} />
                 <br />
                 <span style={{ color: '#94a3b8', fontWeight: 600 }}>
                   {measurementShort[measurement]}
                 </span>
               </th>
               {/* Category columns */}
-              {data.allCategories.map(category => (
-                <th
-                  key={category}
-                  style={{
-                    padding: '0.7rem 1rem',
-                    textAlign: 'left',
-                    fontWeight: 700,
-                    fontSize: '0.65rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    color: '#64748b',
-                    minWidth: '120px',
-                    borderRight: '1px solid #e2e8f0',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {category.replace(/_/g, ' ')}
-                  <br />
-                  <span style={{ color: '#94a3b8', fontWeight: 600 }}>
-                    {measurementShort[measurement]}
-                  </span>
-                </th>
-              ))}
+              {data.allCategories.map(category => {
+                const isActive = sort.col === category;
+                return (
+                  <th
+                    key={category}
+                    onClick={() => handleColSort(category)}
+                    style={{
+                      padding: '0.7rem 1rem',
+                      textAlign: 'left',
+                      fontWeight: 700,
+                      fontSize: '0.65rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      color: isActive ? ACCENT : '#64748b',
+                      minWidth: '120px',
+                      borderRight: '1px solid #e2e8f0',
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      background: isActive ? '#eff6ff' : '#f1f5f9',
+                      transition: 'background 0.1s, color 0.1s',
+                    }}
+                  >
+                    {category.replace(/_/g, ' ')}
+                    <SortIcon dir={sort.dir} active={isActive} />
+                    <br />
+                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                      {measurementShort[measurement]}
+                    </span>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -821,6 +834,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   {/* Per-category metrics */}
                   {data.allCategories.map(category => {
                     const cm = row.categoryMetrics[category];
+                    const isActive = sort.col === category;
                     return (
                       <td
                         key={category}
@@ -828,6 +842,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           padding: '0.55rem 1rem',
                           borderRight: '1px solid #e2e8f0',
                           minWidth: '120px',
+                          background: isActive ? 'rgba(239,246,255,0.6)' : undefined,
                         }}
                       >
                         {cm ? (
@@ -836,7 +851,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                             max={colStats.catStats[category]?.max ?? 0}
                             min={colStats.catStats[category]?.min ?? 0}
                             higherBetter={hiBetter}
-                            color={provColor}
+                            color={isActive ? ACCENT : provColor}
                           />
                         ) : (
                           <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
