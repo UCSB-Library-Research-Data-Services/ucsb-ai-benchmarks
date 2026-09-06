@@ -7,6 +7,14 @@ interface LeaderboardProps {
 
 type Measurement = 'avgTTFT' | 'avgITL' | 'avgGenTPS' | 'avgTotalTPS';
 
+// Higher is better for TPS; lower is better for TTFT and ITL
+const higherIsBetter: Record<Measurement, boolean> = {
+  avgTTFT: false,
+  avgITL: false,
+  avgGenTPS: true,
+  avgTotalTPS: true,
+};
+
 const measurementLabels: Record<Measurement, string> = {
   avgTTFT: 'Avg TTFT (s)',
   avgITL: 'Avg ITL (ms)',
@@ -14,23 +22,248 @@ const measurementLabels: Record<Measurement, string> = {
   avgTotalTPS: 'Avg Total TPS',
 };
 
+const measurementShort: Record<Measurement, string> = {
+  avgTTFT: 'TTFT',
+  avgITL: 'ITL',
+  avgGenTPS: 'Gen TPS',
+  avgTotalTPS: 'Total TPS',
+};
+
+// Provider color map — stable hues per provider name
+const PROVIDER_PALETTE = [
+  '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+  '#8b5cf6', '#06b6d4', '#f97316', '#84cc16',
+];
+function providerColor(providers: string[], name: string): string {
+  const idx = providers.indexOf(name);
+  return PROVIDER_PALETTE[idx % PROVIDER_PALETTE.length];
+}
+
+function RankBadge({ rank }: { rank: number }) {
+  if (rank === 1) {
+    return (
+      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="1st place">
+        🥇
+      </span>
+    );
+  }
+  if (rank === 2) {
+    return (
+      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="2nd place">
+        🥈
+      </span>
+    );
+  }
+  if (rank === 3) {
+    return (
+      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="3rd place">
+        🥉
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: '1.4rem',
+        textAlign: 'center',
+        fontVariantNumeric: 'tabular-nums',
+        color: '#94a3b8',
+        fontSize: '0.8rem',
+        fontWeight: 600,
+      }}
+    >
+      {rank}
+    </span>
+  );
+}
+
+function PerformanceBar({
+  value,
+  max,
+  min,
+  higherBetter,
+  color,
+}: {
+  value: number;
+  max: number;
+  min: number;
+  higherBetter: boolean;
+  color: string;
+}) {
+  const range = max - min || 1;
+  const pct = higherBetter
+    ? ((value - min) / range) * 100
+    : ((max - value) / range) * 100;
+  const clamped = Math.max(4, Math.min(100, pct));
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      <span
+        style={{
+          fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
+          fontSize: '0.78rem',
+          fontWeight: 600,
+          color: '#1e293b',
+          letterSpacing: '-0.01em',
+        }}
+      >
+        {value.toFixed(value < 10 ? 2 : 1)}
+      </span>
+      <div
+        style={{
+          height: '4px',
+          borderRadius: '2px',
+          background: '#e2e8f0',
+          width: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            borderRadius: '2px',
+            background: color,
+            width: `${clamped}%`,
+            transition: 'width 0.3s ease',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  accent: string;
+}) {
+  return (
+    <div
+      style={{
+        borderRadius: '8px',
+        padding: '1rem 1.25rem',
+        background: '#f8fafc',
+        borderLeft: `3px solid ${accent}`,
+        borderTop: '1px solid #e2e8f0',
+        borderRight: '1px solid #e2e8f0',
+        borderBottom: '1px solid #e2e8f0',
+      }}
+    >
+      <div
+        style={{
+          fontSize: '0.7rem',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: '#64748b',
+          marginBottom: '0.3rem',
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+          fontSize: '1.5rem',
+          fontWeight: 700,
+          color: accent,
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+type SortDir = 'asc' | 'desc';
+// null column means "sort by overall metric (best-first per hiBetter)"
+type SortState = { col: string | null; dir: SortDir };
+
+function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
+  const up = active && dir === 'asc';
+  const down = active && dir === 'desc';
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        marginLeft: '4px',
+        gap: '1px',
+        verticalAlign: 'middle',
+        opacity: active ? 1 : 0.35,
+      }}
+    >
+      <svg width="7" height="5" viewBox="0 0 7 5">
+        <path d="M3.5 0L7 5H0z" fill={up ? '#2563eb' : '#94a3b8'} />
+      </svg>
+      <svg width="7" height="5" viewBox="0 0 7 5">
+        <path d="M3.5 5L0 0H7z" fill={down ? '#2563eb' : '#94a3b8'} />
+      </svg>
+    </span>
+  );
+}
+
 export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
-  // null = "All" mode (no filter); a Set means specific providers are selected
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
   const [onlyLatest, setOnlyLatest] = useState(false);
+  const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
 
   const isAllMode = selectedProviders === null;
 
-  // Filter rows based on selected providers
+  // Cycle sort: clicking active col toggles asc↔desc; clicking a new col sets desc first
+  const handleColSort = (col: string | null) => {
+    setSort(prev => {
+      if (prev.col === col) {
+        return { col, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
+      }
+      return { col, dir: 'desc' };
+    });
+  };
+
   const filteredRows = useMemo(() => {
-    if (isAllMode) return data.rows;
-    return data.rows.filter(row => selectedProviders!.has(row.provider));
-  }, [data.rows, selectedProviders, isAllMode]);
+    let rows = isAllMode
+      ? data.rows
+      : data.rows.filter(row => selectedProviders!.has(row.provider));
+    if (onlyLatest) {
+      const latestMap = new Map<string, AggregatedMetrics>();
+      for (const row of rows) {
+        const existing = latestMap.get(row.provider + '/' + row.model);
+        if (!existing || row.latestTimestamp > existing.latestTimestamp) {
+          latestMap.set(row.provider + '/' + row.model, row);
+        }
+      }
+      rows = Array.from(latestMap.values());
+    }
+    return rows;
+  }, [data.rows, selectedProviders, isAllMode, onlyLatest]);
+
+  // Compute per-column min/max for performance bars
+  const colStats = useMemo(() => {
+    const vals = filteredRows.map(r => r[measurement]);
+    const max = Math.max(...vals, 0);
+    const min = Math.min(...vals, 0);
+    const catStats: Record<string, { max: number; min: number }> = {};
+    for (const cat of data.allCategories) {
+      const catVals = filteredRows
+        .map(r => r.categoryMetrics[cat]?.[measurement])
+        .filter((v): v is number => v !== undefined);
+      catStats[cat] = {
+        max: Math.max(...catVals, 0),
+        min: Math.min(...catVals, 0),
+      };
+    }
+    return { max, min, catStats };
+  }, [filteredRows, measurement, data.allCategories]);
 
   const toggleProvider = (provider: string) => {
     if (isAllMode) {
-      // Landing state: clicking a provider enters filter mode with just that one
       setSelectedProviders(new Set([provider]));
     } else {
       const newSet = new Set(selectedProviders);
@@ -39,184 +272,610 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
       } else {
         newSet.add(provider);
       }
-      // If nothing remains selected, fall back to All
       setSelectedProviders(newSet.size === 0 ? null : newSet);
     }
   };
 
-  const selectAllProviders = () => {
-    setSelectedProviders(null);
-  };
+  const hiBetter = higherIsBetter[measurement];
 
-  const formatValue = (value: number, key: Measurement): string => {
-    if (key === 'avgTTFT' || key === 'avgITL') {
-      return value.toFixed(2);
-    }
-    return value.toFixed(1);
-  };
+  // Sort rows: by selected column, or overall metric by default
+  const sortedRows = useMemo(() => {
+    return [...filteredRows].sort((a, b) => {
+      let aVal: number;
+      let bVal: number;
+
+      if (sort.col === null || sort.col === 'overall') {
+        aVal = a[measurement];
+        bVal = b[measurement];
+      } else {
+        aVal = a.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
+        bVal = b.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
+      }
+
+      // desc = best first; for "lower is better" metrics, best = smallest value
+      const naturallyDesc = sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
+      // When hiBetter=false, "desc" should still mean "best first" (lowest value first)
+      if (sort.col === null) {
+        // Overall column always sorts "best first" regardless of dir state
+        return hiBetter ? bVal - aVal : aVal - bVal;
+      }
+      return naturallyDesc;
+    });
+  }, [filteredRows, measurement, hiBetter, sort]);
+
+  const ACCENT = '#2563eb';
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 bg-white rounded-lg shadow">
-      {/* Header Stats */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">Performance Leaderboard</h1>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <div className="text-sm font-semibold text-blue-900">Total Runs</div>
-            <div className="text-2xl font-bold text-blue-600">{data.stats.totalRuns}</div>
+    <div
+      style={{
+        width: '100%',
+        fontFamily:
+          "Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        color: '#1e293b',
+        background: '#ffffff',
+      }}
+    >
+      {/* Page header */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
+          color: '#fff',
+          padding: '2rem 2rem 1.75rem',
+          borderRadius: '12px 12px 0 0',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <div
+              style={{
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: '#93c5fd',
+                marginBottom: '0.4rem',
+              }}
+            >
+              UCSB AI Benchmarks
+            </div>
+            <h1
+              style={{
+                fontSize: '1.65rem',
+                fontWeight: 800,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.15,
+                margin: 0,
+              }}
+            >
+              Performance Leaderboard
+            </h1>
+            <p
+              style={{
+                marginTop: '0.5rem',
+                color: '#94a3b8',
+                fontSize: '0.83rem',
+                lineHeight: 1.5,
+              }}
+            >
+              Comparative inference performance across providers and task categories
+            </p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <div className="text-sm font-semibold text-green-900">Benchmarks</div>
-            <div className="text-2xl font-bold text-green-600">{data.stats.totalBenchmarks}</div>
-          </div>
-          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-            <div className="text-sm font-semibold text-purple-900">Models</div>
-            <div className="text-2xl font-bold text-purple-600">{data.stats.totalModels}</div>
-          </div>
-          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-            <div className="text-sm font-semibold text-orange-900">Providers</div>
-            <div className="text-2xl font-bold text-orange-600">{data.stats.totalProviders}</div>
-          </div>
+        </div>
+
+        {/* Stats row */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '0.75rem',
+            marginTop: '1.5rem',
+          }}
+        >
+          <StatCard label="Total Runs" value={data.stats.totalRuns} accent="#3b82f6" />
+          <StatCard label="Benchmarks" value={data.stats.totalBenchmarks} accent="#10b981" />
+          <StatCard label="Models" value={data.stats.totalModels} accent="#8b5cf6" />
+          <StatCard label="Providers" value={data.stats.totalProviders} accent="#f59e0b" />
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="mb-8 space-y-4">
-        {/* Provider Filter */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-900">Filter by Provider</h2>
+      {/* Controls panel */}
+      <div
+        style={{
+          background: '#f8fafc',
+          borderLeft: '1px solid #e2e8f0',
+          borderRight: '1px solid #e2e8f0',
+          padding: '1.25rem 2rem',
+          borderBottom: '1px solid #e2e8f0',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '1.5rem',
+          alignItems: 'flex-start',
+        }}
+      >
+        {/* Provider chips */}
+        <div style={{ flex: '1 1 auto' }}>
+          <div
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#64748b',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Provider
           </div>
-           <div className="flex flex-wrap gap-2">
-             <button
-               onClick={selectAllProviders}
-               className={`px-4 py-2 rounded-lg font-medium transition ${
-                 isAllMode
-                   ? 'bg-blue-600 text-white hover:bg-blue-700'
-                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-               }`}
-             >
-               All
-             </button>
-             {data.stats.providers.map(provider => (
-               <button
-                 key={provider}
-                 onClick={() => toggleProvider(provider)}
-                 className={`px-4 py-2 rounded-lg font-medium transition ${
-                   !isAllMode && selectedProviders!.has(provider)
-                     ? 'bg-blue-600 text-white hover:bg-blue-700'
-                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                 }`}
-               >
-                 {provider}
-               </button>
-             ))}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+            <button
+              onClick={() => setSelectedProviders(null)}
+              style={{
+                padding: '0.3rem 0.75rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: isAllMode ? `1.5px solid ${ACCENT}` : '1.5px solid #cbd5e1',
+                background: isAllMode ? ACCENT : '#fff',
+                color: isAllMode ? '#fff' : '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              All
+            </button>
+            {data.stats.providers.map(provider => {
+              const active = !isAllMode && selectedProviders!.has(provider);
+              const color = providerColor(data.stats.providers, provider);
+              return (
+                <button
+                  key={provider}
+                  onClick={() => toggleProvider(provider)}
+                  style={{
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '999px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    border: active ? `1.5px solid ${color}` : '1.5px solid #cbd5e1',
+                    background: active ? color : '#fff',
+                    color: active ? '#fff' : '#475569',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: active ? '#fff' : color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  {provider}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Measurement Selector and Toggle */}
-        <div className="flex flex-col md:flex-row gap-4 md:items-center">
-          <div>
-            <label htmlFor="measurement" className="block text-sm font-medium text-gray-900 mb-2">
-              Measurement
-            </label>
-            <select
-              id="measurement"
-              value={measurement}
-              onChange={e => setMeasurement(e.target.value as Measurement)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 hover:border-gray-400 focus:outline-none focus:border-blue-500"
-            >
-              {(Object.keys(measurementLabels) as Measurement[]).map(key => (
-                <option key={key} value={key}>
-                  {measurementLabels[key]}
-                </option>
-              ))}
-            </select>
+        {/* Measurement select */}
+        <div style={{ flexShrink: 0 }}>
+          <div
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#64748b',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Metric
           </div>
+          <select
+            value={measurement}
+            onChange={e => setMeasurement(e.target.value as Measurement)}
+            style={{
+              padding: '0.35rem 2rem 0.35rem 0.75rem',
+              borderRadius: '6px',
+              border: '1.5px solid #cbd5e1',
+              background: '#fff',
+              color: '#1e293b',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.6rem center',
+              outline: 'none',
+            }}
+          >
+            {(Object.keys(measurementLabels) as Measurement[]).map(key => (
+              <option key={key} value={key}>
+                {measurementLabels[key]}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="flex items-center gap-3">
+        {/* Latest only toggle */}
+        <div style={{ flexShrink: 0 }}>
+          <div
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#64748b',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Filter
+          </div>
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: 500,
+              color: '#475569',
+              userSelect: 'none',
+            }}
+          >
             <input
               type="checkbox"
-              id="latest-only"
               checked={onlyLatest}
               onChange={e => setOnlyLatest(e.target.checked)}
-              className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
             />
-            <label htmlFor="latest-only" className="text-sm font-medium text-gray-900">
-              Only most recent runs
-            </label>
-          </div>
+            Most recent only
+          </label>
         </div>
       </div>
 
-      {/* Results info */}
-      <div className="mb-4 text-sm text-gray-600">
-        Showing {filteredRows.length} of {data.rows.length} models
+      {/* Results count */}
+      <div
+        style={{
+          padding: '0.5rem 2rem',
+          fontSize: '0.72rem',
+          color: '#94a3b8',
+          background: '#f8fafc',
+          borderLeft: '1px solid #e2e8f0',
+          borderRight: '1px solid #e2e8f0',
+          fontWeight: 500,
+          letterSpacing: '0.01em',
+        }}
+      >
+        Showing <strong style={{ color: '#475569' }}>{sortedRows.length}</strong> of{' '}
+        <strong style={{ color: '#475569' }}>{data.rows.length}</strong> models &mdash; sorted by{' '}
+        <strong style={{ color: ACCENT }}>
+          {sort.col === null
+            ? measurementLabels[measurement] + ' (overall)'
+            : sort.col.replace(/_/g, ' ') + ' — ' + measurementLabels[measurement]}
+        </strong>{' '}
+        ({sort.col === null
+          ? hiBetter ? 'higher is better' : 'lower is better'
+          : sort.dir === 'desc' ? 'high → low' : 'low → high'})
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div
+        style={{
+          overflowX: 'auto',
+          border: '1px solid #e2e8f0',
+          borderTop: 'none',
+          borderRadius: '0 0 12px 12px',
+        }}
+      >
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            fontSize: '0.8rem',
+          }}
+        >
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-300">
-              <th className="sticky left-0 z-20 bg-gray-100 px-4 py-3 text-left font-semibold text-gray-900 border-r border-gray-300 min-w-[200px]">
+            <tr
+              style={{
+                background: '#f1f5f9',
+                borderBottom: '2px solid #cbd5e1',
+              }}
+            >
+              {/* Rank */}
+              <th
+                style={{
+                  position: 'sticky',
+                  left: 0,
+                  zIndex: 20,
+                  background: '#f1f5f9',
+                  padding: '0.7rem 0.75rem',
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#64748b',
+                  width: '2.5rem',
+                  borderRight: '1px solid #e2e8f0',
+                }}
+              >
+                #
+              </th>
+              {/* Model */}
+              <th
+                style={{
+                  position: 'sticky',
+                  left: '2.5rem',
+                  zIndex: 20,
+                  background: '#f1f5f9',
+                  padding: '0.7rem 1rem',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#64748b',
+                  minWidth: '220px',
+                  borderRight: '1px solid #e2e8f0',
+                }}
+              >
                 Model
               </th>
-              <th className="sticky left-[200px] z-20 bg-gray-100 px-4 py-3 text-center font-semibold text-gray-900 border-r border-gray-300 w-20">
-                # of Runs
+              {/* Runs */}
+              <th
+                style={{
+                  padding: '0.7rem 0.75rem',
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#64748b',
+                  width: '4rem',
+                  borderRight: '1px solid #e2e8f0',
+                }}
+              >
+                Runs
               </th>
-              <th className="sticky left-[280px] z-20 bg-gray-100 px-4 py-3 text-center font-semibold text-gray-900 border-r border-gray-300 w-32">
-                Overall<br />
-                {measurementLabels[measurement]}
+              {/* Overall metric */}
+              <th
+                style={{
+                  padding: '0.7rem 1rem',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: ACCENT,
+                  minWidth: '110px',
+                  borderRight: '2px solid #cbd5e1',
+                  background: '#eff6ff',
+                }}
+              >
+                Overall
+                <br />
+                <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                  {measurementShort[measurement]}
+                </span>
               </th>
+              {/* Category columns */}
               {data.allCategories.map(category => (
                 <th
                   key={category}
-                  className="px-4 py-3 text-center font-semibold text-gray-900 border-r border-gray-300 min-w-32"
+                  style={{
+                    padding: '0.7rem 1rem',
+                    textAlign: 'left',
+                    fontWeight: 700,
+                    fontSize: '0.65rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    color: '#64748b',
+                    minWidth: '120px',
+                    borderRight: '1px solid #e2e8f0',
+                    whiteSpace: 'nowrap',
+                  }}
                 >
-                  {category}
+                  {category.replace(/_/g, ' ')}
                   <br />
-                  {measurementLabels[measurement]}
+                  <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                    {measurementShort[measurement]}
+                  </span>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map((row, idx) => (
-              <tr
-                key={idx}
-                className={`border-b border-gray-200 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50 transition`}
-              >
-                <td className="sticky left-0 z-10 px-4 py-3 font-medium text-gray-900 border-r border-gray-200 min-w-[200px] bg-inherit">
-                  {row.model}
-                </td>
-                <td className="sticky left-[200px] z-10 px-4 py-3 text-center text-gray-700 border-r border-gray-200 w-20 bg-inherit">
-                  {row.runCount}
-                </td>
-                <td className="sticky left-[280px] z-10 px-4 py-3 text-center font-semibold text-blue-600 border-r border-gray-200 w-32 bg-inherit">
-                  {formatValue(row[measurement], measurement)}
-                </td>
-                {data.allCategories.map(category => (
+            {sortedRows.map((row, idx) => {
+              const rank = idx + 1;
+              const provColor = providerColor(data.stats.providers, row.provider);
+              const isEven = idx % 2 === 0;
+              return (
+                <tr
+                  key={`${row.provider}-${row.model}`}
+                  style={{
+                    background: rank <= 3
+                      ? rank === 1
+                        ? '#fffbeb'
+                        : rank === 2
+                        ? '#f8fafc'
+                        : '#fafaf9'
+                      : isEven
+                      ? '#ffffff'
+                      : '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
+                    transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLTableRowElement).style.background = '#eff6ff';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLTableRowElement).style.background =
+                      rank <= 3
+                        ? rank === 1
+                          ? '#fffbeb'
+                          : rank === 2
+                          ? '#f8fafc'
+                          : '#fafaf9'
+                        : isEven
+                        ? '#ffffff'
+                        : '#f8fafc';
+                  }}
+                >
+                  {/* Rank */}
                   <td
-                    key={category}
-                    className="px-4 py-3 text-center text-gray-700 border-r border-gray-200"
+                    style={{
+                      position: 'sticky',
+                      left: 0,
+                      zIndex: 10,
+                      background: 'inherit',
+                      padding: '0.65rem 0.5rem',
+                      textAlign: 'center',
+                      borderRight: '1px solid #e2e8f0',
+                      width: '2.5rem',
+                    }}
                   >
-                    {row.categoryMetrics[category]
-                      ? formatValue(row.categoryMetrics[category][measurement], measurement)
-                      : '-'}
+                    <RankBadge rank={rank} />
                   </td>
-                ))}
-              </tr>
-            ))}
+                  {/* Model name + provider chip */}
+                  <td
+                    style={{
+                      position: 'sticky',
+                      left: '2.5rem',
+                      zIndex: 10,
+                      background: 'inherit',
+                      padding: '0.65rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      minWidth: '220px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.1rem 0.45rem',
+                          borderRadius: '4px',
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.06em',
+                          background: provColor + '18',
+                          color: provColor,
+                          border: `1px solid ${provColor}40`,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {row.provider}
+                      </span>
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          color: '#1e293b',
+                          fontSize: '0.8rem',
+                          fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                        }}
+                      >
+                        {/* Strip the provider prefix that leaderboard.ts prepends */}
+                        {row.model.startsWith(row.provider + ' ')
+                          ? row.model.slice(row.provider.length + 1)
+                          : row.model}
+                      </span>
+                    </div>
+                  </td>
+                  {/* Run count */}
+                  <td
+                    style={{
+                      padding: '0.65rem 0.75rem',
+                      textAlign: 'center',
+                      color: '#94a3b8',
+                      fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      borderRight: '1px solid #e2e8f0',
+                    }}
+                  >
+                    {row.runCount}
+                  </td>
+                  {/* Overall metric with bar */}
+                  <td
+                    style={{
+                      padding: '0.55rem 1rem',
+                      borderRight: '2px solid #cbd5e1',
+                      minWidth: '110px',
+                      background: rank === 1 ? '#fefce8' : 'inherit',
+                    }}
+                  >
+                    <PerformanceBar
+                      value={row[measurement]}
+                      max={colStats.max}
+                      min={colStats.min}
+                      higherBetter={hiBetter}
+                      color={ACCENT}
+                    />
+                  </td>
+                  {/* Per-category metrics */}
+                  {data.allCategories.map(category => {
+                    const cm = row.categoryMetrics[category];
+                    return (
+                      <td
+                        key={category}
+                        style={{
+                          padding: '0.55rem 1rem',
+                          borderRight: '1px solid #e2e8f0',
+                          minWidth: '120px',
+                        }}
+                      >
+                        {cm ? (
+                          <PerformanceBar
+                            value={cm[measurement]}
+                            max={colStats.catStats[category]?.max ?? 0}
+                            min={colStats.catStats[category]?.min ?? 0}
+                            higherBetter={hiBetter}
+                            color={provColor}
+                          />
+                        ) : (
+                          <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+
+        {sortedRows.length === 0 && (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '3rem',
+              color: '#94a3b8',
+              fontSize: '0.85rem',
+            }}
+          >
+            No data for the selected providers.
+          </div>
+        )}
       </div>
 
-      {filteredRows.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No data available for the selected providers.
-        </div>
-      )}
+      {/* Footer */}
+      <div
+        style={{
+          marginTop: '0.75rem',
+          fontSize: '0.7rem',
+          color: '#94a3b8',
+          textAlign: 'right',
+          paddingRight: '0.25rem',
+        }}
+      >
+        Bars show relative performance within the visible selection.
+      </div>
     </div>
   );
 };
