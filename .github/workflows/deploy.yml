@@ -28,6 +28,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
       # Detects package manager
       - name: Setup Node.js
         uses: actions/setup-node@v4
