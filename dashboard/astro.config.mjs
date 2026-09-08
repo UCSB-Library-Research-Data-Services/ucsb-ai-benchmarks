@@ -4,5 +4,7 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://UCSB-Library-Research-Data-Services.github.io',
+  base: '/ucsb-ai-benchmarks',
   integrations: [react()],
 });
