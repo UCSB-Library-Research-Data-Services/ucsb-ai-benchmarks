@@ -415,10 +415,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Benchmark a single model on all services (appends to log by default)
-  python perfBench.py --models gpt-4-turbo
-  
-  # Benchmark multiple models on a specific service
+  # Benchmark every service's config.py roster (appends to log by default)
+  python perfBench.py
+
+  # Benchmark specific models on a specific service
   python perfBench.py --service GRIT --models gpt-4-turbo,gpt-3.5-turbo,llama-2-70b
   
   # Replace/overwrite the entire log instead of appending
@@ -457,8 +457,11 @@ Examples:
     parser.add_argument(
         "--models",
         type=str,
-        required=True,
-        help="Comma-separated list of model IDs to benchmark (required). E.g., 'gpt-4-turbo,gpt-3.5-turbo'"
+        required=False,
+        default=None,
+        help="Comma-separated list of model IDs to benchmark. "
+        "Defaults to each service's `models` roster in config.py. "
+        "E.g., 'gpt-4-turbo,gpt-3.5-turbo'"
     )
     parser.add_argument(
         "--workers",
@@ -494,12 +497,6 @@ Examples:
 
     args = parser.parse_args()
 
-    # Parse models (comma-separated)
-    models_list = [m.strip() for m in args.models.split(",")]
-    if not models_list:
-        print("[-] Error: No models specified. Use --models with comma-separated list.")
-        sys.exit(1)
-
     # Load prompts
     prompts = load_prompts(args.prompts)
 
@@ -525,15 +522,34 @@ Examples:
     else:
         services_to_run = SERVICES
 
+    # Models: explicit --models wins; otherwise each service's config.py roster.
+    models_override = None
+    if args.models:
+        models_override = [m.strip() for m in args.models.split(",") if m.strip()]
+        if not models_override:
+            print("[-] Error: No models specified. Use --models with comma-separated list.")
+            sys.exit(1)
+
     # Build execution queue
     queue = []
-    for s_name in services_to_run:
-        for model in models_list:
+    for s_name, s_info in services_to_run.items():
+        if models_override is not None:
+            models_for_service = models_override
+        else:
+            models_for_service = s_info.get("models") or []
+            if not models_for_service:
+                print(f"[*] Skipping {s_name}: no `models` roster in config.py.")
+                continue
+        for model in models_for_service:
             queue.append((s_name, model))
+
+    if not queue:
+        print("[-] Error: nothing to benchmark (empty roster and no --models).")
+        sys.exit(1)
 
     print("=" * 100)
     print("UCSB LLM Gateway Performance Benchmark Suite")
-    print(f"Services: {len(services_to_run)} | Models: {len(models_list)} | Prompts: {len(prompts)}")
+    print(f"Services: {len(services_to_run)} | Runs: {len(queue)} | Prompts: {len(prompts)}")
     print(f"Total benchmark runs: {len(queue)} | Workers per run: {args.workers}")
     print(f"Output: {Path(args.output).resolve()}")
     print("=" * 100)
