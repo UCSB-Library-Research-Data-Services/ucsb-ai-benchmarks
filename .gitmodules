@@ -2,6 +2,6 @@
 	path = SciCode
 	url = git@github.com:jairomelo/SciCode.git
 
-[submodule "RISE-Humanities"]
+[submodule "RISE"]
 	path = RISE
 	url = git@github.com:jairomelo/humanities_data_benchmark.git
