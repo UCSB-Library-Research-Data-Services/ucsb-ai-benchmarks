@@ -9,7 +9,7 @@ SERVICES = {
         "key": os.getenv("DL_KEY")
         },
     "CIT": {
-        "url": "https://api.ai.college.ucsb.edu",
+        "url": "https://api.ai.college.ucsb.edu/v1",
         "key": os.getenv("CIT_KEY"),
         "models": [
             "gemma-4-31b",
@@ -53,7 +53,7 @@ SERVICES = {
             "openai-gpt-oss-120b",
             "llama-4-scout-17b-instruct",
             "llama-4-maverick-17b-instruct",
-            "claude-v4.6-sonnet,"
+            "claude-v4.6-sonnet",
             "claude-v4.6-opus",
             "claude-v4.5-haiku",
             "amazon-nova-pro",
