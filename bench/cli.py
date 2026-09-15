@@ -76,8 +76,7 @@ def _cmd_collect(args, log_path):
     for suite in targets:
         cargvs = suites.build_collect_argvs(suite)
         if not cargvs:
-            print("performance: no-op (appends to data/performance_results.jsonl directly)")
-            status["collect performance"] = "no-op (self-collecting)"
+            status["collect " + suite] = "no-op"
             continue
         for step, argv in enumerate(cargvs):
             key = "collect " + suite if len(cargvs) == 1 else "collect %s [%d]" % (suite, step + 1)

@@ -100,7 +100,7 @@ def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, 
         if not no_collect:
             cargvs = suites.build_collect_argvs(suite)
             if not cargvs:
-                status["collect " + suite] = "no-op (self-collecting)"
+                status["collect " + suite] = "no-op"
             else:
                 for step, cargv in enumerate(cargvs):
                     rc2 = run_subprocess(cargv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)

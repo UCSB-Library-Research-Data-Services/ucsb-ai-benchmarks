@@ -13,6 +13,7 @@ SCICODE_RUNNER = ["bash", "SciCode/eval/inspect_ai/run_scicode_evals.sh"]
 RISE_COLLECT_ARGV = ["uv", "run", "rise_eval/collect_rise_results.py"]
 SCICODE_COLLECT_ARGV = ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"]
 SCICODE_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_scicode_details.py"]
+PERF_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_performance_details.py"]
 PROBE_ARGV = ["uv", "run", "python", "scripts/check_model_vision.py"]
 BUILD_ARGV = ["npm", "run", "build"]
 
@@ -150,7 +151,8 @@ def build_run_argv(suite, service=None, model=None, smoke=False, passthrough=(),
 
 def build_collect_argv(suite):
     if suite == "performance":
-        return None
+        # perfBench.py appends directly; the details exporter is the only collect step.
+        return list(PERF_DETAILS_ARGV)
     if suite == "rise":
         return list(RISE_COLLECT_ARGV)
     if suite == "scicode":
