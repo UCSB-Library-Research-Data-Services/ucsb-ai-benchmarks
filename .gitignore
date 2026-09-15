@@ -11,6 +11,7 @@ wheels/
 .agents
 .kilo
 .pytest_cache/
+.venv-rise
 
 # Environment variables
 .env
