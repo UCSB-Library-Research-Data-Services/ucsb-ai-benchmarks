@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
-export type DetailKind = 'rise' | 'scicode';
+export type DetailKind = 'rise' | 'scicode' | 'performance';
 
 interface RunDetailPanelProps {
   kind: DetailKind;
   url: string;
   title: string;
   onClose: () => void;
+  /** performance panels: restrict listed runs to one category (Overall = all) */
+  category?: string | null;
 }
 
 interface RiseRequest {
@@ -76,12 +78,39 @@ interface ScicodeShard {
   problems: ScicodeProblem[];
 }
 
+interface PerformanceRun {
+  test_id: string | null;
+  category: string | null;
+  timestamp: string | null;
+  total_time_sec: number | null;
+  ttft_sec: number | null;
+  itl_ms_per_token: number | null;
+  generation_tps: number | null;
+  total_tps: number | null;
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  total_tokens: number | null;
+  output_type: string | null;
+  status: string | null;
+  model_output: string | null;
+}
+
+interface PerformanceShard {
+  service: string;
+  model: string;
+  detailKey: string;
+  runCount: number;
+  latestTimestamp: string | null;
+  categories: string[];
+  runs: PerformanceRun[];
+}
+
 type LoadState =
   | { status: 'loading' }
-  | { status: 'loaded'; data: RiseShard | ScicodeShard }
+  | { status: 'loaded'; data: RiseShard | ScicodeShard | PerformanceShard }
   | { status: 'missing' };
 
-const detailCache = new Map<string, RiseShard | ScicodeShard | null>();
+const detailCache = new Map<string, RiseShard | ScicodeShard | PerformanceShard | null>();
 
 const ACCENT = '#2563eb';
 const MONO = "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace";
@@ -564,7 +593,86 @@ function ScicodeDetail({ shard }: { shard: ScicodeShard }) {
   );
 }
 
-export const RunDetailPanel: React.FC<RunDetailPanelProps> = ({ kind, url, title, onClose }) => {
+function fmtMetric(v: number | null | undefined, digits = 2): string {
+  if (v === null || v === undefined || Number.isNaN(v)) return '—';
+  return v.toFixed(digits);
+}
+
+function PerformanceDetail({ shard, category }: { shard: PerformanceShard; category?: string | null }) {
+  const runs = category ? shard.runs.filter(r => r.category === category) : shard.runs;
+  const ok = runs.filter(r => r.status === 'success');
+  const mean = (f: (r: PerformanceRun) => number | null | undefined, digits = 2) => {
+    const vals = runs.map(f).filter((v): v is number => typeof v === 'number' && !Number.isNaN(v));
+    return vals.length ? (vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(digits) : '—';
+  };
+  return (
+    <div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '0.5rem',
+          marginBottom: '1rem',
+        }}
+      >
+        <MetaCell label="Service" value={shard.service} />
+        <MetaCell label="Model" value={shard.model} />
+        <MetaCell label="Scope" value={category ? category.replace(/_/g, ' ') : 'All categories'} mono={false} />
+        <MetaCell label="Runs" value={`${runs.length}`} />
+        <MetaCell label="Success" value={`${ok.length}/${runs.length}`} />
+        <MetaCell label="Avg TTFT" value={`${mean(r => r.ttft_sec)}s`} />
+        <MetaCell label="Avg ITL" value={`${mean(r => r.itl_ms_per_token)} ms`} />
+        <MetaCell label="Avg Gen TPS" value={mean(r => r.generation_tps, 1)} />
+        <MetaCell label="Avg Total TPS" value={mean(r => r.total_tps, 1)} />
+        <MetaCell label="Latest" value={shard.latestTimestamp ?? '—'} />
+      </div>
+      <div
+        style={{
+          fontSize: '0.68rem',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: '#475569',
+          marginBottom: '0.5rem',
+        }}
+      >
+        Runs · {runs.length}{category ? ` in ${category.replace(/_/g, ' ')}` : ''}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        {runs.map((r, i) => {
+          const header = `${r.test_id ?? `run ${i + 1}`} · ${fmtMetric(r.generation_tps, 1)} gen TPS · ${fmtMetric(r.ttft_sec)}s TTFT · ${fmtMetric(r.itl_ms_per_token)}ms ITL${r.status !== 'success' ? ` · ${r.status}` : ''}`;
+          return (
+            <AccordionItem key={`${r.test_id}-${r.timestamp}-${i}`} header={header} id={`perf-${shard.detailKey}-${i}`}>
+              <div style={{ marginBottom: '0.6rem' }}>
+                <div style={SECTION_LABEL}>Run metrics</div>
+                <TruncatedPre
+                  text={prettyJson({
+                    test_id: r.test_id,
+                    category: r.category,
+                    timestamp: r.timestamp,
+                    status: r.status,
+                    ttft_sec: r.ttft_sec,
+                    itl_ms_per_token: r.itl_ms_per_token,
+                    generation_tps: r.generation_tps,
+                    total_tps: r.total_tps,
+                    total_time_sec: r.total_time_sec,
+                    prompt_tokens: r.prompt_tokens,
+                    completion_tokens: r.completion_tokens,
+                    total_tokens: r.total_tokens,
+                  })}
+                />
+              </div>
+              <div style={SECTION_LABEL}>Model output</div>
+              <TruncatedPre text={r.model_output ?? '(empty output)'} />
+            </AccordionItem>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export const RunDetailPanel: React.FC<RunDetailPanelProps> = ({ kind, url, title, onClose, category }) => {
   const [state, setState] = useState<LoadState>(() => {
     if (detailCache.has(url)) {
       const cached = detailCache.get(url);
@@ -663,8 +771,10 @@ export const RunDetailPanel: React.FC<RunDetailPanelProps> = ({ kind, url, title
       {state.status === 'loaded' &&
         (kind === 'rise' ? (
           <RiseDetail shard={state.data as RiseShard} />
-        ) : (
+        ) : kind === 'scicode' ? (
           <ScicodeDetail shard={state.data as ScicodeShard} />
+        ) : (
+          <PerformanceDetail shard={state.data as PerformanceShard} category={category} />
         ))}
     </div>
   );

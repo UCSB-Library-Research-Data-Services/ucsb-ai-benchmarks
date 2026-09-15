@@ -202,3 +202,14 @@ export function getLeaderboardDataPath(): string {
   // Return path relative to project root
   return path.join(process.cwd(), '..', 'data', 'performance_results.jsonl');
 }
+
+function slugModel(model: string): string {
+  return (model || 'UNKNOWN').replace(/[^A-Za-z0-9._-]+/g, '_') || 'UNKNOWN';
+}
+
+export function performanceDetailPath(provider: string, model: string): string {
+  // leaderboard.ts prepends provider into row.model ("${provider} ${model}");
+  // strip it back to the raw model name for the shard key.
+  const raw = model.startsWith(provider + ' ') ? model.slice(provider.length + 1) : model;
+  return `${import.meta.env.BASE_URL}data/details/performance/${provider}__${slugModel(raw)}.json`;
+}

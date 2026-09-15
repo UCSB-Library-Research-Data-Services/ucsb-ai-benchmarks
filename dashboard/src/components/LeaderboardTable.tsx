@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { AggregatedMetrics, LeaderboardData } from '../lib/leaderboard';
+import { performanceDetailPath } from '../lib/leaderboard';
+import { RunDetailPanel } from './RunDetailPanel';
 
 interface LeaderboardProps {
   data: LeaderboardData;
@@ -215,8 +217,14 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
   const [onlyLatest, setOnlyLatest] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const toggleDetail = (provider: string, model: string, col: string | null) => {
+    const key = `${provider}|${model}|${col ?? 'overall'}`;
+    setOpenKey(prev => (prev === key ? null : key));
+  };
 
   // When metric changes, reset sort to Overall and pick the natural "best first" direction
   const handleMeasurementChange = (m: Measurement) => {
@@ -779,9 +787,49 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               const rank = idx + 1;
               const provColor = providerColor(data.stats.providers, row.provider);
               const isEven = idx % 2 === 0;
+              const rowKey = `${row.provider}|${row.model}`;
+              const colCount = 4 + data.allCategories.length;
+              const clickableCell = (
+                children: React.ReactNode,
+                col: string | null,
+                active: boolean
+              ): React.ReactNode => {
+                const detailKey = `${rowKey}|${col ?? 'overall'}`;
+                const isOpen = openKey === detailKey;
+                return (
+                  <button
+                    onClick={() => toggleDetail(row.provider, row.model, col)}
+                    aria-expanded={isOpen}
+                    aria-controls={`detail-${row.provider}-${row.model}`}
+                    title={`View runs: ${row.provider} ${row.model}${col ? ` · ${col.replace(/_/g, ' ')}` : ' · overall'}`}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      background: 'none',
+                      border: isOpen ? `1.5px solid ${ACCENT}` : '1.5px solid transparent',
+                      borderRadius: '6px',
+                      padding: '0.1rem 0.25rem',
+                      margin: '-0.1rem -0.25rem',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = ACCENT;
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = isOpen
+                        ? ACCENT
+                        : 'transparent';
+                    }}
+                  >
+                    {children}
+                  </button>
+                );
+              };
+              const detailCol = openKey && openKey.startsWith(rowKey + '|') ? openKey.slice(rowKey.length + 1) : null;
               return (
+                <React.Fragment key={`${row.provider}-${row.model}`}>
                 <tr
-                  key={`${row.provider}-${row.model}`}
                   style={{
                     background: rank <= 3
                       ? rank === 1
@@ -891,21 +939,31 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       padding: '0.55rem 1rem',
                       borderRight: '2px solid #cbd5e1',
                       minWidth: '110px',
-                      background: rank === 1 ? '#fefce8' : 'inherit',
+                      background:
+                        openKey === `${rowKey}|overall`
+                          ? '#dbeafe'
+                          : rank === 1
+                          ? '#fefce8'
+                          : 'inherit',
                     }}
                   >
-                    <PerformanceBar
-                      value={row[measurement]}
-                      max={colStats.max}
-                      min={colStats.min}
-                      higherBetter={hiBetter}
-                      color={ACCENT}
-                    />
+                    {clickableCell(
+                      <PerformanceBar
+                        value={row[measurement]}
+                        max={colStats.max}
+                        min={colStats.min}
+                        higherBetter={hiBetter}
+                        color={ACCENT}
+                      />,
+                      null,
+                      sort.col === null
+                    )}
                   </td>
                   {/* Per-category metrics */}
                   {data.allCategories.map(category => {
                     const cm = row.categoryMetrics[category];
                     const isActive = sort.col === category;
+                    const isOpen = openKey === `${rowKey}|${category}`;
                     return (
                       <td
                         key={category}
@@ -913,17 +971,25 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           padding: '0.55rem 1rem',
                           borderRight: '1px solid #e2e8f0',
                           minWidth: '120px',
-                          background: isActive ? 'rgba(239,246,255,0.6)' : undefined,
+                          background: isOpen
+                            ? '#dbeafe'
+                            : isActive
+                            ? 'rgba(239,246,255,0.6)'
+                            : undefined,
                         }}
                       >
                         {cm ? (
-                          <PerformanceBar
-                            value={cm[measurement]}
-                            max={colStats.catStats[category]?.max ?? 0}
-                            min={colStats.catStats[category]?.min ?? 0}
-                            higherBetter={hiBetter}
-                            color={isActive ? ACCENT : provColor}
-                          />
+                          clickableCell(
+                            <PerformanceBar
+                              value={cm[measurement]}
+                              max={colStats.catStats[category]?.max ?? 0}
+                              min={colStats.catStats[category]?.min ?? 0}
+                              higherBetter={hiBetter}
+                              color={isActive ? ACCENT : provColor}
+                            />,
+                            category,
+                            isActive
+                          )
                         ) : (
                           <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
                         )}
@@ -931,6 +997,20 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                     );
                   })}
                 </tr>
+                {detailCol && (
+                  <tr key={`${rowKey}-${detailCol}-detail`}>
+                    <td colSpan={colCount} id={`detail-${row.provider}-${row.model}`} style={{ padding: '0.5rem 1rem 1rem', background: '#fff', borderBottom: '2px solid #cbd5e1' }}>
+                      <RunDetailPanel
+                        kind="performance"
+                        url={performanceDetailPath(row.provider, row.model)}
+                        title={`${row.provider} ${row.model.startsWith(row.provider + ' ') ? row.model.slice(row.provider.length + 1) : row.model}${detailCol === 'overall' ? '' : ` · ${detailCol.replace(/_/g, ' ')}`}`}
+                        category={detailCol === 'overall' ? null : detailCol}
+                        onClose={() => setOpenKey(null)}
+                      />
+                    </td>
+                  </tr>
+                )}
+                </React.Fragment>
               );
             })}
           </tbody>
@@ -960,7 +1040,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           paddingRight: '0.25rem',
         }}
       >
-        Bars show relative performance within the visible selection.
+        Bars show relative performance within the visible selection. Click a score cell
+        to expand the runs behind it.
       </div>
     </div>
   );
