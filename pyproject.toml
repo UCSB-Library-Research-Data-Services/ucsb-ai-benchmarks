@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "ucsb-ai-benchmarks"
 version = "0.1.0"
@@ -13,3 +17,9 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "seaborn>=0.13.2",
 ]
+
+[project.scripts]
+bench = "bench.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bench"]

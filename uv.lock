@@ -1700,7 +1700,7 @@ wheels = [
 [[package]]
 name = "ucsb-ai-benchmarks"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "adjusttext" },
     { name = "inspect-ai" },
