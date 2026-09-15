@@ -40,9 +40,9 @@ export interface ScicodeResult {
 export interface ScicodeRow {
   provider: string;
   model: string;
+  split: string;
   runCount: number;
   latestTimestamp: string;
-  split: string;
   numProblems: number;
   mainResolveRate: number;
   subStepAccuracy: number;
@@ -112,28 +112,39 @@ export function aggregateScicodeData(results: ScicodeResult[]): ScicodeLeaderboa
     const sepIdx = key.indexOf('|');
     const provider = key.slice(0, sepIdx);
     const model = key.slice(sepIdx + 1);
-    const sorted = [...runs].sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-    const latest = sorted[0];
-    rows.push({
-      provider,
-      model,
-      runCount: runs.length,
-      latestTimestamp: latest.timestamp,
-      split: latest.split,
-      numProblems: latest.num_problems,
-      mainResolveRate: latest.main_resolve_rate * 100,
-      subStepAccuracy: latest.sub_step_accuracy * 100,
-      stepsPassed: latest.steps_passed,
-      stepsTotal: latest.steps_total,
-      avgOutputTokensPerTask: latest.avg_output_tokens_per_task,
-      avgReasoningTokensPerTask: latest.avg_reasoning_tokens_per_task,
-      avgAnswerTokensPerTask: latest.avg_answer_tokens_per_task,
-      totalOutputTokens: latest.total_output_tokens,
-      avgModelTimeMin: latest.avg_model_time_min_per_task,
-      withBackground: latest.with_background,
-    });
+
+    const splitMap = new Map<string, ScicodeResult[]>();
+    for (const run of runs) {
+      if (!splitMap.has(run.split)) {
+        splitMap.set(run.split, []);
+      }
+      splitMap.get(run.split)!.push(run);
+    }
+
+    for (const [split, splitRuns] of splitMap.entries()) {
+      const sorted = [...splitRuns].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+      const latest = sorted[0];
+      rows.push({
+        provider,
+        model,
+        split,
+        runCount: splitRuns.length,
+        latestTimestamp: latest.timestamp,
+        numProblems: latest.num_problems,
+        mainResolveRate: latest.main_resolve_rate * 100,
+        subStepAccuracy: latest.sub_step_accuracy * 100,
+        stepsPassed: latest.steps_passed,
+        stepsTotal: latest.steps_total,
+        avgOutputTokensPerTask: latest.avg_output_tokens_per_task,
+        avgReasoningTokensPerTask: latest.avg_reasoning_tokens_per_task,
+        avgAnswerTokensPerTask: latest.avg_answer_tokens_per_task,
+        totalOutputTokens: latest.total_output_tokens,
+        avgModelTimeMin: latest.avg_model_time_min_per_task,
+        withBackground: latest.with_background,
+      });
+    }
   }
 
   const latestRun = rows.reduce<string | null>(
