@@ -14,6 +14,11 @@ Run identity (service, model, benchmark) resolution:
 
 Stdlib only (no third-party imports). Idempotent: ``--out`` is rewritten wholly each run.
 
+Detail shards: one distilled JSON per run is written to
+``data/details/rise/<date>/<test_id>.json`` (drops ``raw_response``,
+truncates text/parsed to 8000 chars, never publishes ``base_url``).
+Whole-tree rewrite with stale-shard pruning on unfiltered runs.
+
 Usage:
   uv run rise_eval/collect_rise_results.py
   uv run rise_eval/collect_rise_results.py --results-dir RISE/results --date 2026-09-09 --test-id T1740
@@ -21,6 +26,7 @@ Usage:
 import argparse
 import csv
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -28,10 +34,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RESULTS_DIR = REPO_ROOT / "rise_eval" / "results"
 DEFAULT_OUT = REPO_ROOT / "data" / "rise_results.jsonl"
+DEFAULT_DETAILS_DIR = REPO_ROOT / "data" / "details" / "rise"
 DEFAULT_CAPABILITIES = REPO_ROOT / "data" / "model_capabilities.json"
 DEFAULT_RISE_ROOT = REPO_ROOT / "RISE"
 
 NOTE_TRUNCATE = 200
+DETAIL_TRUNCATE = 8000
 
 
 def load_json(path):
@@ -275,6 +283,102 @@ def collect(results_dir, capabilities, csv_mapping, ranking_configs, date_filter
     return rows, skipped, warned_combos
 
 
+def truncate_detail_str(value, limit=DETAIL_TRUNCATE):
+    """Truncate a string for detail shards, marking truncation."""
+    if isinstance(value, str) and len(value) > limit:
+        return value[:limit] + "… [truncated]"
+    return value
+
+
+def truncate_detail_value(value, limit=DETAIL_TRUNCATE):
+    """Recursively truncate strings inside parsed payloads."""
+    if isinstance(value, str):
+        return truncate_detail_str(value, limit)
+    if isinstance(value, dict):
+        return {k: truncate_detail_value(v, limit) for k, v in value.items()}
+    if isinstance(value, list):
+        return [truncate_detail_value(v, limit) for v in value]
+    return value
+
+
+def parse_request_line(req_path, test_id):
+    """Extract the line number from request_<test_id>_line_N.json (fallback: 0)."""
+    match = re.search(r"_line_(\d+)\.json$", req_path.name)
+    if match:
+        return int(match.group(1))
+    return 0
+
+
+def distill_requests(run_dir, test_id):
+    """Distill request_*.json files, dropping bulky raw_response."""
+    requests = []
+    for req_path in sorted(run_dir.glob("request_*.json")):
+        req = load_json(req_path)
+        if req is None:
+            continue
+        raw_text = req.get("text")
+        if raw_text is None:
+            text = None
+        elif isinstance(raw_text, str):
+            text = truncate_detail_str(raw_text)
+        else:
+            text = truncate_detail_str(json.dumps(raw_text, ensure_ascii=False))
+        requests.append({
+            "line": parse_request_line(req_path, test_id),
+            "text": text,
+            "parsed": truncate_detail_value(req.get("parsed")),
+            "score": req.get("score"),
+            "usage": req.get("usage"),
+            "duration": req.get("duration"),
+            "finish_reason": req.get("finish_reason"),
+            "timestamp": req.get("timestamp"),
+        })
+    requests.sort(key=lambda r: r["line"])
+    return requests
+
+
+def write_details_shards(rows, results_dir, details_dir, prune=True):
+    """Write one distilled shard per run; prune stale shards when requested.
+
+    Returns the list of shard paths written.
+    """
+    expected = set()
+    for row in rows:
+        run_dir = results_dir / row["date"] / row["test_id"]
+        shard = {
+            "test_id": row["test_id"],
+            "date": row["date"],
+            "service": row["service"],
+            "model": row["model"],
+            "benchmark": row["benchmark"],
+            "normalized_score": row["normalized_score"],
+            "vision_status": row["vision_status"],
+            "vision_note": row["vision_note"],
+            "num_inputs": row["num_inputs"],
+            "num_scored": row["num_scored"],
+            "tokens": row["tokens"],
+            "cost_usd": row["cost_usd"],
+            "timing": row["timing"],
+            "raw_scoring": row["raw_scoring"],
+            "requests": distill_requests(run_dir, row["test_id"]),
+        }
+        shard_path = details_dir / row["date"] / (row["test_id"] + ".json")
+        expected.add(shard_path.resolve())
+        shard_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(shard_path, "w", encoding="utf-8") as f:
+            json.dump(shard, f, ensure_ascii=False)
+    if prune and details_dir.is_dir():
+        for existing in sorted(details_dir.rglob("*.json")):
+            if existing.resolve() not in expected:
+                existing.unlink()
+        for date_dir in sorted((p for p in details_dir.iterdir() if p.is_dir()), reverse=True):
+            try:
+                date_dir.rmdir()
+            except OSError:
+                pass
+    return sorted(expected)
+
+
 def print_summary(rows, skipped, warned_combos, out_path):
     """Human-readable summary: service x benchmark means + skip/failure counts."""
     print(f"\nWrote {len(rows)} row(s) to {out_path}")
@@ -322,6 +426,10 @@ def main():
                         help="RISE checkout for meta.json ranking configs + benchmarks_tests.csv fallback")
     parser.add_argument("--date", default=None, help="only collect runs under this YYYY-MM-DD")
     parser.add_argument("--test-id", default=None, help="only collect this run id (e.g. T1740/U0001)")
+    parser.add_argument("--details-dir", type=Path, default=DEFAULT_DETAILS_DIR,
+                        help="per-run detail shard dir (data/details/rise/<date>/<test_id>.json)")
+    parser.add_argument("--no-details", action="store_true", help="skip detail shard emission")
+    parser.add_argument("--no-prune", action="store_true", help="keep stale shards instead of deleting them")
     args = parser.parse_args()
 
     ranking_configs = load_ranking_configs(args.rise_root)
@@ -337,6 +445,15 @@ def main():
     with open(args.out, "w", encoding="utf-8") as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    if args.no_details:
+        print_summary(rows, skipped, warned_combos, args.out)
+        return 0
+    # Prune only on full rewrites: filtered invocations rewrite a subset.
+    prune = not args.no_prune and args.date is None and args.test_id is None
+    shards = write_details_shards(rows, args.results_dir, args.details_dir, prune=prune)
+    print(f"Wrote {len(shards)} detail shard(s) to {args.details_dir}"
+          + ("" if prune else " (prune skipped: filtered or --no-prune)"))
 
     print_summary(rows, skipped, warned_combos, args.out)
     return 0

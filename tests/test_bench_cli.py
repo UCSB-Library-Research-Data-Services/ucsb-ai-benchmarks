@@ -113,6 +113,15 @@ def test_collect_argv_matrix():
     assert suites.build_collect_argv("scicode") == ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"]
 
 
+def test_collect_argvs_matrix():
+    assert suites.build_collect_argvs("performance") == []
+    assert suites.build_collect_argvs("rise") == [["uv", "run", "rise_eval/collect_rise_results.py"]]
+    assert suites.build_collect_argvs("scicode") == [
+        ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"],
+        ["uv", "run", "python", "scripts/export_scicode_details.py"],
+    ]
+
+
 def test_find_missing(roster):
     cap = {("cit", "gemma-4-31b"): {"tools": {"vision": True}}}
     missing = suites.find_missing(roster, cap)
