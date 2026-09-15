@@ -29,6 +29,7 @@ export interface RiseRow {
   vision: boolean | null;
   runs: number;
   benchmarks: Record<string, number | null>;
+  runRefs: Record<string, { test_id: string; date: string }>;
   avg: number | null;
   lastRun: string;
 }
@@ -132,9 +133,11 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
   const rows: RiseRow[] = [];
   for (const [key, runs] of modelRuns.entries()) {
     const benchmarks: Record<string, number | null> = {};
+    const runRefs: Record<string, { test_id: string; date: string }> = {};
     let lastRun = '';
     for (const run of runs) {
       benchmarks[run.benchmark] = run.normalized_score;
+      runRefs[run.benchmark] = { test_id: run.test_id, date: run.date };
       if (run.date > lastRun) {
         lastRun = run.date;
       }
@@ -148,6 +151,7 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
       vision: runs[0].vision,
       runs: runs.length,
       benchmarks,
+      runRefs,
       avg: scores.length > 0 ? scores.reduce((s, v) => s + v, 0) / scores.length : null,
       lastRun,
     });
@@ -178,4 +182,8 @@ export function getRiseDataPath(): string {
   const dashboardDir = process.cwd();
   const projectRoot = dashboardDir.replace('/dashboard', '');
   return `${projectRoot}/data/rise_results.jsonl`;
+}
+
+export function riseDetailPath(ref: { test_id: string; date: string }): string {
+  return `${import.meta.env.BASE_URL}data/details/rise/${ref.date}/${ref.test_id}.json`;
 }

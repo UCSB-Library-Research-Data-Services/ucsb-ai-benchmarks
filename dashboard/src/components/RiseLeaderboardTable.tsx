@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { RiseLeaderboardData } from '../lib/rise';
-import { benchmarkTitle } from '../lib/rise';
+import { benchmarkTitle, riseDetailPath } from '../lib/rise';
+import { RunDetailPanel } from './RunDetailPanel';
 
 interface RiseLeaderboardProps {
   data: RiseLeaderboardData;
@@ -246,8 +247,14 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
   const [visionFilter, setVisionFilter] = useState<VisionFilter>('all');
   const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const toggleDetail = (rowKey: string, benchmark: string) => {
+    const key = `${rowKey}|${benchmark}`;
+    setOpenKey(prev => (prev === key ? null : key));
+  };
 
   const handleColSort = (col: string) => {
     setSort(prev => {
@@ -770,9 +777,11 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
                   : isEven
                   ? '#ffffff'
                   : '#f8fafc';
+              const rowKey = `${row.service}|${row.model}`;
+              const colCount = 4 + data.allBenchmarks.length;
               return (
+                <React.Fragment key={rowKey}>
                 <tr
-                  key={`${row.service}|${row.model}`}
                   style={{
                     background: rowBg,
                     borderBottom: '1px solid #e2e8f0',
@@ -878,6 +887,20 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
                   {data.allBenchmarks.map(benchmark => {
                     const value = row.benchmarks[benchmark];
                     const isActive = sort.col === benchmark;
+                    const ref = row.runRefs?.[benchmark];
+                    const detailKey = `${rowKey}|${benchmark}`;
+                    const isOpen = openKey === detailKey;
+                    const cellBody =
+                      value !== null && value !== undefined ? (
+                        <ScoreBar value={value} color={isActive ? ACCENT : provColor} />
+                      ) : (
+                        <span
+                          title="Not run (text-only model or run not completed)"
+                          style={{ color: '#cbd5e1', fontSize: '0.75rem' }}
+                        >
+                          —
+                        </span>
+                      );
                     return (
                       <td
                         key={benchmark}
@@ -885,23 +908,68 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
                           padding: '0.55rem 1rem',
                           borderRight: '1px solid #e2e8f0',
                           minWidth: '110px',
-                          background: isActive ? 'rgba(239,246,255,0.6)' : undefined,
+                          background: isOpen
+                            ? '#dbeafe'
+                            : isActive
+                            ? 'rgba(239,246,255,0.6)'
+                            : undefined,
                         }}
                       >
-                        {value !== null && value !== undefined ? (
-                          <ScoreBar value={value} color={isActive ? ACCENT : provColor} />
-                        ) : (
-                          <span
-                            title="Not run (text-only model or run not completed)"
-                            style={{ color: '#cbd5e1', fontSize: '0.75rem' }}
+                        {ref ? (
+                          <button
+                            onClick={() => toggleDetail(rowKey, benchmark)}
+                            aria-expanded={isOpen}
+                            aria-controls={`detail-${row.service}-${row.model}-${benchmark}`}
+                            title={`View run details: ${ref.date}/${ref.test_id}`}
+                            style={{
+                              display: 'block',
+                              width: '100%',
+                              textAlign: 'left',
+                              background: 'none',
+                              border: isOpen ? `1.5px solid ${ACCENT}` : '1.5px solid transparent',
+                              borderRadius: '6px',
+                              padding: '0.1rem 0.25rem',
+                              margin: '-0.1rem -0.25rem',
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={e => {
+                              (e.currentTarget as HTMLButtonElement).style.borderColor = ACCENT;
+                            }}
+                            onMouseLeave={e => {
+                              (e.currentTarget as HTMLButtonElement).style.borderColor = isOpen
+                                ? ACCENT
+                                : 'transparent';
+                            }}
                           >
-                            —
-                          </span>
+                            {cellBody}
+                          </button>
+                        ) : (
+                          cellBody
                         )}
                       </td>
                     );
                   })}
                 </tr>
+                {(() => {
+                  if (!openKey) return null;
+                  const [svc, model, bench] = openKey.split('|');
+                  if (svc !== row.service || model !== row.model) return null;
+                  const ref = row.runRefs?.[bench];
+                  if (!ref) return null;
+                  return (
+                    <tr key={`${openKey}-detail`}>
+                      <td colSpan={colCount} id={`detail-${row.service}-${row.model}-${bench}`} style={{ padding: '0.5rem 1rem 1rem', background: '#fff', borderBottom: '2px solid #cbd5e1' }}>
+                        <RunDetailPanel
+                          kind="rise"
+                          url={riseDetailPath(ref)}
+                          title={`${row.service} ${row.model} · ${benchmarkTitle(bench)} · ${ref.date}/${ref.test_id}`}
+                          onClose={() => setOpenKey(null)}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })()}
+                </React.Fragment>
               );
             })}
           </tbody>
