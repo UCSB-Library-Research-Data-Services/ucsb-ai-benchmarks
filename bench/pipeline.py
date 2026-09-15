@@ -98,12 +98,16 @@ def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, 
         rc = run_subprocess(argv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
         status["run " + suite] = _rc_status(rc, dry_run)
         if not no_collect:
-            cargv = suites.build_collect_argv(suite)
-            if cargv is None:
+            cargvs = suites.build_collect_argvs(suite)
+            if not cargvs:
                 status["collect " + suite] = "no-op (self-collecting)"
             else:
-                rc2 = run_subprocess(cargv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
-                status["collect " + suite] = _rc_status(rc2, dry_run)
+                for step, cargv in enumerate(cargvs):
+                    rc2 = run_subprocess(cargv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
+                    key = "collect " + suite if len(cargvs) == 1 else "collect %s [%d]" % (suite, step + 1)
+                    status[key] = _rc_status(rc2, dry_run)
+                    if rc2 != 0 and not dry_run:
+                        break
     return status
 
 

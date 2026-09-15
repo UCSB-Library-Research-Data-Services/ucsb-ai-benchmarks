@@ -74,12 +74,16 @@ def _cmd_collect(args, log_path):
     targets = list(suites.SUITES) if args.suite == "all" else [args.suite]
     status = {}
     for suite in targets:
-        argv = suites.build_collect_argv(suite)
-        if argv is None:
+        cargvs = suites.build_collect_argvs(suite)
+        if not cargvs:
             print("performance: no-op (appends to data/performance_results.jsonl directly)")
             status["collect performance"] = "no-op (self-collecting)"
             continue
-        status["collect " + suite] = "ok" if run(argv, cwd=REPO_ROOT, log_path=log_path) == 0 else "failed"
+        for step, argv in enumerate(cargvs):
+            key = "collect " + suite if len(cargvs) == 1 else "collect %s [%d]" % (suite, step + 1)
+            status[key] = "ok" if run(argv, cwd=REPO_ROOT, log_path=log_path) == 0 else "failed"
+            if status[key] != "ok":
+                break
     print_summary(status)
     return 0 if all_ok(status) else 1
 

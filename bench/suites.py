@@ -12,6 +12,7 @@ RISE_RUNNER = ["uv", "run", "rise_eval/run_rise_ucsb.py"]
 SCICODE_RUNNER = ["bash", "SciCode/eval/inspect_ai/run_scicode_evals.sh"]
 RISE_COLLECT_ARGV = ["uv", "run", "rise_eval/collect_rise_results.py"]
 SCICODE_COLLECT_ARGV = ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"]
+SCICODE_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_scicode_details.py"]
 PROBE_ARGV = ["uv", "run", "python", "scripts/check_model_vision.py"]
 BUILD_ARGV = ["npm", "run", "build"]
 
@@ -155,6 +156,16 @@ def build_collect_argv(suite):
     if suite == "scicode":
         return list(SCICODE_COLLECT_ARGV)
     raise ValueError("unknown suite %r" % (suite,))
+
+
+def build_collect_argvs(suite):
+    """All collect steps for a suite, in order (scicode also exports detail shards)."""
+    argv = build_collect_argv(suite)
+    if argv is None:
+        return []
+    if suite == "scicode":
+        return [argv, list(SCICODE_DETAILS_ARGV)]
+    return [argv]
 
 
 def build_probe_argv(service, models, output):
