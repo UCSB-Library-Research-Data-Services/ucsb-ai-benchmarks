@@ -110,6 +110,36 @@ function fmtScore(v: unknown): string {
   return String(v);
 }
 
+function prettyJson(value: unknown): string {
+  if (value === null || value === undefined) return '(none)';
+  if (typeof value === 'string') return value;
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
+}
+
+function prettyMaybeJson(text: string): string {
+  const trimmed = text.trim();
+  const looksJson =
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'));
+  if (!looksJson) return text;
+  try {
+    return JSON.stringify(JSON.parse(trimmed), null, 2);
+  } catch {
+    return text;
+  }
+}
+
+const SECTION_LABEL: React.CSSProperties = {
+  fontSize: '0.68rem',
+  fontWeight: 700,
+  color: '#475569',
+  marginBottom: '0.25rem',
+};
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
@@ -319,12 +349,14 @@ function RiseDetail({ shard }: { shard: RiseShard }) {
         <MetaCell label="Vision" value={shard.vision_status ?? '—'} mono={false} />
       </div>
       {shard.vision_note && (
-        <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '0.75rem' }}>
-          Vision note: {shard.vision_note}
+        <div style={{ marginBottom: '0.75rem' }}>
+          <div style={SECTION_LABEL}>Vision note</div>
+          <TruncatedPre text={shard.vision_note} />
         </div>
       )}
-      <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '0.75rem' }}>
-        Raw scoring: <span style={{ fontFamily: MONO }}>{JSON.stringify(shard.raw_scoring).slice(0, 300)}</span>
+      <div style={{ marginBottom: '0.75rem' }}>
+        <div style={SECTION_LABEL}>Raw scoring</div>
+        <TruncatedPre text={prettyJson(shard.raw_scoring)} />
       </div>
       <div
         style={{
@@ -343,15 +375,18 @@ function RiseDetail({ shard }: { shard: RiseShard }) {
           const tok = req.usage?.total_tokens ?? (req.usage?.input_tokens ?? 0) + (req.usage?.output_tokens ?? 0);
           const header = `#${req.line} · ${fmtScore(req.score)} · ${Number(tok).toLocaleString()} tok · ${req.duration !== null && req.duration !== undefined ? req.duration.toFixed(1) + 's' : '—'} · ${req.finish_reason ?? '—'}`;
           const body =
-            req.text ??
-            (req.parsed !== null && req.parsed !== undefined
-              ? JSON.stringify(req.parsed, null, 2)
-              : '(empty output)');
+            req.text != null
+              ? prettyMaybeJson(req.text)
+              : req.parsed !== null && req.parsed !== undefined
+                ? prettyJson(req.parsed)
+                : '(empty output)';
           return (
             <AccordionItem key={req.line} header={header} id={`rise-${shard.test_id}-${req.line}`}>
-              <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>
-                Score: <span style={{ fontFamily: MONO }}>{JSON.stringify(req.score)}</span>
+              <div style={{ marginBottom: '0.6rem' }}>
+                <div style={SECTION_LABEL}>Score</div>
+                <TruncatedPre text={prettyJson(req.score)} />
               </div>
+              <div style={SECTION_LABEL}>Model output</div>
               <TruncatedPre text={body} />
             </AccordionItem>
           );
