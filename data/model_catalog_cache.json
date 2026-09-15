@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T17:52:09+00:00",
+  "generated_at": "2026-09-15T20:27:51+00:00",
   "description": "Last-good GET /v1/models responses per service. Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
@@ -19,13 +19,13 @@
       "mistral:latest",
       "qwen3-coder:latest",
       "llama3.1:8b",
-      "qwen3:latest",
       "phi4:latest",
+      "qwen3:latest",
       "llama3:latest",
       "llava:7b",
-      "gpt-oss:20b",
       "deepseek-r1:latest",
       "gemma3:latest",
+      "gpt-oss:20b",
       "all-the-things"
     ],
     "AICommons": [

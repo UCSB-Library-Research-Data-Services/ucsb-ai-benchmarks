@@ -248,7 +248,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
         const color = providerColor(canonicalIds, service);
         const total = models.filter(m => m.service === service).length;
         return (
-          <section key={service} id={`models-${service.toLowerCase()}`} style={{ scrollMarginTop: '7rem', marginBottom: '2rem' }}>
+          <section key={service} id={`models-${service.toLowerCase()}`} style={{ scrollMarginTop: '5rem', marginBottom: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
               <span
                 style={{
@@ -284,7 +284,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                     key={m.slug}
                     id={m.slug}
                     style={{
-                      scrollMarginTop: '7rem',
+                      scrollMarginTop: '5.5rem',
                       background: '#fff',
                       border: isHi ? `2px solid ${ACCENT}` : '1px solid #e2e8f0',
                       borderRadius: '0.6rem',
