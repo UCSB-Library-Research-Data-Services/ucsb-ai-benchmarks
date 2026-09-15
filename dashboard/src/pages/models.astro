@@ -308,9 +308,6 @@ const providers = catalog?.providers ?? [];
                     ) : (
                       <p class="meta">Website TBD</p>
                     )}
-                    {p.api_url && (
-                      <p class="meta">API endpoint: <code>{p.api_url}</code></p>
-                    )}
                     <p class="meta">{p.model_types ? `Model types: ${p.model_types}` : 'Model types TBD'}</p>
                     <p class="meta">{p.access ? `Access: ${p.access}` : 'Access TBD'}</p>
                     <p class="stat">{p.model_count} models · {p.benchmarked_count} benchmarked</p>
