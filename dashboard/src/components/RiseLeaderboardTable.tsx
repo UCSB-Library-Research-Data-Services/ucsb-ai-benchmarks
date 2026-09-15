@@ -313,16 +313,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
     });
   }, [filteredRows, sort.col, sort.dir]);
 
-  const navLinkStyle: React.CSSProperties = {
-    padding: '0.3rem 0.9rem',
-    borderRadius: '999px',
-    fontSize: '0.75rem',
-    fontWeight: 700,
-    border: '1.5px solid #475569',
-    color: '#cbd5e1',
-    textDecoration: 'none',
-  };
-
   return (
     <div
       style={{
@@ -432,40 +422,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
               )}
             </p>
           </div>
-          <nav
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-              alignItems: 'center',
-              flexShrink: 0,
-              flexWrap: 'wrap',
-            }}
-          >
-            <a href={withBase('')} style={navLinkStyle}>
-              Home
-            </a>
-            <a href={withBase('leaderboard')} style={navLinkStyle}>
-              Performance
-            </a>
-            <a href={withBase('scicode')} style={navLinkStyle}>
-              SciCode
-            </a>
-            <span
-              style={{
-                padding: '0.3rem 0.9rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                background: ACCENT,
-                color: '#fff',
-              }}
-            >
-              RISE
-            </span>
-            <a href={withBase('models')} style={navLinkStyle}>
-              Models & Providers
-            </a>
-          </nav>
         </div>
 
         {/* Stats row */}

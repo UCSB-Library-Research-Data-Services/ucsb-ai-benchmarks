@@ -1,5 +1,6 @@
 ---
 import { LeaderboardTable } from '../components/LeaderboardTable';
+import SiteNav from '../components/SiteNav.astro';
 import { parsePerformanceResults, aggregatePerformanceData } from '../lib/leaderboard';
 import type { LeaderboardData } from '../lib/leaderboard';
 import '../styles/global.css';
@@ -95,6 +96,7 @@ try {
     </style>
   </head>
   <body>
+    <SiteNav active="performance" />
     {error ? (
       <div class="error-container">
         <h2>Error Loading Leaderboard</h2>

@@ -1,0 +1,118 @@
+---
+interface Props {
+  active?: 'home' | 'performance' | 'scicode' | 'rise' | 'models';
+  sections?: { href: string; label: string }[];
+}
+
+const { active = '', sections = [] } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const link = (path: string) => `${base}/${path}`;
+
+const items = [
+  { key: 'home', href: `${base}/`, label: 'Home' },
+  { key: 'performance', href: link('leaderboard'), label: 'Performance' },
+  { key: 'scicode', href: link('scicode'), label: 'SciCode' },
+  { key: 'rise', href: link('rise'), label: 'RISE' },
+  { key: 'models', href: link('models'), label: 'Models & Providers' },
+];
+---
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href={`${base}/`}>
+      <span class="brand-mark"></span>
+      UCSB AI Benchmarks
+    </a>
+    <nav class="topnav">
+      {items.map((item) => (
+        <a href={item.href} class:list={[{ active: active === item.key }]}>{item.label}</a>
+      ))}
+      {sections.length > 0 && <span class="topbar-divider"></span>}
+      {sections.map((s) => (
+        <a href={s.href} class="anchor">{s.label}</a>
+      ))}
+    </nav>
+  </div>
+</nav>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .topbar-inner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 0.65rem 1.5rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .brand-mark {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+    background: #2563eb;
+    flex-shrink: 0;
+  }
+
+  nav.topnav {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+
+  nav.topnav a {
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.15rem 0;
+  }
+
+  nav.topnav a:hover {
+    color: #2563eb;
+  }
+
+  nav.topnav a.active {
+    color: #2563eb;
+    font-weight: 700;
+  }
+
+  nav.topnav a.anchor {
+    color: #2563eb;
+  }
+
+  .topbar-divider {
+    width: 1px;
+    height: 1.2rem;
+    background: #e2e8f0;
+  }
+
+  @media (max-width: 800px) {
+    nav.topnav {
+      margin-left: 0;
+    }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import { ModelsCatalog } from '../components/ModelsCatalog';
+import SiteNav from '../components/SiteNav.astro';
 import { providerColor, providerAnchor } from '../lib/catalog';
 import type { Catalog } from '../lib/catalog';
 import * as fs from 'fs';
@@ -51,79 +52,6 @@ const providers = catalog?.providers ?? [];
         max-width: 64rem;
         margin: 0 auto;
         padding: 0 1.5rem;
-      }
-
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(6px);
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      .topbar-inner {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem 1.5rem;
-        max-width: 64rem;
-        margin: 0 auto;
-        padding: 0.65rem 1.5rem;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #0f172a;
-        text-decoration: none;
-        flex-shrink: 0;
-      }
-
-      .brand-mark {
-        width: 0.7rem;
-        height: 0.7rem;
-        border-radius: 9999px;
-        background: #2563eb;
-        flex-shrink: 0;
-      }
-
-      nav.topnav {
-        display: flex;
-        align-items: center;
-        gap: 1.1rem;
-        margin-left: auto;
-        flex-wrap: wrap;
-      }
-
-      nav.topnav a {
-        color: #475569;
-        text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 500;
-        padding: 0.15rem 0;
-      }
-
-      nav.topnav a:hover {
-        color: #2563eb;
-      }
-
-      nav.topnav a.active {
-        color: #2563eb;
-        font-weight: 700;
-      }
-
-      nav.topnav a.anchor {
-        color: #2563eb;
-      }
-
-      .topbar-divider {
-        width: 1px;
-        height: 1.2rem;
-        background: #e2e8f0;
       }
 
       .hero {
@@ -304,10 +232,6 @@ const providers = catalog?.providers ?? [];
           grid-template-columns: 1fr;
         }
 
-        nav.topnav {
-          margin-left: 0;
-        }
-
         .models-panel {
           padding: 1.25rem;
         }
@@ -315,24 +239,7 @@ const providers = catalog?.providers ?? [];
     </style>
   </head>
   <body>
-    <nav class="topbar">
-      <div class="topbar-inner">
-        <a class="brand" href={base + '/'}>
-          <span class="brand-mark"></span>
-          UCSB AI Benchmarks
-        </a>
-        <nav class="topnav">
-          <a href={base + '/'}>Home</a>
-          <a href={link('leaderboard')}>Performance</a>
-          <a href={link('scicode')}>SciCode</a>
-          <a href={link('rise')}>RISE</a>
-          <a href={link('models')} class="active">Models & Providers</a>
-          <span class="topbar-divider"></span>
-          <a href="#providers" class="anchor">Providers</a>
-          <a href="#models" class="anchor">Models</a>
-        </nav>
-      </div>
-    </nav>
+    <SiteNav active="models" sections={[{ href: '#providers', label: 'Providers' }, { href: '#models', label: 'Models' }]} />
 
     <main>
       <section class="hero container">

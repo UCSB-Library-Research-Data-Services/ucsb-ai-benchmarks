@@ -1,5 +1,6 @@
 ---
 import { ScicodeLeaderboardTable } from '../components/ScicodeLeaderboardTable';
+import SiteNav from '../components/SiteNav.astro';
 import { parseScicodeResults, aggregateScicodeData } from '../lib/scicode';
 import type { ScicodeLeaderboardData } from '../lib/scicode';
 import '../styles/global.css';
@@ -89,6 +90,7 @@ try {
     </style>
   </head>
   <body>
+    <SiteNav active="scicode" />
     {error ? (
       <div class="error-container">
         <h2>Error Loading SciCode Leaderboard</h2>

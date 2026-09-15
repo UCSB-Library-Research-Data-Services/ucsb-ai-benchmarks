@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T20:27:51+00:00",
+  "generated_at": "2026-09-15T20:37:47+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -456,7 +456,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -470,7 +470,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -512,7 +512,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -526,7 +526,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -540,7 +540,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -568,7 +568,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -582,7 +582,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -596,7 +596,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -610,7 +610,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     },
     {
@@ -638,7 +638,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": false
+        "rise": true
       }
     }
   ]

@@ -1,7 +1,8 @@
 ---
 // Frontpage for the UCSB AI Benchmarks dashboard.
-const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-const link = (path: string) => `${base}/${path}`;
+import SiteNav from '../components/SiteNav.astro';
+
+const link = (path: string) => `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/${path}`;
 
 const leaderboards = [
   {
@@ -58,56 +59,6 @@ const leaderboards = [
         max-width: 64rem;
         margin: 0 auto;
         padding: 0 1.5rem;
-      }
-
-      /* Header */
-      header {
-        background-color: #ffffff;
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      .header-inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        max-width: 64rem;
-        margin: 0 auto;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #0f172a;
-        text-decoration: none;
-      }
-
-      .brand-mark {
-        width: 0.7rem;
-        height: 0.7rem;
-        border-radius: 9999px;
-        background: #2563eb;
-        flex-shrink: 0;
-      }
-
-      nav {
-        display: flex;
-        gap: 1.25rem;
-      }
-
-      nav a {
-        color: #475569;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-      }
-
-      nav a:hover {
-        color: #2563eb;
       }
 
       /* Hero */
@@ -292,29 +243,11 @@ const leaderboards = [
         .hero {
           padding: 3.25rem 0 2.75rem;
         }
-
-        .header-inner {
-          flex-direction: column;
-          gap: 0.5rem;
-        }
       }
     </style>
   </head>
   <body>
-    <header>
-      <div class="header-inner">
-        <a class="brand" href={base + '/'}>
-          <span class="brand-mark"></span>
-          UCSB AI Benchmarks
-        </a>
-        <nav>
-          <a href={link('leaderboard')}>Performance</a>
-          <a href={link('scicode')}>SciCode</a>
-          <a href={link('rise')}>RISE</a>
-          <a href={link('models')}>Models & Providers</a>
-        </nav>
-      </div>
-    </header>
+    <SiteNav active="home" />
 
     <main>
       <section class="hero container">

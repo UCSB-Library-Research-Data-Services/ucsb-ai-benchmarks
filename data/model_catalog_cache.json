@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T20:27:51+00:00",
+  "generated_at": "2026-09-15T20:37:47+00:00",
   "description": "Last-good GET /v1/models responses per service. Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
