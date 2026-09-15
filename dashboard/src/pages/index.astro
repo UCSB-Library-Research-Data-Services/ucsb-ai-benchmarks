@@ -1,11 +1,381 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+// Frontpage for the UCSB AI Benchmarks dashboard.
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const link = (path: string) => `${base}/${path}`;
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const leaderboards = [
+  {
+    title: 'Performance',
+    tag: 'Speed & latency',
+    description:
+      'A suite of simple benchmark tests that measures the speed of the models currently served by each provider — time to first token, inter-token latency, and generation throughput.',
+    href: link('leaderboard'),
+  },
+  {
+    title: 'SciCode',
+    tag: 'Scientific coding',
+    description:
+      'A benchmark that examines how well models generate code to solve real scientific research problems, based on the scientist-curated SciCode benchmark of laboratory problems across 16 disciplines.',
+    href: link('scicode'),
+  },
+  {
+    title: 'RISE Humanities Data Benchmark',
+    tag: 'Humanities',
+    description:
+      'A benchmark that assesses the performance of LLMs on humanities-related tasks, developed with UC Santa Barbara humanities researchers.',
+    href: link('rise'),
+  },
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Benchmark leaderboards for the AI models and inference providers available through UCSB's gateways."
+    />
+    <title>UCSB AI Benchmarks</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f1f5f9;
+        color: #1e293b;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Header */
+      header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        max-width: 64rem;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #0f172a;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 9999px;
+        background: #2563eb;
+        flex-shrink: 0;
+      }
+
+      nav {
+        display: flex;
+        gap: 1.25rem;
+      }
+
+      nav a {
+        color: #475569;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      nav a:hover {
+        color: #2563eb;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 4.5rem 0 3.5rem;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #2563eb;
+        background-color: #dbeafe;
+        border-radius: 9999px;
+        padding: 0.3rem 0.9rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 2.9rem);
+        line-height: 1.15;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+      }
+
+      .hero h1 span {
+        color: #2563eb;
+      }
+
+      .hero p {
+        max-width: 44rem;
+        margin: 1.25rem auto 0;
+        font-size: 1.08rem;
+        color: #475569;
+      }
+
+      /* Why */
+      .why {
+        padding: 1rem 0 3.5rem;
+      }
+
+      .why-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+
+      .why-card h2 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 1rem;
+      }
+
+      .why-card p {
+        color: #475569;
+        margin-bottom: 0.9rem;
+      }
+
+      .why-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .why-points {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+
+      .why-point h3 {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.3rem;
+      }
+
+      .why-point p {
+        font-size: 0.88rem;
+        margin: 0;
+        color: #64748b;
+      }
+
+      /* Leaderboards */
+      .leaderboards {
+        padding: 1rem 0 4rem;
+      }
+
+      .section-heading {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 1.25rem;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+
+      .board-card {
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+
+      .board-card:hover {
+        transform: translateY(-2px);
+        border-color: #93c5fd;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+      }
+
+      .board-tag {
+        align-self: flex-start;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #475569;
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 9999px;
+        padding: 0.2rem 0.65rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .board-card h3 {
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+      }
+
+      .board-card p {
+        font-size: 0.92rem;
+        color: #64748b;
+        flex-grow: 1;
+      }
+
+      .board-cta {
+        margin-top: 1.1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2563eb;
+      }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 1.75rem 0 2.25rem;
+        background-color: #ffffff;
+      }
+
+      footer p {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      @media (max-width: 800px) {
+        .card-grid,
+        .why-points {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          padding: 3.25rem 0 2.75rem;
+        }
+
+        .header-inner {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a class="brand" href={base + '/'}>
+          <span class="brand-mark"></span>
+          UCSB AI Benchmarks
+        </a>
+        <nav>
+          <a href={link('leaderboard')}>Performance</a>
+          <a href={link('scicode')}>SciCode</a>
+          <a href={link('rise')}>RISE</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <span class="eyebrow">Gateways &amp; Inference Providers</span>
+        <h1>UCSB AI Benchmarks</h1>
+        <p>
+          A suite of benchmark leaderboards that measures how the AI models available through
+          UCSB's gateways and inference providers perform in practice — so faculty, researchers,
+          staff, and students can choose the most suitable model and provider for each use case.
+        </p>
+      </section>
+
+      <section class="why container">
+        <div class="why-card">
+          <h2>Why this benchmark exists</h2>
+          <p>
+            Beyond commercial frontier models, the UCSB community needs AI tools that operate
+            within a safe and transparent environment with strong data-privacy guarantees. Models
+            served through UCSB gateways and inference providers come with assurances that your
+            data is never used for training — and in some cases, is never processed outside
+            university premises.
+          </p>
+          <p>
+            These leaderboards help you select the right model for specific tasks such as data
+            processing, agentic coding, prototyping, or literature review; understand each model's
+            possibilities and limitations; and track how every model and provider improves over
+            time.
+          </p>
+          <div class="why-points">
+            <div class="why-point">
+              <h3>Data privacy</h3>
+              <p>Gateway models guarantee that your prompts and outputs are never used for training.</p>
+            </div>
+            <div class="why-point">
+              <h3>Transparency</h3>
+              <p>Independent, reproducible evaluations of every model and provider combination.</p>
+            </div>
+            <div class="why-point">
+              <h3>Over time</h3>
+              <p>Results are refreshed as new evaluation runs complete, so you can track progress.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="leaderboards container">
+        <h2 class="section-heading">Current leaderboards</h2>
+        <div class="card-grid">
+          {leaderboards.map((board) => (
+            <a class="board-card" href={board.href}>
+              <span class="board-tag">{board.tag}</span>
+              <h3>{board.title}</h3>
+              <p>{board.description}</p>
+              <span class="board-cta">View leaderboard →</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>UCSB AI Benchmarks · Built for the UCSB community · Results update as new evaluation runs complete</p>
+    </footer>
+  </body>
+</html>
