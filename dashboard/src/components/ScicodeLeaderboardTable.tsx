@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ScicodeRow, ScicodeLeaderboardData } from '../lib/scicode';
 import { scicodeDetailPath } from '../lib/scicode';
+import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
 interface ScicodeProps {
@@ -544,7 +545,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
           </div>
           <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
             <a
-              href="/leaderboard"
+              href={withBase('leaderboard')}
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
@@ -558,7 +559,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
               Performance
             </a>
             <a
-              href="/rise"
+              href={withBase('rise')}
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',

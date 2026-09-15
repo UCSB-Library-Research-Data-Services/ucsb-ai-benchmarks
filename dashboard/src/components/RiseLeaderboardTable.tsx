@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { RiseLeaderboardData } from '../lib/rise';
 import { benchmarkTitle, riseDetailPath } from '../lib/rise';
+import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
 interface RiseLeaderboardProps {
@@ -438,10 +439,10 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
               flexShrink: 0,
             }}
           >
-            <a href="/leaderboard" style={navLinkStyle}>
+            <a href={withBase('leaderboard')} style={navLinkStyle}>
               Performance
             </a>
-            <a href="/scicode" style={navLinkStyle}>
+            <a href={withBase('scicode')} style={navLinkStyle}>
               SciCode
             </a>
             <span

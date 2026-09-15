@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { AggregatedMetrics, LeaderboardData } from '../lib/leaderboard';
 import { performanceDetailPath } from '../lib/leaderboard';
+import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
 interface LeaderboardProps {
@@ -410,7 +411,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               Performance
             </span>
             <a
-              href="/scicode"
+              href={withBase('scicode')}
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
@@ -424,7 +425,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               SciCode
             </a>
             <a
-              href="/rise"
+              href={withBase('rise')}
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
