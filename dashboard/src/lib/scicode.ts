@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { withBase } from './paths';
 
 export interface ScicodeProblem {
   problem_id: string;
@@ -174,5 +175,5 @@ export function getScicodeDataPath(): string {
 
 export function scicodeDetailPath(logFile: string): string {
   const stem = logFile.replace(/\.eval$/, '');
-  return `${import.meta.env.BASE_URL}data/details/scicode/${stem}.json`;
+  return withBase(`data/details/scicode/${stem}.json`);
 }

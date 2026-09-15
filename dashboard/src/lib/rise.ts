@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { withBase } from './paths';
 
 export interface RiseResult {
   service: string;
@@ -185,5 +186,5 @@ export function getRiseDataPath(): string {
 }
 
 export function riseDetailPath(ref: { test_id: string; date: string }): string {
-  return `${import.meta.env.BASE_URL}data/details/rise/${ref.date}/${ref.test_id}.json`;
+  return withBase(`data/details/rise/${ref.date}/${ref.test_id}.json`);
 }
