@@ -108,13 +108,15 @@ def test_passthrough_appended_once(roster):
 
 
 def test_collect_argv_matrix():
-    assert suites.build_collect_argv("performance") is None
+    assert suites.build_collect_argv("performance") == ["uv", "run", "python", "scripts/export_performance_details.py"]
     assert suites.build_collect_argv("rise") == ["uv", "run", "rise_eval/collect_rise_results.py"]
     assert suites.build_collect_argv("scicode") == ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"]
 
 
 def test_collect_argvs_matrix():
-    assert suites.build_collect_argvs("performance") == []
+    assert suites.build_collect_argvs("performance") == [
+        ["uv", "run", "python", "scripts/export_performance_details.py"]
+    ]
     assert suites.build_collect_argvs("rise") == [["uv", "run", "rise_eval/collect_rise_results.py"]]
     assert suites.build_collect_argvs("scicode") == [
         ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"],
