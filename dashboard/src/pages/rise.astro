@@ -1,0 +1,107 @@
+---
+import { RiseLeaderboardTable } from '../components/RiseLeaderboardTable';
+import { parseRiseResults, aggregateRiseData, getRiseDataPath } from '../lib/rise';
+import type { RiseLeaderboardData } from '../lib/rise';
+import '../styles/global.css';
+
+// Load data at build time
+let riseData: RiseLeaderboardData | null = null;
+let error: string | null = null;
+
+try {
+  const dataPath = getRiseDataPath();
+
+  console.log('Loading from:', dataPath);
+
+  const results = parseRiseResults(dataPath);
+  riseData = aggregateRiseData(results);
+} catch (e) {
+  error = `Error loading RISE leaderboard: ${e instanceof Error ? e.message : 'Unknown error'}`;
+  console.error(error, e);
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RISE Leaderboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f1f5f9;
+        color: #1e293b;
+      }
+
+      .w-full {
+        width: 100%;
+      }
+
+      .max-w-7xl {
+        max-width: 80rem;
+      }
+
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .p-6 {
+        padding: 1.5rem;
+      }
+
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+
+      .shadow {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .bg-white {
+        background-color: white;
+      }
+
+      .error-container {
+        background-color: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 2rem auto;
+        max-width: 80rem;
+      }
+
+      .error-container h2 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    {error ? (
+      <div class="error-container">
+        <h2>Error Loading RISE Leaderboard</h2>
+        <p>{error}</p>
+      </div>
+    ) : riseData ? (
+      <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
+        <RiseLeaderboardTable client:load data={riseData} />
+      </div>
+    ) : (
+      <div class="error-container">
+        <h2>Loading RISE Leaderboard...</h2>
+        <p>Please wait while we fetch the RISE results.</p>
+      </div>
+    )}
+  </body>
+</html>

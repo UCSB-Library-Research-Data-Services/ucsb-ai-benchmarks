@@ -549,6 +549,20 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
             >
               Performance
             </a>
+            <a
+              href="/rise"
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                border: '1.5px solid #475569',
+                color: '#cbd5e1',
+                textDecoration: 'none',
+              }}
+            >
+              RISE
+            </a>
             <span
               style={{
                 padding: '0.3rem 0.9rem',

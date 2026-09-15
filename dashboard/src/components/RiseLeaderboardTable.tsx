@@ -1,33 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import type { AggregatedMetrics, LeaderboardData } from '../lib/leaderboard';
+import type { RiseLeaderboardData } from '../lib/rise';
+import { benchmarkTitle } from '../lib/rise';
 
-interface LeaderboardProps {
-  data: LeaderboardData;
+interface RiseLeaderboardProps {
+  data: RiseLeaderboardData;
 }
 
-type Measurement = 'avgTTFT' | 'avgITL' | 'avgGenTPS' | 'avgTotalTPS';
-
-// Higher is better for TPS; lower is better for TTFT and ITL
-const higherIsBetter: Record<Measurement, boolean> = {
-  avgTTFT: false,
-  avgITL: false,
-  avgGenTPS: true,
-  avgTotalTPS: true,
-};
-
-const measurementLabels: Record<Measurement, string> = {
-  avgTTFT: 'Avg TTFT (s)',
-  avgITL: 'Avg ITL (ms)',
-  avgGenTPS: 'Avg Gen TPS',
-  avgTotalTPS: 'Avg Total TPS',
-};
-
-const measurementShort: Record<Measurement, string> = {
-  avgTTFT: 'TTFT',
-  avgITL: 'ITL',
-  avgGenTPS: 'Gen TPS',
-  avgTotalTPS: 'Total TPS',
-};
+type VisionFilter = 'all' | 'vision' | 'text';
 
 // Provider color map — stable hues per provider name
 const PROVIDER_PALETTE = [
@@ -39,25 +18,33 @@ function providerColor(providers: string[], name: string): string {
   return PROVIDER_PALETTE[idx % PROVIDER_PALETTE.length];
 }
 
+const ACCENT = '#2563eb';
+const AVG_TOOLTIP =
+  'Normalized to a 0-100 scale per benchmark ranking metric: fuzzy as-is, F1 x 100, CER inverted to 100 - CER x 100. Avg is the mean over completed benchmarks (nulls excluded).';
+
 function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' }) {
-  if (rank === 1 && sortDir === 'desc') {
+  if (sortDir !== 'desc') {
     return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="1st place">
-        🥇
+      <span
+        style={{
+          display: 'inline-block',
+          width: '1.4rem',
+          textAlign: 'center',
+          fontVariantNumeric: 'tabular-nums',
+          color: '#94a3b8',
+          fontSize: '0.8rem',
+          fontWeight: 600,
+        }}
+      >
+        {rank}
       </span>
     );
   }
-  if (rank === 2 && sortDir === 'desc') {
+  const medals: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  if (medals[rank]) {
     return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="2nd place">
-        🥈
-      </span>
-    );
-  }
-  if (rank === 3 && sortDir === 'desc') {
-    return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="3rd place">
-        🥉
+      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title={`${rank} place`}>
+        {medals[rank]}
       </span>
     );
   }
@@ -78,25 +65,9 @@ function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' })
   );
 }
 
-function PerformanceBar({
-  value,
-  max,
-  min,
-  higherBetter,
-  color,
-}: {
-  value: number;
-  max: number;
-  min: number;
-  higherBetter: boolean;
-  color: string;
-}) {
-  const range = max - min || 1;
-  const pct = higherBetter
-    ? ((value - min) / range) * 100
-    : ((max - value) / range) * 100;
-  const clamped = Math.max(4, Math.min(100, pct));
-
+// All RISE cells share the same 0-100 normalized scale, so bars are absolute.
+function ScoreBar({ value, color }: { value: number; color: string }) {
+  const pct = Math.max(2, Math.min(100, value));
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span
@@ -106,9 +77,10 @@ function PerformanceBar({
           fontWeight: 600,
           color: '#1e293b',
           letterSpacing: '-0.01em',
+          fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {value.toFixed(value < 10 ? 2 : 1)}
+        {value.toFixed(1)}
       </span>
       <div
         style={{
@@ -124,7 +96,7 @@ function PerformanceBar({
             height: '100%',
             borderRadius: '2px',
             background: color,
-            width: `${clamped}%`,
+            width: `${pct}%`,
             transition: 'width 0.3s ease',
           }}
         />
@@ -181,11 +153,71 @@ function StatCard({
   );
 }
 
-type SortDir = 'asc' | 'desc';
-// null column means "sort by overall metric (best-first per hiBetter)"
-type SortState = { col: string | null; dir: SortDir };
+function VisionBadge({ vision }: { vision: boolean | null }) {
+  if (vision === true) {
+    return (
+      <span
+        title="Vision-capable (probed via fixture transcription)"
+        style={{
+          display: 'inline-block',
+          padding: '0.1rem 0.45rem',
+          borderRadius: '4px',
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          background: '#ecfdf5',
+          color: '#047857',
+          border: '1px solid #6ee7b7',
+          flexShrink: 0,
+        }}
+      >
+        👁️ vision
+      </span>
+    );
+  }
+  if (vision === false) {
+    return (
+      <span
+        title="Not vision-capable (probed); text-only benchmarks only"
+        style={{
+          display: 'inline-block',
+          padding: '0.1rem 0.45rem',
+          borderRadius: '4px',
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          background: '#f1f5f9',
+          color: '#64748b',
+          border: '1px solid #cbd5e1',
+          flexShrink: 0,
+        }}
+      >
+        text-only
+      </span>
+    );
+  }
+  return (
+    <span
+      title="Vision capability untested"
+      style={{
+        display: 'inline-block',
+        padding: '0.1rem 0.45rem',
+        borderRadius: '4px',
+        fontSize: '0.65rem',
+        fontWeight: 700,
+        background: '#fffbeb',
+        color: '#b45309',
+        border: '1px solid #fcd34d',
+        flexShrink: 0,
+      }}
+    >
+      ⚠️ untested
+    </span>
+  );
+}
 
-function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
+type SortDir = 'asc' | 'desc';
+type SortState = { col: string; dir: SortDir };
+
+function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   const up = active && dir === 'asc';
   const down = active && dir === 'desc';
   return (
@@ -209,23 +241,15 @@ function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
   );
 }
 
-export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
+export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
-  const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
-  const [onlyLatest, setOnlyLatest] = useState(false);
-  const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
+  const [visionFilter, setVisionFilter] = useState<VisionFilter>('all');
+  const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const isAllMode = selectedProviders === null;
 
-  // When metric changes, reset sort to Overall and pick the natural "best first" direction
-  const handleMeasurementChange = (m: Measurement) => {
-    setMeasurement(m);
-    setSort({ col: null, dir: higherIsBetter[m] ? 'desc' : 'asc' });
-  };
-
-  // Cycle sort: clicking active col toggles asc↔desc; clicking a new col sets desc first
-  const handleColSort = (col: string | null) => {
+  const handleColSort = (col: string) => {
     setSort(prev => {
       if (prev.col === col) {
         return { col, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
@@ -233,41 +257,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
       return { col, dir: 'desc' };
     });
   };
-
-  const filteredRows = useMemo(() => {
-    let rows = isAllMode
-      ? data.rows
-      : data.rows.filter(row => selectedProviders!.has(row.provider));
-    if (onlyLatest) {
-      const latestMap = new Map<string, AggregatedMetrics>();
-      for (const row of rows) {
-        const existing = latestMap.get(row.provider + '/' + row.model);
-        if (!existing || row.latestTimestamp > existing.latestTimestamp) {
-          latestMap.set(row.provider + '/' + row.model, row);
-        }
-      }
-      rows = Array.from(latestMap.values());
-    }
-    return rows;
-  }, [data.rows, selectedProviders, isAllMode, onlyLatest]);
-
-  // Compute per-column min/max for performance bars
-  const colStats = useMemo(() => {
-    const vals = filteredRows.map(r => r[measurement]);
-    const max = Math.max(...vals, 0);
-    const min = Math.min(...vals, 0);
-    const catStats: Record<string, { max: number; min: number }> = {};
-    for (const cat of data.allCategories) {
-      const catVals = filteredRows
-        .map(r => r.categoryMetrics[cat]?.[measurement])
-        .filter((v): v is number => v !== undefined);
-      catStats[cat] = {
-        max: Math.max(...catVals, 0),
-        min: Math.min(...catVals, 0),
-      };
-    }
-    return { max, min, catStats };
-  }, [filteredRows, measurement, data.allCategories]);
 
   const toggleProvider = (provider: string) => {
     if (isAllMode) {
@@ -283,27 +272,47 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
     }
   };
 
-  const hiBetter = higherIsBetter[measurement];
+  const filteredRows = useMemo(() => {
+    let rows =
+      isAllMode
+        ? data.rows
+        : data.rows.filter(row => selectedProviders!.has(row.service));
+    if (visionFilter === 'vision') {
+      rows = rows.filter(row => row.vision === true);
+    } else if (visionFilter === 'text') {
+      rows = rows.filter(row => row.vision === false);
+    }
+    return rows;
+  }, [data.rows, selectedProviders, isAllMode, visionFilter]);
 
-  // Sort rows: by selected column, or overall metric by default
   const sortedRows = useMemo(() => {
-    return [...filteredRows].sort((a, b) => {
-      let aVal: number;
-      let bVal: number;
-
-      if (sort.col === null || sort.col === 'overall') {
-        aVal = a[measurement];
-        bVal = b[measurement];
-      } else {
-        aVal = a.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
-        bVal = b.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
+    const scoreOf = (row: (typeof filteredRows)[number], col: string): number | null => {
+      if (col === 'avg') {
+        return row.avg;
       }
-
+      const v = row.benchmarks[col];
+      return v === undefined ? null : v;
+    };
+    return [...filteredRows].sort((a, b) => {
+      const aVal = scoreOf(a, sort.col);
+      const bVal = scoreOf(b, sort.col);
+      // Nulls always sort last regardless of direction.
+      if (aVal === null && bVal === null) return 0;
+      if (aVal === null) return 1;
+      if (bVal === null) return -1;
       return sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
     });
-  }, [filteredRows, measurement, hiBetter, sort]);
+  }, [filteredRows, sort.col, sort.dir]);
 
-  const ACCENT = '#2563eb';
+  const navLinkStyle: React.CSSProperties = {
+    padding: '0.3rem 0.9rem',
+    borderRadius: '999px',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    border: '1.5px solid #475569',
+    color: '#cbd5e1',
+    textDecoration: 'none',
+  };
 
   return (
     <div
@@ -324,7 +333,15 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           borderRadius: '12px 12px 0 0',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
           <div>
             <div
               style={{
@@ -347,7 +364,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 margin: 0,
               }}
             >
-              Performance Leaderboard
+              RISE Leaderboard
             </h1>
             <p
               style={{
@@ -355,80 +372,83 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 color: '#94a3b8',
                 fontSize: '0.83rem',
                 lineHeight: 1.5,
+                maxWidth: '55rem',
               }}
             >
-              Inference performance allows users to evaluate how long a model takes to process average prompts from a particular inference provider.{' '}
+              Humanities data-extraction benchmarks (RISE, University of Basel) run against
+              UCSB inference services. Every cell is normalized to a 0-100 scale, so columns
+              are directly comparable.{' '}
               {isDescExpanded ? (
                 <>
-                  <br /><br />
-                  This leaderboard tracks four key metrics:
-                  <ul style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}>
-                    <li><strong>Time to First Token (TTFT):</strong> Duration from sending a prompt until the first token is received.</li>
-                    <li><strong>Inter-Token Latency (ITL):</strong> Average time between consecutive generated tokens.</li>
-                    <li><strong>Generation Tokens per Second (Gen TPS):</strong> Speed of generating new text, excluding initial prompt processing time.</li>
-                    <li><strong>Total Tokens per Second (Total TPS):</strong> Overall speed of the round-trip interaction.</li>
-                  </ul>
-                  A high-performing model minimizes TTFT and ITL while maximizing average tokens per second. High performance and low latency are especially relevant for products that rely on real-time user experience (like chat interfaces), whereas less performant models can still be highly valuable for asynchronous or iterative tasks (like cron jobs and batch processing). Note that these metrics measure speed and latency, not model intelligence or output quality.{' '}
-                  <button 
+                  <br />
+                  <br />
+                  <strong>Scoring:</strong> each benchmark's ranking metric is normalized to
+                  0-100 (fuzzy match scores of 0-100 are used as-is; 0-1 metrics like F1 are
+                  multiplied by 100; error metrics like CER are inverted to 100 - CER x 100).
+                  <strong> Avg</strong> is the mean over completed benchmarks, so a text-only
+                  model is averaged over fewer columns — compare models on the benchmarks they
+                  ran. <strong>Vision gating:</strong> image benchmarks only run for models
+                  probed as vision-capable; text-only models never appear in image columns.
+                  <br />
+                  <button
                     onClick={() => setIsDescExpanded(false)}
-                    style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#93c5fd',
+                      cursor: 'pointer',
+                      padding: 0,
+                      font: 'inherit',
+                      textDecoration: 'underline',
+                    }}
                   >
                     [see less]
                   </button>
                 </>
               ) : (
-                <>
-                  <button 
-                    onClick={() => setIsDescExpanded(true)}
-                    style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
-                  >
-                    [see more]
-                  </button>
-                </>
+                <button
+                  onClick={() => setIsDescExpanded(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#93c5fd',
+                    cursor: 'pointer',
+                    padding: 0,
+                    font: 'inherit',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  [see more]
+                </button>
               )}
             </p>
           </div>
-          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          <nav
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <a href="/leaderboard" style={navLinkStyle}>
+              Performance
+            </a>
+            <a href="/scicode" style={navLinkStyle}>
+              SciCode
+            </a>
             <span
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
                 fontSize: '0.75rem',
                 fontWeight: 700,
-                background: '#2563eb',
+                background: ACCENT,
                 color: '#fff',
               }}
             >
-              Performance
-            </span>
-            <a
-              href="/scicode"
-              style={{
-                padding: '0.3rem 0.9rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                border: '1.5px solid #475569',
-                color: '#cbd5e1',
-                textDecoration: 'none',
-              }}
-            >
-              SciCode
-            </a>
-            <a
-              href="/rise"
-              style={{
-                padding: '0.3rem 0.9rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                border: '1.5px solid #475569',
-                color: '#cbd5e1',
-                textDecoration: 'none',
-              }}
-            >
               RISE
-            </a>
+            </span>
           </nav>
         </div>
 
@@ -442,9 +462,9 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           }}
         >
           <StatCard label="Total Runs" value={data.stats.totalRuns} accent="#3b82f6" />
-          <StatCard label="Benchmarks" value={data.stats.totalBenchmarks} accent="#10b981" />
+          <StatCard label="Benchmarks" value={data.stats.benchmarks.length} accent="#10b981" />
           <StatCard label="Models" value={data.stats.totalModels} accent="#8b5cf6" />
-          <StatCard label="Providers" value={data.stats.totalProviders} accent="#f59e0b" />
+          <StatCard label="Providers" value={data.stats.providers.length} accent="#f59e0b" />
         </div>
       </div>
 
@@ -531,7 +551,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           </div>
         </div>
 
-        {/* Measurement select */}
+        {/* Vision filter chips */}
         <div style={{ flexShrink: 0 }}>
           <div
             style={{
@@ -543,69 +563,38 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               marginBottom: '0.5rem',
             }}
           >
-            Metric
+            Vision
           </div>
-          <select
-            value={measurement}
-            onChange={e => handleMeasurementChange(e.target.value as Measurement)}
-            style={{
-              padding: '0.35rem 2rem 0.35rem 0.75rem',
-              borderRadius: '6px',
-              border: '1.5px solid #cbd5e1',
-              background: '#fff',
-              color: '#1e293b',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              appearance: 'none',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.6rem center',
-              outline: 'none',
-            }}
-          >
-            {(Object.keys(measurementLabels) as Measurement[]).map(key => (
-              <option key={key} value={key}>
-                {measurementLabels[key]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Latest only toggle */}
-        <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: '#64748b',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Filter
+          <div style={{ display: 'flex', gap: '0.375rem' }}>
+            {(
+              [
+                ['all', 'All'],
+                ['vision', 'Vision 👁️'],
+                ['text', 'Text-only'],
+              ] as [VisionFilter, string][]
+            ).map(([value, label]) => {
+              const active = visionFilter === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => setVisionFilter(value)}
+                  style={{
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '999px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    border: active ? `1.5px solid ${ACCENT}` : '1.5px solid #cbd5e1',
+                    background: active ? ACCENT : '#fff',
+                    color: active ? '#fff' : '#475569',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              color: '#475569',
-              userSelect: 'none',
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={onlyLatest}
-              onChange={e => setOnlyLatest(e.target.checked)}
-              style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
-            />
-            Most recent only
-          </label>
         </div>
       </div>
 
@@ -623,15 +612,12 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
         }}
       >
         Showing <strong style={{ color: '#475569' }}>{sortedRows.length}</strong> of{' '}
-        <strong style={{ color: '#475569' }}>{data.rows.length}</strong> models &mdash; sorted by{' '}
+        <strong style={{ color: '#475569' }}>{data.rows.length}</strong> models &mdash; sorted
+        by{' '}
         <strong style={{ color: ACCENT }}>
-          {sort.col === null
-            ? measurementLabels[measurement] + ' (overall)'
-            : sort.col.replace(/_/g, ' ') + ' — ' + measurementLabels[measurement]}
+          {sort.col === 'avg' ? 'Avg' : benchmarkTitle(sort.col)}
         </strong>{' '}
-        ({sort.col === null
-          ? hiBetter ? 'higher is better' : 'lower is better'
-          : sort.dir === 'desc' ? 'high → low' : 'low → high'})
+        ({sort.dir === 'desc' ? 'high → low' : 'low → high'}, missing runs last)
       </div>
 
       {/* Table */}
@@ -657,7 +643,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 borderBottom: '2px solid #cbd5e1',
               }}
             >
-              {/* Rank */}
               <th
                 style={{
                   position: 'sticky',
@@ -677,7 +662,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               >
                 #
               </th>
-              {/* Model */}
               <th
                 style={{
                   position: 'sticky',
@@ -691,13 +675,12 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
                   color: '#64748b',
-                  minWidth: '220px',
+                  minWidth: '240px',
                   borderRight: '1px solid #e2e8f0',
                 }}
               >
                 Model
               </th>
-              {/* Runs */}
               <th
                 style={{
                   padding: '0.7rem 0.75rem',
@@ -713,9 +696,10 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               >
                 Runs
               </th>
-              {/* Overall metric */}
+              {/* Avg — primary sort column */}
               <th
-                onClick={() => handleColSort(null)}
+                onClick={() => handleColSort('avg')}
+                title={AVG_TOOLTIP}
                 style={{
                   padding: '0.7rem 1rem',
                   textAlign: 'left',
@@ -723,29 +707,28 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   fontSize: '0.65rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  color: sort.col === null ? ACCENT : '#64748b',
+                  color: sort.col === 'avg' ? ACCENT : '#1d4ed8',
                   minWidth: '110px',
                   borderRight: '2px solid #cbd5e1',
-                  background: sort.col === null ? '#eff6ff' : '#f1f5f9',
+                  background: sort.col === 'avg' ? '#eff6ff' : '#f8fafc',
                   cursor: 'pointer',
                   userSelect: 'none',
                   whiteSpace: 'nowrap',
                 }}
               >
-                Overall
-                <SortIcon dir={sort.dir} active={sort.col === null} />
+                Avg
+                <SortIcon dir={sort.dir} active={sort.col === 'avg'} />
                 <br />
-                <span style={{ color: '#94a3b8', fontWeight: 600 }}>
-                  {measurementShort[measurement]}
-                </span>
+                <span style={{ color: '#94a3b8', fontWeight: 600 }}>0-100</span>
               </th>
-              {/* Category columns */}
-              {data.allCategories.map(category => {
-                const isActive = sort.col === category;
+              {/* Benchmark columns */}
+              {data.allBenchmarks.map(benchmark => {
+                const isActive = sort.col === benchmark;
                 return (
                   <th
-                    key={category}
-                    onClick={() => handleColSort(category)}
+                    key={benchmark}
+                    onClick={() => handleColSort(benchmark)}
+                    title={benchmarkTitle(benchmark)}
                     style={{
                       padding: '0.7rem 1rem',
                       textAlign: 'left',
@@ -754,7 +737,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       textTransform: 'uppercase',
                       letterSpacing: '0.06em',
                       color: isActive ? ACCENT : '#64748b',
-                      minWidth: '120px',
+                      minWidth: '110px',
                       borderRight: '1px solid #e2e8f0',
                       whiteSpace: 'nowrap',
                       cursor: 'pointer',
@@ -763,12 +746,10 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       transition: 'background 0.1s, color 0.1s',
                     }}
                   >
-                    {category.replace(/_/g, ' ')}
+                    {benchmarkTitle(benchmark)}
                     <SortIcon dir={sort.dir} active={isActive} />
                     <br />
-                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>
-                      {measurementShort[measurement]}
-                    </span>
+                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>0-100</span>
                   </th>
                 );
               })}
@@ -777,21 +758,23 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           <tbody>
             {sortedRows.map((row, idx) => {
               const rank = idx + 1;
-              const provColor = providerColor(data.stats.providers, row.provider);
+              const provColor = providerColor(data.stats.providers, row.service);
               const isEven = idx % 2 === 0;
+              const rowBg =
+                rank <= 3 && sort.dir === 'desc' && sort.col === 'avg'
+                  ? rank === 1
+                    ? '#fffbeb'
+                    : rank === 2
+                    ? '#f8fafc'
+                    : '#fafaf9'
+                  : isEven
+                  ? '#ffffff'
+                  : '#f8fafc';
               return (
                 <tr
-                  key={`${row.provider}-${row.model}`}
+                  key={`${row.service}|${row.model}`}
                   style={{
-                    background: rank <= 3
-                      ? rank === 1
-                        ? '#fffbeb'
-                        : rank === 2
-                        ? '#f8fafc'
-                        : '#fafaf9'
-                      : isEven
-                      ? '#ffffff'
-                      : '#f8fafc',
+                    background: rowBg,
                     borderBottom: '1px solid #e2e8f0',
                     transition: 'background 0.1s',
                   }}
@@ -799,19 +782,9 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                     (e.currentTarget as HTMLTableRowElement).style.background = '#eff6ff';
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLTableRowElement).style.background =
-                      rank <= 3
-                        ? rank === 1
-                          ? '#fffbeb'
-                          : rank === 2
-                          ? '#f8fafc'
-                          : '#fafaf9'
-                        : isEven
-                        ? '#ffffff'
-                        : '#f8fafc';
+                    (e.currentTarget as HTMLTableRowElement).style.background = rowBg;
                   }}
                 >
-                  {/* Rank */}
                   <td
                     style={{
                       position: 'sticky',
@@ -826,7 +799,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   >
                     <RankBadge rank={rank} sortDir={sort.dir} />
                   </td>
-                  {/* Model name + provider chip */}
                   <td
                     style={{
                       position: 'sticky',
@@ -835,10 +807,17 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       background: 'inherit',
                       padding: '0.65rem 1rem',
                       borderRight: '1px solid #e2e8f0',
-                      minWidth: '220px',
+                      minWidth: '240px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        flexWrap: 'wrap',
+                      }}
+                    >
                       <span
                         style={{
                           display: 'inline-block',
@@ -854,7 +833,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           flexShrink: 0,
                         }}
                       >
-                        {row.provider}
+                        {row.service}
                       </span>
                       <span
                         style={{
@@ -864,14 +843,11 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
                         }}
                       >
-                        {/* Strip the provider prefix that leaderboard.ts prepends */}
-                        {row.model.startsWith(row.provider + ' ')
-                          ? row.model.slice(row.provider.length + 1)
-                          : row.model}
+                        {row.model}
                       </span>
+                      <VisionBadge vision={row.vision} />
                     </div>
                   </td>
-                  {/* Run count */}
                   <td
                     style={{
                       padding: '0.65rem 0.75rem',
@@ -883,49 +859,44 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       borderRight: '1px solid #e2e8f0',
                     }}
                   >
-                    {row.runCount}
+                    {row.runs}
                   </td>
-                  {/* Overall metric with bar */}
                   <td
                     style={{
                       padding: '0.55rem 1rem',
                       borderRight: '2px solid #cbd5e1',
                       minWidth: '110px',
-                      background: rank === 1 ? '#fefce8' : 'inherit',
+                      background: rank === 1 && sort.col === 'avg' && sort.dir === 'desc' ? '#fefce8' : 'inherit',
                     }}
                   >
-                    <PerformanceBar
-                      value={row[measurement]}
-                      max={colStats.max}
-                      min={colStats.min}
-                      higherBetter={hiBetter}
-                      color={ACCENT}
-                    />
+                    {row.avg !== null ? (
+                      <ScoreBar value={row.avg} color={ACCENT} />
+                    ) : (
+                      <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
+                    )}
                   </td>
-                  {/* Per-category metrics */}
-                  {data.allCategories.map(category => {
-                    const cm = row.categoryMetrics[category];
-                    const isActive = sort.col === category;
+                  {data.allBenchmarks.map(benchmark => {
+                    const value = row.benchmarks[benchmark];
+                    const isActive = sort.col === benchmark;
                     return (
                       <td
-                        key={category}
+                        key={benchmark}
                         style={{
                           padding: '0.55rem 1rem',
                           borderRight: '1px solid #e2e8f0',
-                          minWidth: '120px',
+                          minWidth: '110px',
                           background: isActive ? 'rgba(239,246,255,0.6)' : undefined,
                         }}
                       >
-                        {cm ? (
-                          <PerformanceBar
-                            value={cm[measurement]}
-                            max={colStats.catStats[category]?.max ?? 0}
-                            min={colStats.catStats[category]?.min ?? 0}
-                            higherBetter={hiBetter}
-                            color={isActive ? ACCENT : provColor}
-                          />
+                        {value !== null && value !== undefined ? (
+                          <ScoreBar value={value} color={isActive ? ACCENT : provColor} />
                         ) : (
-                          <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
+                          <span
+                            title="Not run (text-only model or run not completed)"
+                            style={{ color: '#cbd5e1', fontSize: '0.75rem' }}
+                          >
+                            —
+                          </span>
                         )}
                       </td>
                     );
@@ -945,7 +916,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               fontSize: '0.85rem',
             }}
           >
-            No data for the selected providers.
+            No data for the selected filters.
           </div>
         )}
       </div>
@@ -960,7 +931,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           paddingRight: '0.25rem',
         }}
       >
-        Bars show relative performance within the visible selection.
+        All cells share the 0-100 normalized scale; bars are absolute. &mdash; means the
+        benchmark was not run for that model.
       </div>
     </div>
   );
