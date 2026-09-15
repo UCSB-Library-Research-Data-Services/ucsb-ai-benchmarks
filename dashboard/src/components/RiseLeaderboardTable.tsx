@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { RiseLeaderboardData } from '../lib/rise';
 import { benchmarkTitle, riseDetailPath } from '../lib/rise';
+import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
@@ -437,8 +438,12 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
               gap: '0.5rem',
               alignItems: 'center',
               flexShrink: 0,
+              flexWrap: 'wrap',
             }}
           >
+            <a href={withBase('')} style={navLinkStyle}>
+              Home
+            </a>
             <a href={withBase('leaderboard')} style={navLinkStyle}>
               Performance
             </a>
@@ -457,6 +462,9 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
             >
               RISE
             </span>
+            <a href={withBase('models')} style={navLinkStyle}>
+              Models & Providers
+            </a>
           </nav>
         </div>
 
@@ -828,7 +836,9 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
                         flexWrap: 'wrap',
                       }}
                     >
-                      <span
+                      <a
+                        href={`${withBase('models')}#${providerAnchor(row.service)}`}
+                        title={`View ${row.service} on Models & Providers`}
                         style={{
                           display: 'inline-block',
                           padding: '0.1rem 0.45rem',
@@ -841,20 +851,38 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
                           color: provColor,
                           border: `1px solid ${provColor}40`,
                           flexShrink: 0,
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
                         }}
                       >
                         {row.service}
-                      </span>
-                      <span
+                      </a>
+                      <a
+                        href={`${withBase('models')}#${modelAnchor(row.service, row.model)}`}
+                        title={`View model on Models & Providers`}
                         style={{
                           fontWeight: 600,
                           color: '#1e293b',
                           fontSize: '0.8rem',
                           fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#2563eb';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#1e293b';
                         }}
                       >
                         {row.model}
-                      </span>
+                      </a>
                       <VisionBadge vision={row.vision} />
                     </div>
                   </td>

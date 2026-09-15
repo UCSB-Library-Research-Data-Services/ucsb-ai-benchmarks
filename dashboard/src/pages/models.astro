@@ -1,0 +1,450 @@
+---
+import { ModelsCatalog } from '../components/ModelsCatalog';
+import { providerColor, providerAnchor } from '../lib/catalog';
+import type { Catalog } from '../lib/catalog';
+import * as fs from 'fs';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const link = (path: string) => `${base}/${path}`;
+
+let catalog: Catalog | null = null;
+try {
+  const catalogPath = process.cwd() + '/src/data/catalog.json';
+  const raw = fs.readFileSync(catalogPath, 'utf-8');
+  catalog = JSON.parse(raw) as Catalog;
+} catch (e) {
+  console.error('Error loading catalog:', e);
+}
+
+const canonicalIds = (catalog?.providers ?? []).map(p => p.id).sort();
+const models = catalog?.models ?? [];
+const providers = catalog?.providers ?? [];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Models and inference providers available through UCSB's gateways."
+    />
+    <title>Models & Providers · UCSB AI Benchmarks</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f1f5f9;
+        color: #1e293b;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        max-width: 64rem;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #0f172a;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 9999px;
+        background: #2563eb;
+        flex-shrink: 0;
+      }
+
+      nav.topnav {
+        display: flex;
+        gap: 1.25rem;
+      }
+
+      nav.topnav a {
+        color: #475569;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      nav.topnav a:hover {
+        color: #2563eb;
+      }
+
+      nav.topnav a.active {
+        color: #2563eb;
+        font-weight: 700;
+      }
+
+      .subnav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .subnav-inner {
+        display: flex;
+        gap: 1.25rem;
+        align-items: center;
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 0.6rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .subnav-inner a {
+        color: #475569;
+        text-decoration: none;
+      }
+
+      .subnav-inner a:hover {
+        color: #2563eb;
+      }
+
+      .hero {
+        padding: 3rem 0 2rem;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #2563eb;
+        background-color: #dbeafe;
+        border-radius: 9999px;
+        padding: 0.3rem 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        line-height: 1.15;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+      }
+
+      .hero p {
+        max-width: 44rem;
+        margin: 1rem auto 0;
+        font-size: 1rem;
+        color: #475569;
+      }
+
+      section.block {
+        padding: 0.5rem 0 2.5rem;
+        scroll-margin-top: 4rem;
+      }
+
+      .section-heading {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.35rem;
+      }
+
+      .section-sub {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 1.25rem;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+
+      .provider-card {
+        display: flex;
+        flex-direction: column;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        scroll-margin-top: 7rem;
+      }
+
+      .chip-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+
+      .provider-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .provider-card .desc {
+        font-size: 0.88rem;
+        color: #475569;
+        margin-bottom: 0.75rem;
+      }
+
+      .provider-card .desc.muted {
+        color: #94a3b8;
+        font-style: italic;
+      }
+
+      .meta {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.35rem;
+      }
+
+      .meta code {
+        font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+        font-size: 0.72rem;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 0.05rem 0.35rem;
+        overflow-wrap: anywhere;
+      }
+
+      .meta a {
+        color: #2563eb;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+      }
+
+      .meta a:hover {
+        text-decoration: underline;
+      }
+
+      .stat {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0.75rem 0;
+      }
+
+      .cta {
+        margin-top: auto;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #2563eb;
+        text-decoration: none;
+      }
+
+      .cta:hover {
+        text-decoration: underline;
+      }
+
+      .models-panel {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+
+      .error-box {
+        background-color: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.75rem;
+        margin: 2rem auto;
+        max-width: 64rem;
+      }
+
+      .error-box code {
+        font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+        font-size: 0.8em;
+      }
+
+      footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 1.75rem 0 2.25rem;
+        background-color: #ffffff;
+      }
+
+      footer p {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      @media (max-width: 800px) {
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .header-inner {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .models-panel {
+          padding: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a class="brand" href={base + '/'}>
+          <span class="brand-mark"></span>
+          UCSB AI Benchmarks
+        </a>
+        <nav class="topnav">
+          <a href={base + '/'}>Home</a>
+          <a href={link('leaderboard')}>Performance</a>
+          <a href={link('scicode')}>SciCode</a>
+          <a href={link('rise')}>RISE</a>
+          <a href={link('models')} class="active">Models & Providers</a>
+        </nav>
+      </div>
+    </header>
+    <div class="subnav">
+      <div class="subnav-inner">
+        <a href="#providers">Providers</a>
+        <a href="#models">Models</a>
+      </div>
+    </div>
+
+    <main>
+      <section class="hero container">
+        <span class="eyebrow">Catalog</span>
+        <h1>Models & Providers</h1>
+        <p>
+          Every model served through UCSB's gateways and inference providers, plus the
+          providers behind them. Model entries link out to the leaderboards they appear in.
+        </p>
+      </section>
+
+      {catalog ? (
+        <>
+          <section id="providers" class="block container">
+            <h2 class="section-heading">Providers</h2>
+            <p class="section-sub">{providers.length} providers · {models.length} models cataloged</p>
+            <div class="card-grid">
+              {providers.map((p) => {
+                const color = providerColor(canonicalIds, p.id);
+                return (
+                  <div class="provider-card" id={providerAnchor(p.id)}>
+                    <div class="chip-row">
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.15rem 0.6rem',
+                          borderRadius: '4px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.06em',
+                          background: `${color}18`,
+                          color,
+                          border: `1px solid ${color}40`,
+                        }}
+                      >
+                        {p.name}
+                      </span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.1rem 0.5rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.06em',
+                          background: '#ecfdf5',
+                          color: '#047857',
+                          border: '1px solid #6ee7b7',
+                        }}
+                      >
+                        {p.status || 'active'}
+                      </span>
+                    </div>
+                    {p.description ? (
+                      <p class="desc">{p.description}</p>
+                    ) : (
+                      <p class="desc muted">Description TBD — edit data/providers.json</p>
+                    )}
+                    {p.website ? (
+                      <p class="meta"><a href={p.website}>{p.website}</a></p>
+                    ) : (
+                      <p class="meta">Website TBD</p>
+                    )}
+                    {p.api_url && (
+                      <p class="meta">API endpoint: <code>{p.api_url}</code></p>
+                    )}
+                    <p class="meta">{p.model_types ? `Model types: ${p.model_types}` : 'Model types TBD'}</p>
+                    <p class="meta">{p.access ? `Access: ${p.access}` : 'Access TBD'}</p>
+                    <p class="stat">{p.model_count} models · {p.benchmarked_count} benchmarked</p>
+                    <a class="cta" href={`#models-${p.id.toLowerCase()}`}>View models ↓</a>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section id="models" class="block container">
+            <h2 class="section-heading">Models</h2>
+            <p class="section-sub">Search and filter across all providers. Deep links from the leaderboards land here.</p>
+            <div class="models-panel">
+              <ModelsCatalog client:load models={models} providers={providers} />
+            </div>
+          </section>
+        </>
+      ) : (
+        <div class="container">
+          <div class="error-box">
+            <strong>Catalog not available.</strong>
+            <p>Run <code>uv run python scripts/export_catalog.py --offline</code> from the project root to generate <code>dashboard/src/data/catalog.json</code>, then rebuild.</p>
+          </div>
+        </div>
+      )}
+    </main>
+
+    <footer>
+      <p>UCSB AI Benchmarks · Built for the UCSB community · Results update as new evaluation runs complete</p>
+    </footer>
+  </body>
+</html>

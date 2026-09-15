@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ScicodeRow, ScicodeLeaderboardData } from '../lib/scicode';
 import { scicodeDetailPath } from '../lib/scicode';
+import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
@@ -543,7 +544,21 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
               )}
             </p>
           </div>
-          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap' }}>
+            <a
+              href={withBase('')}
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                border: '1.5px solid #475569',
+                color: '#cbd5e1',
+                textDecoration: 'none',
+              }}
+            >
+              Home
+            </a>
             <a
               href={withBase('leaderboard')}
               style={{
@@ -558,6 +573,18 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
             >
               Performance
             </a>
+            <span
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                background: ACCENT,
+                color: '#fff',
+              }}
+            >
+              SciCode
+            </span>
             <a
               href={withBase('rise')}
               style={{
@@ -572,18 +599,20 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
             >
               RISE
             </a>
-            <span
+            <a
+              href={withBase('models')}
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
                 fontSize: '0.75rem',
                 fontWeight: 700,
-                background: ACCENT,
-                color: '#fff',
+                border: '1.5px solid #475569',
+                color: '#cbd5e1',
+                textDecoration: 'none',
               }}
             >
-              SciCode
-            </span>
+              Models & Providers
+            </a>
           </nav>
         </div>
 
@@ -995,7 +1024,9 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <span
+                      <a
+                        href={`${withBase('models')}#${providerAnchor(row.provider)}`}
+                        title={`View ${row.provider} on Models & Providers`}
                         style={{
                           display: 'inline-block',
                           padding: '0.1rem 0.45rem',
@@ -1008,20 +1039,38 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
                           color: provColor,
                           border: `1px solid ${provColor}40`,
                           flexShrink: 0,
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
                         }}
                       >
                         {row.provider}
-                      </span>
-                      <span
+                      </a>
+                      <a
+                        href={`${withBase('models')}#${modelAnchor(row.provider, row.model)}`}
+                        title={`View model on Models & Providers`}
                         style={{
                           fontWeight: 600,
                           color: '#1e293b',
                           fontSize: '0.8rem',
                           fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#2563eb';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#1e293b';
                         }}
                       >
                         {row.model}
-                      </span>
+                      </a>
                       <span
                         title={`Most recent run: ${row.split} split (${row.numProblems} problems), with_background=${row.withBackground}`}
                         style={{

@@ -1,0 +1,645 @@
+{
+  "generated_at": "2026-09-15T17:52:41+00:00",
+  "providers": [
+    {
+      "id": "CIT",
+      "name": "CIT",
+      "description": "",
+      "website": "",
+      "api_url": "https://api.ai.college.ucsb.edu/v1",
+      "model_types": "",
+      "access": "",
+      "status": "active",
+      "model_count": 10,
+      "benchmarked_count": 8
+    },
+    {
+      "id": "GRIT",
+      "name": "GRIT",
+      "description": "",
+      "website": "",
+      "api_url": "https://llm.grit.ucsb.edu/api/v1",
+      "model_types": "",
+      "access": "",
+      "status": "active",
+      "model_count": 15,
+      "benchmarked_count": 11
+    },
+    {
+      "id": "AICommons",
+      "name": "AICommons",
+      "description": "",
+      "website": "",
+      "api_url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
+      "model_types": "",
+      "access": "",
+      "status": "active",
+      "model_count": 18,
+      "benchmarked_count": 18
+    }
+  ],
+  "models": [
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-lite",
+      "slug": "aicommons--amazon-nova-lite",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-micro",
+      "slug": "aicommons--amazon-nova-micro",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-pro",
+      "slug": "aicommons--amazon-nova-pro",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.5-haiku",
+      "slug": "aicommons--claude-v4.5-haiku",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.6-opus",
+      "slug": "aicommons--claude-v4.6-opus",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.6-sonnet",
+      "slug": "aicommons--claude-v4.6-sonnet",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5-opus",
+      "slug": "aicommons--claude-v5-opus",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5-sonnet",
+      "slug": "aicommons--claude-v5-sonnet",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-3.5-turbo",
+      "slug": "aicommons--gpt-3.5-turbo",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-3.5-turbo-16k",
+      "slug": "aicommons--gpt-3.5-turbo-16k",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4",
+      "slug": "aicommons--gpt-4",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4-turbo",
+      "slug": "aicommons--gpt-4-turbo",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4o",
+      "slug": "aicommons--gpt-4o",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "llama-4-maverick-17b-instruct",
+      "slug": "aicommons--llama-4-maverick-17b-instruct",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "llama-4-scout-17b-instruct",
+      "slug": "aicommons--llama-4-scout-17b-instruct",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-oss-120b",
+      "slug": "aicommons--openai-gpt-oss-120b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-oss-20b",
+      "slug": "aicommons--openai-gpt-oss-20b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "AICommons",
+      "model": "qwen3-32b",
+      "slug": "aicommons--qwen3-32b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "bge-reranker",
+      "slug": "cit--bge-reranker",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "gemma-4-26b-a4b-it",
+      "slug": "cit--gemma-4-26b-a4b-it",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "gemma-4-31b",
+      "slug": "cit--gemma-4-31b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "gpt-oss-120b",
+      "slug": "cit--gpt-oss-120b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "granite-4.1-30b",
+      "slug": "cit--granite-4.1-30b",
+      "in_api": false,
+      "in_roster": true,
+      "vision": null,
+      "vision_status": "error",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "mistral-small-4-119b-2603",
+      "slug": "cit--mistral-small-4-119b-2603",
+      "in_api": false,
+      "in_roster": true,
+      "vision": null,
+      "vision_status": "error",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "Qwen3-Coder-Next",
+      "slug": "cit--qwen3-coder-next",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "qwen3-embedding-8b",
+      "slug": "cit--qwen3-embedding-8b",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "qwen3.6-35b-a3b",
+      "slug": "cit--qwen3.6-35b-a3b",
+      "in_api": false,
+      "in_roster": true,
+      "vision": null,
+      "vision_status": "error",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
+      "model": "qwen3.8-27b",
+      "slug": "cit--qwen3.8-27b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": true
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "all-the-things",
+      "slug": "grit--all-the-things",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "deepseek-r1:latest",
+      "slug": "grit--deepseek-r1_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "gemma3:latest",
+      "slug": "grit--gemma3_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "gemma4:31b",
+      "slug": "grit--gemma4_31b",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "glm-ocr:latest",
+      "slug": "grit--glm-ocr_latest",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "gpt-oss:20b",
+      "slug": "grit--gpt-oss_20b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "llama3.1:8b",
+      "slug": "grit--llama3.1_8b",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "llama3:latest",
+      "slug": "grit--llama3_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "llava:7b",
+      "slug": "grit--llava_7b",
+      "in_api": true,
+      "in_roster": false,
+      "vision": null,
+      "vision_status": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "mistral:latest",
+      "slug": "grit--mistral_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "hallucinates",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "phi4:latest",
+      "slug": "grit--phi4_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3-coder-next:latest",
+      "slug": "grit--qwen3-coder-next_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "hallucinates",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3-coder:latest",
+      "slug": "grit--qwen3-coder_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3.5:latest",
+      "slug": "grit--qwen3.5_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": true,
+      "vision_status": "sees",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": true
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3:latest",
+      "slug": "grit--qwen3_latest",
+      "in_api": true,
+      "in_roster": true,
+      "vision": false,
+      "vision_status": "rejects",
+      "benchmarked": {
+        "performance": true,
+        "scicode": true,
+        "rise": false
+      }
+    }
+  ]
+}

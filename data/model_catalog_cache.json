@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-09-15T17:52:09+00:00",
+  "description": "Last-good GET /v1/models responses per service. Fallback for export_catalog.py --offline.",
+  "services": {
+    "CIT": [
+      "qwen3-embedding-8b",
+      "bge-reranker",
+      "gemma-4-31b",
+      "Qwen3-Coder-Next",
+      "qwen3.8-27b",
+      "gemma-4-26b-a4b-it",
+      "gpt-oss-120b"
+    ],
+    "GRIT": [
+      "glm-ocr:latest",
+      "gemma4:31b",
+      "qwen3.5:latest",
+      "qwen3-coder-next:latest",
+      "mistral:latest",
+      "qwen3-coder:latest",
+      "llama3.1:8b",
+      "qwen3:latest",
+      "phi4:latest",
+      "llama3:latest",
+      "llava:7b",
+      "gpt-oss:20b",
+      "deepseek-r1:latest",
+      "gemma3:latest",
+      "all-the-things"
+    ],
+    "AICommons": [
+      "amazon-nova-lite",
+      "amazon-nova-micro",
+      "amazon-nova-pro",
+      "claude-v4.5-haiku",
+      "claude-v4.6-opus",
+      "claude-v4.6-sonnet",
+      "claude-v5-opus",
+      "claude-v5-sonnet",
+      "llama-4-maverick-17b-instruct",
+      "llama-4-scout-17b-instruct",
+      "openai-gpt-oss-120b",
+      "openai-gpt-oss-20b",
+      "qwen3-32b",
+      "gpt-3.5-turbo",
+      "gpt-3.5-turbo-16k",
+      "gpt-4",
+      "gpt-4-turbo",
+      "gpt-4o"
+    ]
+  }
+}

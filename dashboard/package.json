@@ -6,9 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "predev": "node scripts/copy-details.mjs",
+    "predev": "node scripts/copy-details.mjs && uv run --directory .. python scripts/export_catalog.py --offline || true",
     "dev": "astro dev",
-    "prebuild": "node scripts/copy-details.mjs",
+    "prebuild": "node scripts/copy-details.mjs && uv run --directory .. python scripts/export_catalog.py || true",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

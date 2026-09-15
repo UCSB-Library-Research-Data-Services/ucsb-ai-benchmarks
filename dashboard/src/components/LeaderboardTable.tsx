@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { AggregatedMetrics, LeaderboardData } from '../lib/leaderboard';
 import { performanceDetailPath } from '../lib/leaderboard';
+import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 
@@ -397,7 +398,21 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               )}
             </p>
           </div>
-          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap' }}>
+            <a
+              href={withBase('')}
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                border: '1.5px solid #475569',
+                color: '#cbd5e1',
+                textDecoration: 'none',
+              }}
+            >
+              Home
+            </a>
             <span
               style={{
                 padding: '0.3rem 0.9rem',
@@ -437,6 +452,20 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               }}
             >
               RISE
+            </a>
+            <a
+              href={withBase('models')}
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                border: '1.5px solid #475569',
+                color: '#cbd5e1',
+                textDecoration: 'none',
+              }}
+            >
+              Models & Providers
             </a>
           </nav>
         </div>
@@ -888,7 +917,9 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <span
+                      <a
+                        href={`${withBase('models')}#${providerAnchor(row.provider)}`}
+                        title={`View ${row.provider} on Models & Providers`}
                         style={{
                           display: 'inline-block',
                           padding: '0.1rem 0.45rem',
@@ -901,23 +932,41 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           color: provColor,
                           border: `1px solid ${provColor}40`,
                           flexShrink: 0,
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
                         }}
                       >
                         {row.provider}
-                      </span>
-                      <span
+                      </a>
+                      <a
+                        href={`${withBase('models')}#${modelAnchor(row.provider, row.model)}`}
+                        title={`View model on Models & Providers`}
                         style={{
                           fontWeight: 600,
                           color: '#1e293b',
                           fontSize: '0.8rem',
                           fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#2563eb';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
+                          (e.currentTarget as HTMLAnchorElement).style.color = '#1e293b';
                         }}
                       >
                         {/* Strip the provider prefix that leaderboard.ts prepends */}
                         {row.model.startsWith(row.provider + ' ')
                           ? row.model.slice(row.provider.length + 1)
                           : row.model}
-                      </span>
+                      </a>
                     </div>
                   </td>
                   {/* Run count */}
