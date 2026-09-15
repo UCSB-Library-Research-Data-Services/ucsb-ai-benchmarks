@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ScicodeRow, ScicodeLeaderboardData } from '../lib/scicode';
+import { scicodeDetailPath } from '../lib/scicode';
+import { RunDetailPanel } from './RunDetailPanel';
 
 interface ScicodeProps {
   data: ScicodeLeaderboardData;
@@ -322,8 +324,14 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
     dir: 'desc',
   });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const toggleDetail = (provider: string, model: string, split: string) => {
+    const key = `${provider}|${model}|${split}`;
+    setOpenKey(prev => (prev === key ? null : key));
+  };
 
   const handleMeasurementChange = (m: Measurement) => {
     setSort({ key: m, dir: bestDir(m) });
@@ -911,9 +919,43 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
                   ? '#ffffff'
                   : '#f8fafc';
               const isActiveCol = (metric: Measurement) => sort.key === metric;
+              const rowKey = `${row.provider}|${row.model}|${row.split}`;
+              const isOpen = openKey === rowKey;
+              const clickableCell = (
+                children: React.ReactNode,
+                label: string
+              ): React.ReactNode => (
+                <button
+                  onClick={() => toggleDetail(row.provider, row.model, row.split)}
+                  aria-expanded={isOpen}
+                  aria-controls={`detail-${row.provider}-${row.model}-${row.split}`}
+                  title={label}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    background: 'none',
+                    border: isOpen ? `1.5px solid ${ACCENT}` : '1.5px solid transparent',
+                    borderRadius: '6px',
+                    padding: '0.1rem 0.25rem',
+                    margin: '-0.1rem -0.25rem',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = ACCENT;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = isOpen
+                      ? ACCENT
+                      : 'transparent';
+                  }}
+                >
+                  {children}
+                </button>
+              );
               return (
+                <React.Fragment key={`${row.provider}-${row.model}-${row.split}`}>
                 <tr
-                  key={`${row.provider}-${row.model}`}
                   style={{
                     background: rowBg,
                     borderBottom: '1px solid #e2e8f0',
@@ -1017,30 +1059,44 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
                       padding: '0.55rem 1rem',
                       borderRight: '1px solid #e2e8f0',
                       minWidth: '110px',
-                      background: isActiveCol('mainResolveRate') ? 'rgba(239,246,255,0.6)' : undefined,
+                      background: isOpen
+                        ? '#dbeafe'
+                        : isActiveCol('mainResolveRate')
+                        ? 'rgba(239,246,255,0.6)'
+                        : undefined,
                     }}
                   >
-                    <ScoreBar
-                      value={row.mainResolveRate}
-                      min={colStats.mainResolveRate.min}
-                      max={colStats.mainResolveRate.max}
-                      color={isActiveCol('mainResolveRate') ? ACCENT : provColor}
-                    />
+                    {clickableCell(
+                      <ScoreBar
+                        value={row.mainResolveRate}
+                        min={colStats.mainResolveRate.min}
+                        max={colStats.mainResolveRate.max}
+                        color={isActiveCol('mainResolveRate') ? ACCENT : provColor}
+                      />,
+                      `View run details: ${row.logFile}`
+                    )}
                   </td>
                   <td
                     style={{
                       padding: '0.55rem 1rem',
                       borderRight: '1px solid #e2e8f0',
                       minWidth: '110px',
-                      background: isActiveCol('subStepAccuracy') ? 'rgba(239,246,255,0.6)' : undefined,
+                      background: isOpen
+                        ? '#dbeafe'
+                        : isActiveCol('subStepAccuracy')
+                        ? 'rgba(239,246,255,0.6)'
+                        : undefined,
                     }}
                   >
-                    <ScoreBar
-                      value={row.subStepAccuracy}
-                      min={colStats.subStepAccuracy.min}
-                      max={colStats.subStepAccuracy.max}
-                      color={isActiveCol('subStepAccuracy') ? ACCENT : provColor}
-                    />
+                    {clickableCell(
+                      <ScoreBar
+                        value={row.subStepAccuracy}
+                        min={colStats.subStepAccuracy.min}
+                        max={colStats.subStepAccuracy.max}
+                        color={isActiveCol('subStepAccuracy') ? ACCENT : provColor}
+                      />,
+                      `View run details: ${row.logFile}`
+                    )}
                   </td>
                   <td
                     style={{
@@ -1110,6 +1166,19 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
                     {fmtDate(row.latestTimestamp)}
                   </td>
                 </tr>
+                {isOpen && (
+                  <tr key={`${rowKey}-detail`}>
+                    <td colSpan={10} id={`detail-${row.provider}-${row.model}-${row.split}`} style={{ padding: '0.5rem 1rem 1rem', background: '#fff', borderBottom: '2px solid #cbd5e1' }}>
+                      <RunDetailPanel
+                        kind="scicode"
+                        url={scicodeDetailPath(row.logFile)}
+                        title={`${row.provider} ${row.model} · ${row.split} · ${row.logFile}`}
+                        onClose={() => setOpenKey(null)}
+                      />
+                    </td>
+                  </tr>
+                )}
+                </React.Fragment>
               );
             })}
           </tbody>
@@ -1142,6 +1211,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
       >
         Score bars show relative standing within the visible selection; token and time bars show
         magnitude. Each row reflects the most recent run per model, provider, and split.
+        Click a score cell to expand run details.
       </div>
     </div>
   );

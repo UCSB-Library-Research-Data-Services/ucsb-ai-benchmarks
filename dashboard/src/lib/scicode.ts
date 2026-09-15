@@ -43,6 +43,7 @@ export interface ScicodeRow {
   split: string;
   runCount: number;
   latestTimestamp: string;
+  logFile: string;
   numProblems: number;
   mainResolveRate: number;
   subStepAccuracy: number;
@@ -132,6 +133,7 @@ export function aggregateScicodeData(results: ScicodeResult[]): ScicodeLeaderboa
         split,
         runCount: splitRuns.length,
         latestTimestamp: latest.timestamp,
+        logFile: latest.log_file,
         numProblems: latest.num_problems,
         mainResolveRate: latest.main_resolve_rate * 100,
         subStepAccuracy: latest.sub_step_accuracy * 100,
@@ -168,4 +170,9 @@ export function aggregateScicodeData(results: ScicodeResult[]): ScicodeLeaderboa
 
 export function getScicodeDataPath(): string {
   return path.join(process.cwd(), '..', 'data', 'scicode_results.jsonl');
+}
+
+export function scicodeDetailPath(logFile: string): string {
+  const stem = logFile.replace(/\.eval$/, '');
+  return `${import.meta.env.BASE_URL}data/details/scicode/${stem}.json`;
 }
