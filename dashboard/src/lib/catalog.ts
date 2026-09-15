@@ -10,8 +10,11 @@ export interface CatalogModel {
   slug: string;
   in_api: boolean;
   in_roster: boolean;
+  owned_by: string | null;
   vision: boolean | null;
   vision_status: string | null;
+  max_output_tokens: number | null;
+  max_output_tokens_source: string | null;
   benchmarked: CatalogBenchmarked;
 }
 

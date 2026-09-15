@@ -10,6 +10,58 @@ interface ModelsCatalogProps {
 
 const ACCENT = '#2563eb';
 
+function fmtTokensShort(n: number): string {
+  if (n % 1000 === 0) return `${n / 1000}K`;
+  return String(n);
+}
+
+function OwnerBadge({ ownedBy }: { ownedBy: string }) {
+  return (
+    <span
+      title="Serving backend (owned_by) as reported by the gateway's /models endpoint"
+      style={{
+        display: 'inline-block',
+        padding: '0.1rem 0.45rem',
+        borderRadius: '4px',
+        fontSize: '0.65rem',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        background: '#eef2ff',
+        color: '#4338ca',
+        border: '1px solid #c7d2fe',
+        flexShrink: 0,
+      }}
+    >
+      owner: {ownedBy}
+    </span>
+  );
+}
+
+function MaxTokensBadge({ tokens, source }: { tokens: number; source: string | null }) {
+  const tooltip = `Max output tokens accepted by this gateway (verified from an observed gateway limit)${
+    source ? ` — ${source}` : ''
+  }. Benchmark requests are clamped to this value.`;
+  return (
+    <span
+      title={tooltip}
+      style={{
+        display: 'inline-block',
+        padding: '0.1rem 0.45rem',
+        borderRadius: '4px',
+        fontSize: '0.65rem',
+        fontWeight: 700,
+        background: '#ecfeff',
+        color: '#0e7490',
+        border: '1px solid #a5f3fc',
+        flexShrink: 0,
+      }}
+    >
+      ≤ {fmtTokensShort(tokens)} out tok
+    </span>
+  );
+}
+
 function VisionBadge({ vision, status }: { vision: boolean | null; status: string | null }) {
   if (vision === true) {
     return (
@@ -307,6 +359,10 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.6rem' }}>
                       <VisionBadge vision={m.vision} status={m.vision_status} />
+                      {m.owned_by && <OwnerBadge ownedBy={m.owned_by} />}
+                      {m.max_output_tokens !== null && m.max_output_tokens !== undefined && (
+                        <MaxTokensBadge tokens={m.max_output_tokens} source={m.max_output_tokens_source} />
+                      )}
                       {m.in_roster && !m.in_api && (
                         <span
                           title="In the config roster but not listed by the provider API"

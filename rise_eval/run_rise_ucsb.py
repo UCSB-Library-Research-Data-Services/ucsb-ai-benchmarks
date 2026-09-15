@@ -22,6 +22,10 @@ Results land in rise_eval/results/<YYYY-MM-DD>/<U####>/ (request_*.json + scorin
 run_meta.json). U-namespace IDs never collide with upstream T#### runs. Resume semantics
 match upstream: existing request files are skipped unless --regenerate is passed.
 
+max_tokens is clamped per model from data/model_limits.json (gateway-verified limits
+observed via HTTP 400) by injecting rules.max_tokens, which benchmark_base honors in
+place of its 32768 default. Models without an entry keep the upstream default.
+
 The dependency header pins Python <3.13 (Levenshtein 0.25.1 has no newer wheels) and isolates
 generic-llm-api-client's openai<2.27 pin from the project's openai>=2.53 — uv resolves the
 script env into its own cache, so the project .venv stays untouched:
@@ -44,6 +48,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 RISE_ROOT = REPO_ROOT / "RISE"
 RESULTS_DIR = REPO_ROOT / "rise_eval" / "results"
 DEFAULT_CAPABILITIES = REPO_ROOT / "data" / "model_capabilities.json"
+DEFAULT_MODEL_LIMITS = REPO_ROOT / "data" / "model_limits.json"
 
 sys.path.insert(0, str(RISE_ROOT))
 sys.path.insert(0, str(RISE_ROOT / "scripts"))
@@ -97,6 +102,22 @@ def load_vision_gates(path):
         if model:
             gates[((entry.get("service") or "").lower(), model)] = (entry.get("tools") or {}).get("vision")
     return gates
+
+
+def load_model_limits(path):
+    """model -> max_output_tokens from the curated limits file ({} when unreadable)."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        logger.warning("Could not load model limits from %s: %s", path, e)
+        return {}
+    limits = {}
+    for model, entry in (data.get("models") or {}).items():
+        cap = (entry or {}).get("max_output_tokens") if isinstance(entry, dict) else None
+        if isinstance(cap, int) and cap > 0:
+            limits[model] = cap
+    return limits
 
 
 def build_combos(services, gates, force):
@@ -215,13 +236,18 @@ def patch_output_paths(benchmark, out_dir, limit_objects):
     return benchmark
 
 
-def run_combo(combo, services, args):
+def run_combo(combo, services, args, model_limits):
     """Instantiate, patch, and run one (service, model, benchmark) combo. Returns status string."""
     service_name = combo["service"]
     service = services[service_name]
     bench = combo["benchmark"]
     benchmark_dir = RISE_ROOT / "benchmarks" / bench["name"]
     out_dir = RESULTS_DIR / datetime.now().strftime("%Y-%m-%d") / combo["test_id"]
+
+    rules = {"base_url": service["url"]}
+    cap = model_limits.get(combo["model"])
+    if cap:
+        rules["max_tokens"] = cap
 
     test_config = {
         "id": combo["test_id"],
@@ -232,7 +258,7 @@ def run_combo(combo, services, args):
         "temperature": bench["temperature"],
         "role_description": bench["role_description"],
         "prompt_file": bench["prompt_file"],
-        "rules": json.dumps({"base_url": service["url"]}),
+        "rules": json.dumps(rules),
     }
 
     api_key = service.get("key")
@@ -280,6 +306,8 @@ def main():
     parser.add_argument("--text-only", action="store_true", help="only book_advert_xml")
     parser.add_argument("--vision-only", action="store_true", help="only the vision-gated benchmarks")
     parser.add_argument("--capabilities", type=Path, default=DEFAULT_CAPABILITIES)
+    parser.add_argument("--model-limits", type=Path, default=DEFAULT_MODEL_LIMITS,
+                        help="curated per-model max_output_tokens caps (rules.max_tokens)")
     parser.add_argument("--force", action="store_true",
                         help="ignore the vision gate for the selected combos (with warning)")
     parser.add_argument("--workers", type=int, default=4, help="parallel request threads per benchmark run")
@@ -299,10 +327,14 @@ def main():
     services = config.SERVICES
 
     gates = load_vision_gates(args.capabilities)
+    model_limits = load_model_limits(args.model_limits)
     planned, skipped = build_combos(services, gates, args.force)
     planned, skipped = filter_combos(planned, skipped, args)
 
     print_plan_header(planned, skipped)
+    if model_limits:
+        print("Model max_tokens caps: " + ", ".join(
+            f"{m}={c}" for m, c in sorted(model_limits.items())))
 
     for s in skipped:
         print(f"SKIP {s['service']}/{s['model']} × {s['benchmark']}: [{s['reason']}] {s['detail']}")
@@ -321,7 +353,7 @@ def main():
         label = f"{combo['test_id']} {combo['service']}/{combo['model']} × {b['name']}"
         print(f"\n=== [{i}/{len(planned)}] {label} ===")
         try:
-            status = run_combo(combo, services, args)
+            status = run_combo(combo, services, args, model_limits)
         except FatalProviderError as e:
             logger.critical("Fatal provider error in %s: %s", label, e)
             status = "fatal-provider-error"

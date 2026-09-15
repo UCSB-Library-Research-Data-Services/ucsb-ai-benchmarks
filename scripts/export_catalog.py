@@ -5,8 +5,9 @@ caches the last-good response, and falls back to the cache then the
 config.py roster when unreachable. Unions API list + roster + models seen in
 the three benchmark JSONLs so leaderboard cross-links never 404.
 
-Only API-derived fields (model id), capabilities, and benchmark
-participation are recorded -- no fabricated model info.
+API-derived fields (model id, owned_by) are recorded verbatim, plus
+capabilities, curated gateway-verified max output tokens from
+data/model_limits.json, and benchmark participation -- no fabricated model info.
 
 Usage:
     uv run --directory .. python scripts/export_catalog.py
@@ -26,6 +27,7 @@ import requests
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 PROVIDERS_PATH = WORKSPACE_ROOT / "data" / "providers.json"
 CAPABILITIES_PATH = WORKSPACE_ROOT / "data" / "model_capabilities.json"
+MODEL_LIMITS_PATH = WORKSPACE_ROOT / "data" / "model_limits.json"
 CACHE_PATH = WORKSPACE_ROOT / "data" / "model_catalog_cache.json"
 DEFAULT_OUTPUT = WORKSPACE_ROOT / "dashboard" / "src" / "data" / "catalog.json"
 
@@ -81,6 +83,34 @@ def read_jsonl_models(path):
     return seen
 
 
+def load_model_limits(path):
+    """model -> (max_output_tokens, source) from the curated limits file ({} when unreadable)."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"[!] could not parse model limits {path.name}: {e}")
+        return {}
+    out = {}
+    for model, entry in (data.get("models") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        cap = entry.get("max_output_tokens")
+        if isinstance(cap, int) and cap > 0:
+            out[model] = (cap, entry.get("source") or "")
+    return out
+
+
+def normalize_api_entries(entries):
+    """Cache entries -> [{"id", "owned_by"}]; accepts the legacy id-string format."""
+    out = []
+    for entry in entries or []:
+        if isinstance(entry, str):
+            out.append({"id": entry, "owned_by": None})
+        elif isinstance(entry, dict) and entry.get("id"):
+            out.append({"id": entry["id"], "owned_by": entry.get("owned_by")})
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--services", nargs="*", default=None)
@@ -132,6 +162,7 @@ def main():
     perf_by_svc = bucket(perf_seen)
     scicode_by_svc = bucket(scicode_seen)
     rise_by_svc = bucket(rise_seen)
+    model_limits = load_model_limits(MODEL_LIMITS_PATH)
 
     new_cache = dict(cache)
     catalog_models = []
@@ -147,14 +178,14 @@ def main():
             try:
                 r = requests.get(api_base(cfg) + "/models", headers=auth(cfg), timeout=FETCH_TIMEOUT)
                 r.raise_for_status()
-                api_models = [m["id"] for m in r.json().get("data", []) if m.get("id")]
+                api_models = normalize_api_entries(r.json().get("data", []))
                 new_cache[name] = api_models
                 source = "api"
             except Exception as e:
                 print(f"[!] {name}: live fetch failed ({e}); trying cache")
         if api_models is None:
             if name in cache:
-                api_models = list(cache[name])
+                api_models = normalize_api_entries(cache[name])
                 source = "cache"
             else:
                 api_models = []
@@ -164,9 +195,10 @@ def main():
         else:
             print(f"    {name}: live API listed {len(api_models)} model(s)")
 
-        api_set = set(api_models)
+        api_set = {entry["id"] for entry in api_models}
+        owned_by = {entry["id"]: entry.get("owned_by") for entry in api_models if entry.get("owned_by")}
         union = []
-        for m in api_models + roster + sorted(perf_by_svc.get(name, set())) \
+        for m in [entry["id"] for entry in api_models] + roster + sorted(perf_by_svc.get(name, set())) \
                 + sorted(scicode_by_svc.get(name, set())) + sorted(rise_by_svc.get(name, set())):
             if m not in union:
                 union.append(m)
@@ -174,14 +206,18 @@ def main():
         for model in sorted(union):
             cap = caps_table.get((name.lower(), model))
             vision = (cap.get("tools") or {}).get("vision") if cap else None
+            limit = model_limits.get(model)
             catalog_models.append({
                 "service": name,
                 "model": model,
                 "slug": model_slug(name, model),
                 "in_api": model in api_set,
                 "in_roster": model in roster_set,
+                "owned_by": owned_by.get(model),
                 "vision": vision,
                 "vision_status": cap.get("status") if cap else None,
+                "max_output_tokens": limit[0] if limit else None,
+                "max_output_tokens_source": limit[1] if limit else None,
                 "benchmarked": {
                     "performance": model in perf_by_svc.get(name, set()),
                     "scicode": model in scicode_by_svc.get(name, set()),
@@ -220,7 +256,7 @@ def main():
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps({
             "generated_at": output["generated_at"],
-            "description": "Last-good GET /v1/models responses per service. Fallback for export_catalog.py --offline.",
+            "description": "Last-good GET /v1/models responses per service (entries: {id, owned_by}). Fallback for export_catalog.py --offline.",
             "services": new_cache,
         }, indent=2) + "\n")
         print(f"Updated cache {cache_path}")

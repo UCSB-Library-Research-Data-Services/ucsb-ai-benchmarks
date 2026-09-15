@@ -248,6 +248,9 @@ const providers = catalog?.providers ?? [];
         <p>
           Every model served through UCSB's gateways and inference providers, plus the
           providers behind them. Model entries link out to the leaderboards they appear in.
+          Each card also shows the serving backend (<code>owned_by</code>, as reported by the
+          gateway's <code>/models</code> endpoint) and the maximum output tokens the gateway
+          accepts for that model, when verified.
         </p>
       </section>
 

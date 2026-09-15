@@ -1,0 +1,29 @@
+{
+  "description": "Per-model maximum output tokens accepted by each gateway, verified via observed HTTP 400 responses (RISE runs of 2026-09-14). Consumed by rise_eval/run_rise_ucsb.py to clamp max_tokens in rules, and by scripts/export_catalog.py to display limits on the Models & Providers page. Keys are exact model ids as served by the gateways.",
+  "models": {
+    "amazon-nova-lite": {
+      "max_output_tokens": 10000,
+      "source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 10000' (RISE run 2026-09-14, logs/20260914-184731.log)"
+    },
+    "amazon-nova-micro": {
+      "max_output_tokens": 10000,
+      "source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 10000' (RISE run 2026-09-14, logs/20260914-184731.log)"
+    },
+    "amazon-nova-pro": {
+      "max_output_tokens": 10000,
+      "source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 10000' (RISE run 2026-09-14, logs/20260914-184731.log)"
+    },
+    "llama-4-scout-17b-instruct": {
+      "max_output_tokens": 8192,
+      "source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 8192' (RISE run 2026-09-14, logs/20260914-184731.log)"
+    },
+    "llama-4-maverick-17b-instruct": {
+      "max_output_tokens": 8192,
+      "source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 8192' (RISE run 2026-09-14, logs/20260914-184731.log)"
+    },
+    "qwen3-32b": {
+      "max_output_tokens": 8192,
+      "source": "gateway HTTP 400: 'maximum context length is 32768 tokens. However, you requested 32768 output tokens' (RISE run 2026-09-14); output capped at 8192 to leave prompt headroom"
+    }
+  }
+}
