@@ -1,35 +1,51 @@
 import React, { useState, useMemo } from 'react';
-import type { AggregatedMetrics, LeaderboardData } from '../lib/leaderboard';
+import type { ScicodeRow, ScicodeLeaderboardData } from '../lib/scicode';
 
-interface LeaderboardProps {
-  data: LeaderboardData;
+interface ScicodeProps {
+  data: ScicodeLeaderboardData;
 }
 
-type Measurement = 'avgTTFT' | 'avgITL' | 'avgGenTPS' | 'avgTotalTPS';
+type Measurement =
+  | 'mainResolveRate'
+  | 'subStepAccuracy'
+  | 'tokensPerTask'
+  | 'outputTokens'
+  | 'timePerTask'
+  | 'stepsPassed';
 
-// Higher is better for TPS; lower is better for TTFT and ITL
+type SortDir = 'asc' | 'desc';
+
 const higherIsBetter: Record<Measurement, boolean> = {
-  avgTTFT: false,
-  avgITL: false,
-  avgGenTPS: true,
-  avgTotalTPS: true,
+  mainResolveRate: true,
+  subStepAccuracy: true,
+  tokensPerTask: false,
+  outputTokens: false,
+  timePerTask: false,
+  stepsPassed: true,
 };
 
 const measurementLabels: Record<Measurement, string> = {
-  avgTTFT: 'Avg TTFT (s)',
-  avgITL: 'Avg ITL (ms)',
-  avgGenTPS: 'Avg Gen TPS',
-  avgTotalTPS: 'Avg Total TPS',
+  mainResolveRate: 'Main Resolve Rate (%)',
+  subStepAccuracy: 'Sub-step Accuracy (%)',
+  tokensPerTask: 'Tokens / Task',
+  outputTokens: 'Output Tokens',
+  timePerTask: 'Time / Task (min)',
+  stepsPassed: 'Steps Passed',
 };
 
 const measurementShort: Record<Measurement, string> = {
-  avgTTFT: 'TTFT',
-  avgITL: 'ITL',
-  avgGenTPS: 'Gen TPS',
-  avgTotalTPS: 'Total TPS',
+  mainResolveRate: 'Resolve %',
+  subStepAccuracy: 'Sub-step %',
+  tokensPerTask: 'Tokens',
+  outputTokens: 'Out Tokens',
+  timePerTask: 'Minutes',
+  stepsPassed: 'Steps',
 };
 
-// Provider color map — stable hues per provider name
+const ACCENT = '#2563eb';
+const REASONING_COLOR = '#8b5cf6';
+const NEUTRAL_BAR = '#94a3b8';
+
 const PROVIDER_PALETTE = [
   '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
   '#8b5cf6', '#06b6d4', '#f97316', '#84cc16',
@@ -39,25 +55,29 @@ function providerColor(providers: string[], name: string): string {
   return PROVIDER_PALETTE[idx % PROVIDER_PALETTE.length];
 }
 
-function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' }) {
-  if (rank === 1 && sortDir === 'desc') {
+function fmtTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return `${Math.round(n)}`;
+}
+
+function fmtDate(ts: string): string {
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function bestDir(m: Measurement): SortDir {
+  return higherIsBetter[m] ? 'desc' : 'asc';
+}
+
+function RankBadge({ rank, showMedal }: { rank: number; showMedal: boolean }) {
+  if (showMedal && rank <= 3) {
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
+    const title = rank === 1 ? '1st place' : rank === 2 ? '2nd place' : '3rd place';
     return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="1st place">
-        🥇
-      </span>
-    );
-  }
-  if (rank === 2 && sortDir === 'desc') {
-    return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="2nd place">
-        🥈
-      </span>
-    );
-  }
-  if (rank === 3 && sortDir === 'desc') {
-    return (
-      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title="3rd place">
-        🥉
+      <span style={{ fontSize: '1.1rem', lineHeight: 1 }} title={title}>
+        {medal}
       </span>
     );
   }
@@ -78,25 +98,10 @@ function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' })
   );
 }
 
-function PerformanceBar({
-  value,
-  max,
-  min,
-  higherBetter,
-  color,
-}: {
-  value: number;
-  max: number;
-  min: number;
-  higherBetter: boolean;
-  color: string;
-}) {
+function ScoreBar({ value, min, max, color }: { value: number; min: number; max: number }) {
   const range = max - min || 1;
-  const pct = higherBetter
-    ? ((value - min) / range) * 100
-    : ((max - value) / range) * 100;
+  const pct = ((value - min) / range) * 100;
   const clamped = Math.max(4, Math.min(100, pct));
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span
@@ -108,7 +113,7 @@ function PerformanceBar({
           letterSpacing: '-0.01em',
         }}
       >
-        {value.toFixed(value < 10 ? 2 : 1)}
+        {value.toFixed(1)}%
       </span>
       <div
         style={{
@@ -128,6 +133,93 @@ function PerformanceBar({
             transition: 'width 0.3s ease',
           }}
         />
+      </div>
+    </div>
+  );
+}
+
+function MagnitudeBar({ value, max, color }: { value: number; max: number; color: string }) {
+  const pct = max > 0 ? (value / max) * 100 : 0;
+  const clamped = Math.max(2, Math.min(100, pct));
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      <span
+        style={{
+          fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
+          fontSize: '0.78rem',
+          fontWeight: 600,
+          color: '#1e293b',
+          letterSpacing: '-0.01em',
+        }}
+      >
+        {fmtTokens(value)}
+      </span>
+      <div
+        style={{
+          height: '4px',
+          borderRadius: '2px',
+          background: '#e2e8f0',
+          width: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            borderRadius: '2px',
+            background: color,
+            width: `${clamped}%`,
+            transition: 'width 0.3s ease',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TokenStackBar({
+  total,
+  reasoning,
+  answer,
+  max,
+}: {
+  total: number;
+  reasoning: number | null;
+  answer: number;
+  max: number;
+}) {
+  const pct = max > 0 ? Math.min(100, (total / max) * 100) : 0;
+  const reasonPct = reasoning !== null && total > 0 ? (reasoning / total) * 100 : 0;
+  const answerPct = 100 - reasonPct;
+  const tooltip =
+    reasoning !== null
+      ? `Reasoning: ${fmtTokens(reasoning)} • Answer: ${fmtTokens(answer)} tokens/task`
+      : `${fmtTokens(answer)} answer tokens/task (reasoning tokens not reported)`;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }} title={tooltip}>
+      <span
+        style={{
+          fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
+          fontSize: '0.78rem',
+          fontWeight: 600,
+          color: '#1e293b',
+          letterSpacing: '-0.01em',
+        }}
+      >
+        {fmtTokens(total)}
+      </span>
+      <div
+        style={{
+          height: '4px',
+          borderRadius: '2px',
+          background: '#e2e8f0',
+          width: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+        }}
+      >
+        <div style={{ height: '100%', background: NEUTRAL_BAR, width: `${pct * (reasonPct / 100)}%` }} />
+        <div style={{ height: '100%', background: ACCENT, width: `${pct * (answerPct / 100)}%` }} />
       </div>
     </div>
   );
@@ -181,11 +273,7 @@ function StatCard({
   );
 }
 
-type SortDir = 'asc' | 'desc';
-// null column means "sort by overall metric (best-first per hiBetter)"
-type SortState = { col: string | null; dir: SortDir };
-
-function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
+function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   const up = active && dir === 'asc';
   const down = active && dir === 'desc';
   return (
@@ -209,65 +297,52 @@ function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
   );
 }
 
-export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
+const TIME_TOOLTIP =
+  'Average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.';
+
+export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
-  const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
-  const [onlyLatest, setOnlyLatest] = useState(false);
-  const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
+  const [sort, setSort] = useState<{ key: Measurement; dir: SortDir }>({
+    key: 'mainResolveRate',
+    dir: 'desc',
+  });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const isAllMode = selectedProviders === null;
 
-  // When metric changes, reset sort to Overall and pick the natural "best first" direction
   const handleMeasurementChange = (m: Measurement) => {
-    setMeasurement(m);
-    setSort({ col: null, dir: higherIsBetter[m] ? 'desc' : 'asc' });
+    setSort({ key: m, dir: bestDir(m) });
   };
 
-  // Cycle sort: clicking active col toggles asc↔desc; clicking a new col sets desc first
-  const handleColSort = (col: string | null) => {
+  const handleColSort = (key: Measurement) => {
     setSort(prev => {
-      if (prev.col === col) {
-        return { col, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
+      if (prev.key === key) {
+        return { key, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
       }
-      return { col, dir: 'desc' };
+      return { key, dir: bestDir(key) };
     });
   };
 
   const filteredRows = useMemo(() => {
-    let rows = isAllMode
-      ? data.rows
-      : data.rows.filter(row => selectedProviders!.has(row.provider));
-    if (onlyLatest) {
-      const latestMap = new Map<string, AggregatedMetrics>();
-      for (const row of rows) {
-        const existing = latestMap.get(row.provider + '/' + row.model);
-        if (!existing || row.latestTimestamp > existing.latestTimestamp) {
-          latestMap.set(row.provider + '/' + row.model, row);
-        }
-      }
-      rows = Array.from(latestMap.values());
-    }
-    return rows;
-  }, [data.rows, selectedProviders, isAllMode, onlyLatest]);
+    if (isAllMode) return data.rows;
+    return data.rows.filter(row => selectedProviders!.has(row.provider));
+  }, [data.rows, selectedProviders, isAllMode]);
 
-  // Compute per-column min/max for performance bars
   const colStats = useMemo(() => {
-    const vals = filteredRows.map(r => r[measurement]);
-    const max = Math.max(...vals, 0);
-    const min = Math.min(...vals, 0);
-    const catStats: Record<string, { max: number; min: number }> = {};
-    for (const cat of data.allCategories) {
-      const catVals = filteredRows
-        .map(r => r.categoryMetrics[cat]?.[measurement])
-        .filter((v): v is number => v !== undefined);
-      catStats[cat] = {
-        max: Math.max(...catVals, 0),
-        min: Math.min(...catVals, 0),
-      };
-    }
-    return { max, min, catStats };
-  }, [filteredRows, measurement, data.allCategories]);
+    const maxOf = (f: (r: ScicodeRow) => number) =>
+      filteredRows.reduce((m, r) => Math.max(m, f(r)), 0);
+    const bounds = (f: (r: ScicodeRow) => number) => {
+      const vals = filteredRows.map(f);
+      return { max: Math.max(...vals, 0), min: Math.min(...vals, 0) };
+    };
+    return {
+      mainResolveRate: bounds(r => r.mainResolveRate),
+      subStepAccuracy: bounds(r => r.subStepAccuracy),
+      tokensPerTask: maxOf(r => r.avgOutputTokensPerTask),
+      outputTokens: maxOf(r => r.totalOutputTokens),
+      timePerTask: maxOf(r => r.avgModelTimeMin),
+    };
+  }, [filteredRows]);
 
   const toggleProvider = (provider: string) => {
     if (isAllMode) {
@@ -283,27 +358,51 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
     }
   };
 
-  const hiBetter = higherIsBetter[measurement];
-
-  // Sort rows: by selected column, or overall metric by default
   const sortedRows = useMemo(() => {
-    return [...filteredRows].sort((a, b) => {
-      let aVal: number;
-      let bVal: number;
-
-      if (sort.col === null || sort.col === 'overall') {
-        aVal = a[measurement];
-        bVal = b[measurement];
-      } else {
-        aVal = a.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
-        bVal = b.categoryMetrics[sort.col]?.[measurement] ?? -Infinity;
+    const get = (r: ScicodeRow, key: Measurement): number => {
+      switch (key) {
+        case 'mainResolveRate':
+          return r.mainResolveRate;
+        case 'subStepAccuracy':
+          return r.subStepAccuracy;
+        case 'tokensPerTask':
+          return r.avgOutputTokensPerTask;
+        case 'outputTokens':
+          return r.totalOutputTokens;
+        case 'timePerTask':
+          return r.avgModelTimeMin;
+        case 'stepsPassed':
+          return r.stepsPassed;
       }
+    };
+    return [...filteredRows].sort((a, b) =>
+      sort.dir === 'desc' ? get(b, sort.key) - get(a, sort.key) : get(a, sort.key) - get(b, sort.key)
+    );
+  }, [filteredRows, sort]);
 
-      return sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
-    });
-  }, [filteredRows, measurement, hiBetter, sort]);
+  const showMedals =
+    (higherIsBetter[sort.key] && sort.dir === 'desc') ||
+    (!higherIsBetter[sort.key] && sort.dir === 'asc');
 
-  const ACCENT = '#2563eb';
+  const headerCell = (extra: React.CSSProperties = {}): React.CSSProperties => ({
+    padding: '0.7rem 1rem',
+    textAlign: 'left',
+    fontWeight: 700,
+    fontSize: '0.65rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    color: '#64748b',
+    whiteSpace: 'nowrap',
+    ...extra,
+  });
+
+  const metricColumns: Measurement[] = [
+    'mainResolveRate',
+    'subStepAccuracy',
+    'tokensPerTask',
+    'outputTokens',
+    'timePerTask',
+  ];
 
   return (
     <div
@@ -315,7 +414,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
         background: '#ffffff',
       }}
     >
-      {/* Page header */}
       <div
         style={{
           background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
@@ -347,7 +445,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 margin: 0,
               }}
             >
-              Performance Leaderboard
+              SciCode Leaderboard
             </h1>
             <p
               style={{
@@ -355,21 +453,27 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 color: '#94a3b8',
                 fontSize: '0.83rem',
                 lineHeight: 1.5,
+                maxWidth: '56rem',
               }}
             >
-              Inference performance allows users to evaluate how long a model takes to process average prompts from a particular inference provider.{' '}
+              Scientific coding ability on the SciCode benchmark: models solve research-level
+              problems step by step, and each step is executed and checked against gold test
+              cases.{' '}
               {isDescExpanded ? (
                 <>
                   <br /><br />
-                  This leaderboard tracks four key metrics:
                   <ul style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}>
-                    <li><strong>Time to First Token (TTFT):</strong> Duration from sending a prompt until the first token is received.</li>
-                    <li><strong>Inter-Token Latency (ITL):</strong> Average time between consecutive generated tokens.</li>
-                    <li><strong>Generation Tokens per Second (Gen TPS):</strong> Speed of generating new text, excluding initial prompt processing time.</li>
-                    <li><strong>Total Tokens per Second (Total TPS):</strong> Overall speed of the round-trip interaction.</li>
+                    <li><strong>Main Resolve Rate:</strong> percentage of problems whose final result is fully correct.</li>
+                    <li><strong>Sub-step Accuracy:</strong> percentage of individual solution steps passing their test cases.</li>
+                    <li><strong>Tokens / Task:</strong> average output tokens per problem, split into reasoning and answer when the provider reports reasoning tokens.</li>
+                    <li><strong>Output Tokens:</strong> total output tokens generated across the whole eval run.</li>
+                    <li><strong>Time / Task:</strong> average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.</li>
+                    <li><strong>Steps:</strong> steps passed out of steps attempted in the most recent run.</li>
                   </ul>
-                  A high-performing model minimizes TTFT and ITL while maximizing average tokens per second. High performance and low latency are especially relevant for products that rely on real-time user experience (like chat interfaces), whereas less performant models can still be highly valuable for asynchronous or iterative tasks (like cron jobs and batch processing). Note that these metrics measure speed and latency, not model intelligence or output quality.{' '}
-                  <button 
+                  Each row shows the most recent run per model and provider; the tag next to the
+                  model name indicates the split (test: 65 problems, validation: 15). Runs use
+                  with_background=True and temperature 0.{' '}
+                  <button
                     onClick={() => setIsDescExpanded(false)}
                     style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
                   >
@@ -377,32 +481,18 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   </button>
                 </>
               ) : (
-                <>
-                  <button 
-                    onClick={() => setIsDescExpanded(true)}
-                    style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
-                  >
-                    [see more]
-                  </button>
-                </>
+                <button
+                  onClick={() => setIsDescExpanded(true)}
+                  style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                >
+                  [see more]
+                </button>
               )}
             </p>
           </div>
           <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
-            <span
-              style={{
-                padding: '0.3rem 0.9rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                background: '#2563eb',
-                color: '#fff',
-              }}
-            >
-              Performance
-            </span>
             <a
-              href="/scicode"
+              href="/leaderboard"
               style={{
                 padding: '0.3rem 0.9rem',
                 borderRadius: '999px',
@@ -413,12 +503,23 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 textDecoration: 'none',
               }}
             >
-              SciCode
+              Performance
             </a>
+            <span
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                background: ACCENT,
+                color: '#fff',
+              }}
+            >
+              SciCode
+            </span>
           </nav>
         </div>
 
-        {/* Stats row */}
         <div
           style={{
             display: 'grid',
@@ -428,13 +529,16 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           }}
         >
           <StatCard label="Total Runs" value={data.stats.totalRuns} accent="#3b82f6" />
-          <StatCard label="Benchmarks" value={data.stats.totalBenchmarks} accent="#10b981" />
-          <StatCard label="Models" value={data.stats.totalModels} accent="#8b5cf6" />
-          <StatCard label="Providers" value={data.stats.totalProviders} accent="#f59e0b" />
+          <StatCard label="Models" value={data.stats.totalModels} accent="#10b981" />
+          <StatCard label="Providers" value={data.stats.totalProviders} accent="#8b5cf6" />
+          <StatCard
+            label="Last Run"
+            value={data.stats.latestRun ? fmtDate(data.stats.latestRun) : '—'}
+            accent="#f59e0b"
+          />
         </div>
       </div>
 
-      {/* Controls panel */}
       <div
         style={{
           background: '#f8fafc',
@@ -448,7 +552,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           alignItems: 'flex-start',
         }}
       >
-        {/* Provider chips */}
         <div style={{ flex: '1 1 auto' }}>
           <div
             style={{
@@ -517,7 +620,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           </div>
         </div>
 
-        {/* Measurement select */}
         <div style={{ flexShrink: 0 }}>
           <div
             style={{
@@ -532,7 +634,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
             Metric
           </div>
           <select
-            value={measurement}
+            value={sort.key}
             onChange={e => handleMeasurementChange(e.target.value as Measurement)}
             style={{
               padding: '0.35rem 2rem 0.35rem 0.75rem',
@@ -557,45 +659,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
             ))}
           </select>
         </div>
-
-        {/* Latest only toggle */}
-        <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: '#64748b',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Filter
-          </div>
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              color: '#475569',
-              userSelect: 'none',
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={onlyLatest}
-              onChange={e => setOnlyLatest(e.target.checked)}
-              style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
-            />
-            Most recent only
-          </label>
-        </div>
       </div>
 
-      {/* Results count */}
       <div
         style={{
           padding: '0.5rem 2rem',
@@ -610,17 +675,12 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
       >
         Showing <strong style={{ color: '#475569' }}>{sortedRows.length}</strong> of{' '}
         <strong style={{ color: '#475569' }}>{data.rows.length}</strong> models &mdash; sorted by{' '}
-        <strong style={{ color: ACCENT }}>
-          {sort.col === null
-            ? measurementLabels[measurement] + ' (overall)'
-            : sort.col.replace(/_/g, ' ') + ' — ' + measurementLabels[measurement]}
-        </strong>{' '}
-        ({sort.col === null
-          ? hiBetter ? 'higher is better' : 'lower is better'
-          : sort.dir === 'desc' ? 'high → low' : 'low → high'})
+        <strong style={{ color: ACCENT }}>{measurementLabels[sort.key]}</strong>{' '}
+        ({higherIsBetter[sort.key]
+          ? sort.dir === 'desc' ? 'higher is better' : 'lower is better'
+          : sort.dir === 'asc' ? 'lower is better' : 'higher is better'})
       </div>
 
-      {/* Table */}
       <div
         style={{
           overflowX: 'auto',
@@ -643,7 +703,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 borderBottom: '2px solid #cbd5e1',
               }}
             >
-              {/* Rank */}
               <th
                 style={{
                   position: 'sticky',
@@ -663,7 +722,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               >
                 #
               </th>
-              {/* Model */}
               <th
                 style={{
                   position: 'sticky',
@@ -683,7 +741,6 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               >
                 Model
               </th>
-              {/* Runs */}
               <th
                 style={{
                   padding: '0.7rem 0.75rem',
@@ -699,65 +756,44 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               >
                 Runs
               </th>
-              {/* Overall metric */}
-              <th
-                onClick={() => handleColSort(null)}
-                style={{
-                  padding: '0.7rem 1rem',
-                  textAlign: 'left',
-                  fontWeight: 700,
-                  fontSize: '0.65rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  color: sort.col === null ? ACCENT : '#64748b',
-                  minWidth: '110px',
-                  borderRight: '2px solid #cbd5e1',
-                  background: sort.col === null ? '#eff6ff' : '#f1f5f9',
+              {metricColumns.map(metric => {
+                const isActive = sort.key === metric;
+                const style = headerCell({
+                  color: isActive ? ACCENT : '#64748b',
+                  background: isActive ? '#eff6ff' : '#f1f5f9',
                   cursor: 'pointer',
                   userSelect: 'none',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Overall
-                <SortIcon dir={sort.dir} active={sort.col === null} />
-                <br />
-                <span style={{ color: '#94a3b8', fontWeight: 600 }}>
-                  {measurementShort[measurement]}
-                </span>
-              </th>
-              {/* Category columns */}
-              {data.allCategories.map(category => {
-                const isActive = sort.col === category;
+                  borderRight: metric === 'timePerTask' ? '2px solid #cbd5e1' : '1px solid #e2e8f0',
+                  transition: 'background 0.1s, color 0.1s',
+                });
                 return (
                   <th
-                    key={category}
-                    onClick={() => handleColSort(category)}
-                    style={{
-                      padding: '0.7rem 1rem',
-                      textAlign: 'left',
-                      fontWeight: 700,
-                      fontSize: '0.65rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: isActive ? ACCENT : '#64748b',
-                      minWidth: '120px',
-                      borderRight: '1px solid #e2e8f0',
-                      whiteSpace: 'nowrap',
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      background: isActive ? '#eff6ff' : '#f1f5f9',
-                      transition: 'background 0.1s, color 0.1s',
-                    }}
+                    key={metric}
+                    onClick={() => handleColSort(metric)}
+                    title={metric === 'timePerTask' ? TIME_TOOLTIP : undefined}
+                    style={style}
                   >
-                    {category.replace(/_/g, ' ')}
+                    {measurementLabels[metric]}
                     <SortIcon dir={sort.dir} active={isActive} />
-                    <br />
-                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>
-                      {measurementShort[measurement]}
-                    </span>
                   </th>
                 );
               })}
+              <th
+                onClick={() => handleColSort('stepsPassed')}
+                title="Steps passed / steps attempted in the most recent run"
+                style={headerCell({
+                  color: sort.key === 'stepsPassed' ? ACCENT : '#64748b',
+                  background: sort.key === 'stepsPassed' ? '#eff6ff' : '#f1f5f9',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  borderRight: '1px solid #e2e8f0',
+                  transition: 'background 0.1s, color 0.1s',
+                })}
+              >
+                Steps
+                <SortIcon dir={sort.dir} active={sort.key === 'stepsPassed'} />
+              </th>
+              <th style={headerCell()}>Last Run</th>
             </tr>
           </thead>
           <tbody>
@@ -765,19 +801,22 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               const rank = idx + 1;
               const provColor = providerColor(data.stats.providers, row.provider);
               const isEven = idx % 2 === 0;
+              const rowBg =
+                showMedals && rank <= 3
+                  ? rank === 1
+                    ? '#fffbeb'
+                    : rank === 2
+                    ? '#f8fafc'
+                    : '#fafaf9'
+                  : isEven
+                  ? '#ffffff'
+                  : '#f8fafc';
+              const isActiveCol = (metric: Measurement) => sort.key === metric;
               return (
                 <tr
                   key={`${row.provider}-${row.model}`}
                   style={{
-                    background: rank <= 3
-                      ? rank === 1
-                        ? '#fffbeb'
-                        : rank === 2
-                        ? '#f8fafc'
-                        : '#fafaf9'
-                      : isEven
-                      ? '#ffffff'
-                      : '#f8fafc',
+                    background: rowBg,
                     borderBottom: '1px solid #e2e8f0',
                     transition: 'background 0.1s',
                   }}
@@ -785,19 +824,9 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                     (e.currentTarget as HTMLTableRowElement).style.background = '#eff6ff';
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLTableRowElement).style.background =
-                      rank <= 3
-                        ? rank === 1
-                          ? '#fffbeb'
-                          : rank === 2
-                          ? '#f8fafc'
-                          : '#fafaf9'
-                        : isEven
-                        ? '#ffffff'
-                        : '#f8fafc';
+                    (e.currentTarget as HTMLTableRowElement).style.background = rowBg;
                   }}
                 >
-                  {/* Rank */}
                   <td
                     style={{
                       position: 'sticky',
@@ -810,9 +839,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                       width: '2.5rem',
                     }}
                   >
-                    <RankBadge rank={rank} sortDir={sort.dir} />
+                    <RankBadge rank={rank} showMedal={showMedals} />
                   </td>
-                  {/* Model name + provider chip */}
                   <td
                     style={{
                       position: 'sticky',
@@ -850,14 +878,28 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                           fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
                         }}
                       >
-                        {/* Strip the provider prefix that leaderboard.ts prepends */}
-                        {row.model.startsWith(row.provider + ' ')
-                          ? row.model.slice(row.provider.length + 1)
-                          : row.model}
+                        {row.model}
+                      </span>
+                      <span
+                        title={`Most recent run: ${row.split} split (${row.numProblems} problems), with_background=${row.withBackground}`}
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.05rem 0.35rem',
+                          borderRadius: '4px',
+                          fontSize: '0.6rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          background: '#f1f5f9',
+                          color: '#64748b',
+                          border: '1px solid #e2e8f0',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {row.split}
                       </span>
                     </div>
                   </td>
-                  {/* Run count */}
                   <td
                     style={{
                       padding: '0.65rem 0.75rem',
@@ -871,51 +913,103 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                   >
                     {row.runCount}
                   </td>
-                  {/* Overall metric with bar */}
+                  <td
+                    style={{
+                      padding: '0.55rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      minWidth: '110px',
+                      background: isActiveCol('mainResolveRate') ? 'rgba(239,246,255,0.6)' : undefined,
+                    }}
+                  >
+                    <ScoreBar
+                      value={row.mainResolveRate}
+                      min={colStats.mainResolveRate.min}
+                      max={colStats.mainResolveRate.max}
+                      color={isActiveCol('mainResolveRate') ? ACCENT : provColor}
+                    />
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.55rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      minWidth: '110px',
+                      background: isActiveCol('subStepAccuracy') ? 'rgba(239,246,255,0.6)' : undefined,
+                    }}
+                  >
+                    <ScoreBar
+                      value={row.subStepAccuracy}
+                      min={colStats.subStepAccuracy.min}
+                      max={colStats.subStepAccuracy.max}
+                      color={isActiveCol('subStepAccuracy') ? ACCENT : provColor}
+                    />
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.55rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      minWidth: '120px',
+                      background: isActiveCol('tokensPerTask') ? 'rgba(239,246,255,0.6)' : undefined,
+                    }}
+                  >
+                    <TokenStackBar
+                      total={row.avgOutputTokensPerTask}
+                      reasoning={row.avgReasoningTokensPerTask}
+                      answer={row.avgAnswerTokensPerTask}
+                      max={colStats.tokensPerTask}
+                    />
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.55rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      minWidth: '100px',
+                      background: isActiveCol('outputTokens') ? 'rgba(239,246,255,0.6)' : undefined,
+                    }}
+                  >
+                    <MagnitudeBar
+                      value={row.totalOutputTokens}
+                      max={colStats.outputTokens}
+                      color={NEUTRAL_BAR}
+                    />
+                  </td>
                   <td
                     style={{
                       padding: '0.55rem 1rem',
                       borderRight: '2px solid #cbd5e1',
-                      minWidth: '110px',
-                      background: rank === 1 ? '#fefce8' : 'inherit',
+                      minWidth: '100px',
+                      background: isActiveCol('timePerTask') ? 'rgba(239,246,255,0.6)' : undefined,
                     }}
+                    title={`${row.avgModelTimeMin.toFixed(1)} min avg model API time per task (includes TTFT; excludes solver overhead)`}
                   >
-                    <PerformanceBar
-                      value={row[measurement]}
-                      max={colStats.max}
-                      min={colStats.min}
-                      higherBetter={hiBetter}
-                      color={ACCENT}
+                    <MagnitudeBar
+                      value={row.avgModelTimeMin}
+                      max={colStats.timePerTask}
+                      color={NEUTRAL_BAR}
                     />
                   </td>
-                  {/* Per-category metrics */}
-                  {data.allCategories.map(category => {
-                    const cm = row.categoryMetrics[category];
-                    const isActive = sort.col === category;
-                    return (
-                      <td
-                        key={category}
-                        style={{
-                          padding: '0.55rem 1rem',
-                          borderRight: '1px solid #e2e8f0',
-                          minWidth: '120px',
-                          background: isActive ? 'rgba(239,246,255,0.6)' : undefined,
-                        }}
-                      >
-                        {cm ? (
-                          <PerformanceBar
-                            value={cm[measurement]}
-                            max={colStats.catStats[category]?.max ?? 0}
-                            min={colStats.catStats[category]?.min ?? 0}
-                            higherBetter={hiBetter}
-                            color={isActive ? ACCENT : provColor}
-                          />
-                        ) : (
-                          <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
-                        )}
-                      </td>
-                    );
-                  })}
+                  <td
+                    style={{
+                      padding: '0.65rem 1rem',
+                      borderRight: '1px solid #e2e8f0',
+                      whiteSpace: 'nowrap',
+                      fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    {row.stepsPassed} / {row.stepsTotal}
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.65rem 1rem',
+                      whiteSpace: 'nowrap',
+                      color: '#64748b',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {fmtDate(row.latestTimestamp)}
+                  </td>
                 </tr>
               );
             })}
@@ -931,12 +1025,13 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
               fontSize: '0.85rem',
             }}
           >
-            No data for the selected providers.
+            {data.rows.length === 0
+              ? 'No SciCode results collected yet.'
+              : 'No data for the selected providers.'}
           </div>
         )}
       </div>
 
-      {/* Footer */}
       <div
         style={{
           marginTop: '0.75rem',
@@ -946,7 +1041,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
           paddingRight: '0.25rem',
         }}
       >
-        Bars show relative performance within the visible selection.
+        Score bars show relative standing within the visible selection; token and time bars show
+        magnitude. Each row reflects the most recent run per model and provider.
       </div>
     </div>
   );
