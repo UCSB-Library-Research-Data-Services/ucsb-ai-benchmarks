@@ -173,29 +173,118 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+const CODE_BG = '#020617';
+const CODE_FG = '#f8fafc';
+const CODE_PUNCT = '#cbd5e1';
+const CODE_KEY = '#93c5fd';
+const CODE_STR = '#86efac';
+const CODE_NUM = '#fbbf24';
+const CODE_BOOL = '#f0abfc';
+const CODE_NULL = '#94a3b8';
+
+function highlightJsonTokens(text: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  const re = /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false)\b|\b(null)\b|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g;
+  let last = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {
+      nodes.push(
+        <span key={key++} style={{ color: CODE_PUNCT }}>
+          {text.slice(last, m.index)}
+        </span>
+      );
+    }
+    const tok = m[0];
+    const str = m[1];
+    const colon = m[2];
+    const bool = m[3];
+    const nul = m[4];
+    const num = m[5];
+    if (str !== undefined) {
+      if (colon !== undefined) {
+        nodes.push(
+          <span key={key++} style={{ color: CODE_KEY }}>
+            {str}
+          </span>
+        );
+        nodes.push(
+          <span key={key++} style={{ color: CODE_PUNCT }}>
+            {colon}
+          </span>
+        );
+      } else {
+        nodes.push(
+          <span key={key++} style={{ color: CODE_STR }}>
+            {str}
+          </span>
+        );
+      }
+    } else if (bool !== undefined) {
+      nodes.push(
+        <span key={key++} style={{ color: CODE_BOOL }}>
+          {bool}
+        </span>
+      );
+    } else if (nul !== undefined) {
+      nodes.push(
+        <span key={key++} style={{ color: CODE_NULL }}>
+          {nul}
+        </span>
+      );
+    } else if (num !== undefined) {
+      nodes.push(
+        <span key={key++} style={{ color: CODE_NUM }}>
+          {num}
+        </span>
+      );
+    } else {
+      nodes.push(
+        <span key={key++} style={{ color: CODE_PUNCT }}>
+          {tok}
+        </span>
+      );
+    }
+    last = m.index + tok.length;
+  }
+  if (last < text.length) {
+    nodes.push(
+      <span key={key++} style={{ color: CODE_PUNCT }}>
+        {text.slice(last)}
+      </span>
+    );
+  }
+  return nodes;
+}
+
 function TruncatedPre({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
   const needsTruncate = text.length > CLIENT_TRUNCATE;
   const shown = expanded || !needsTruncate ? text : text.slice(0, CLIENT_TRUNCATE) + '…';
+  const trimmed = shown.trimStart();
+  const isJson = trimmed.startsWith('{') || trimmed.startsWith('[');
   return (
     <div>
       <pre
         style={{
           fontFamily: MONO,
-          fontSize: '0.72rem',
-          lineHeight: 1.55,
+          fontSize: '0.8rem',
+          lineHeight: 1.65,
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
-          background: '#0f172a',
-          color: '#e2e8f0',
+          tabSize: 2,
+          background: CODE_BG,
+          color: CODE_FG,
+          border: '1px solid #334155',
           borderRadius: '8px',
-          padding: '0.75rem 0.9rem',
+          padding: '0.85rem 1rem',
           margin: 0,
           maxHeight: expanded ? '32rem' : '12rem',
           overflow: 'auto',
         }}
       >
-        {shown}
+        {isJson ? highlightJsonTokens(shown) : shown}
       </pre>
       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem', alignItems: 'center' }}>
         {needsTruncate && (
