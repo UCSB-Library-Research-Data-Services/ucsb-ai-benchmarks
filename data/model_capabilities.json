@@ -1,0 +1,488 @@
+{
+  "generated_at": "2026-09-15T00:38:55+00:00",
+  "fixture": "tests/vision/CCundinamarca_page_1.png",
+  "description": "Model tool capabilities. Only 'vision' is probed (fixture transcription test); other tools are placeholders (false). Benchmark scripts should skip a model when a required tool is not true.",
+  "models": [
+    {
+      "service": "CIT",
+      "model": "Qwen3-Coder-Next",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"litellm.BadRequestError: OpenAIException - Qwen/Qwen3-Coder-Next is not a multimodal model. Received Model Group=Qwen3-Coder-Next\\nAvailabl"
+    },
+    {
+      "service": "CIT",
+      "model": "gemma-4-26b-a4b-it",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "CIT",
+      "model": "gemma-4-31b",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "CIT",
+      "model": "gpt-oss-120b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I\u2019m unable to view the image, so I can\u2019t provide a transcription. The user asks to transcribe all printed text in this image. There's an image attached presumab"
+    },
+    {
+      "service": "CIT",
+      "model": "granite-4.1-30b",
+      "tools": {
+        "vision": null,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "error",
+      "note": "HTTP 400: {\"error\":{\"message\":\"/chat/completions: Invalid model name passed in model=granite-4.1-30b. Call `/v1/models` to view available models for your key.\",\"type\":\"No"
+    },
+    {
+      "service": "CIT",
+      "model": "mistral-small-4-119b-2603",
+      "tools": {
+        "vision": null,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "error",
+      "note": "HTTP 400: {\"error\":{\"message\":\"/chat/completions: Invalid model name passed in model=mistral-small-4-119b-2603. Call `/v1/models` to view available models for your key.\","
+    },
+    {
+      "service": "CIT",
+      "model": "qwen3.6-35b-a3b",
+      "tools": {
+        "vision": null,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "error",
+      "note": "HTTP 400: {\"error\":{\"message\":\"/chat/completions: Invalid model name passed in model=qwen3.6-35b-a3b. Call `/v1/models` to view available models for your key.\",\"type\":\"No"
+    },
+    {
+      "service": "CIT",
+      "model": "qwen3.8-27b",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 10/11 keywords (91% char coverage)"
+    },
+    {
+      "service": "GRIT",
+      "model": "deepseek-r1:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I'm sorry, but I cannot transcribe text from an image as you haven't provided any image. Please upload the image you want me to transcribe. Okay, the user is as"
+    },
+    {
+      "service": "GRIT",
+      "model": "gemma3:latest",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 10/11 keywords (91% char coverage)"
+    },
+    {
+      "service": "GRIT",
+      "model": "gpt-oss:20b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I\u2019m sorry, but I can\u2019t view images. The user provided a reference to an image: \"[img-0]\". I need to transcribe all printed text in the image. But I cannot see t"
+    },
+    {
+      "service": "GRIT",
+      "model": "llama3.1:8b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: There is no image provided. If you provide the image, I'll be happy to transcribe the printed text for you."
+    },
+    {
+      "service": "GRIT",
+      "model": "llama3:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: **No image provided**\n\nPlease provide the image, and I'll be happy to transcribe the printed text for you!"
+    },
+    {
+      "service": "GRIT",
+      "model": "mistral:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "hallucinates",
+      "note": "matched 0/11 (0% char coverage); answer: \"THE FIVE PILLARS OF ISLAM\n\n1. Shahada (Faith)\nThere is no god but Allah and Muhammad is the Messenger of Allah.\n2. Salat (Prayer)\nFive daily prayers in Arabic,"
+    },
+    {
+      "service": "GRIT",
+      "model": "phi4:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I'm unable to view or transcribe images directly. If you can describe the content of the image or provide the text in a different format, I'd be happy to help!"
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3-coder-next:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "hallucinates",
+      "note": "matched 0/11 (0% char coverage); answer: \u201cWelcome to our new caf\u00e9!  \nOpen 7 days a week, 7am\u20139pm  \nSpecialty coffee, fresh pastries & light meals  \nFree Wi-Fi & charging stations  \n\ud83d\udccd 123 Main Street, D"
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3-coder:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I cannot process or transcribe images. Please provide the image file directly, and I'll transcribe all printed text from it."
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3.5:latest",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 10/11 keywords (91% char coverage)"
+    },
+    {
+      "service": "GRIT",
+      "model": "qwen3:latest",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "model says it cannot see images: I cannot transcribe text from images as I do not have access to visual content or external files. Okay, the user wants me to transcribe all the printed text fro"
+    },
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-lite",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-micro",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"Invalid request for model 'amazon-nova-micro': This model doesn't support the image content block that you provided. Update the content blo"
+    },
+    {
+      "service": "AICommons",
+      "model": "amazon-nova-pro",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.5-haiku",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.6-opus",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v4.6-sonnet",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5-opus",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5-sonnet",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-3.5-turbo",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-3.5-turbo-16k",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4-turbo",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "gpt-4o",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "llama-4-maverick-17b-instruct",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "llama-4-scout-17b-instruct",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-oss-120b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"Invalid request for model 'openai-gpt-oss-120b': This model doesn't support the image content block that you provided. Update the content b"
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-oss-20b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"Invalid request for model 'openai-gpt-oss-20b': This model doesn't support the image content block that you provided. Update the content bl"
+    },
+    {
+      "service": "AICommons",
+      "model": "qwen3-32b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"Invalid request for model 'qwen3-32b': This model doesn't support the image content block that you provided. Update the content block and t"
+    }
+  ]
+}
