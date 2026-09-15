@@ -19,6 +19,8 @@ wheels/
 # temporary files
 tmp/
 temp_*
+logs/
+rise_eval/results/
 dashboard/.vscode/extensions.json
 dashboard/.vscode/launch.json
 .DS_Store
