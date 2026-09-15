@@ -4,10 +4,6 @@ import os
 load_dotenv()
 
 SERVICES = {
-    "dreamlab": {
-        "url": "https://litellm.dreamlab.ucsb.edu",
-        "key": os.getenv("DL_KEY")
-        },
     "CIT": {
         "url": "https://api.ai.college.ucsb.edu/v1",
         "key": os.getenv("CIT_KEY"),
