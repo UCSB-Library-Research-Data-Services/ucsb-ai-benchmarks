@@ -1,0 +1,87 @@
+$ bash scicode_eval/run_scicode_evals.sh --service CIT --model qwen3.8-27b  [cwd=/home/coder/workspace/ucsb-ai-benchmarks]
+split=test with_background=True mode=normal log_dir=logs/scicode/2026-09-16-fresh out_base=tmp/scicode runs=1
+[1/1] CIT qwen3.8-27b
+/home/coder/workspace/ucsb-ai-benchmarks/SciCode/src/scicode/gen/models.py:4: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+Monitor from another shell: inspect ctl task list   (inspect ctl --help)
+Failed to generate response for problem 11 step 4.
+[09/16/26 03:38:51] WARNING  Metric sub_problem_correctness should be updated to take         logger.py:278
+                             list[SampleScore]. Metrics with list[Score] are deprecated.                   
+Failed to generate response for problem 13 step 8.
+Failed to generate response for problem 2 step 1.
+Failed to generate response for problem 17 step 2.
+Failed to generate response for problem 22 step 1.
+Failed to generate response for problem 22 step 2.
+Failed to generate response for problem 22 step 3.
+Failed to generate response for problem 37 step 2.
+Failed to generate response for problem 37 step 3.
+Failed to generate response for problem 54 step 3.
+Failed to generate response for problem 62 step 5.
+Failed to generate response for problem 65 step 2.
+Failed to generate response for problem 62 step 6.
+Failed to generate response for problem 69 step 2.
+Failed to generate response for problem 80 step 7.
+Failed to generate response for problem 67 step 5.
+Failed to generate response for problem 71 step 3.
+Failed to generate response for problem 69 step 5.
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│scicode (65 samples): openai-api/cit/qwen3.8-27b                                                         │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+max_connections: 4, max_tokens: 32784, temperature: 0.0, split: test, output_dir:                          
+tmp/scicode/CIT/qwen3.8-27b, with_background: True, mode: normal, dataset: SciCode1/SciCode                
+                                                                                                           
+total time:                             1:36:55                                                            
+openai-api/cit/qwen3.8-27b              1,077,008 tokens [I: 871,652, O: 205,356, R: 0]                    
+                                                                                                           
+scicode_scorer                  Problem Correctness                                                        
+sub_problem_correctness  0.378  mean                 0.077                                                 
+                                                                                                           
+Log: logs/scicode/2026-09-16-fresh/2026-09-16T03-35-35-00-00_scicode_5B9uY4yviQKtftHnoWTtEn.eval           
+                                                                                                             OK: CIT qwen3.8-27b
+---- summary: 1/1 succeeded ----
+$ uv run python scicode_eval/collect_scicode_results.py  [cwd=/home/coder/workspace/ucsb-ai-benchmarks]
+scanned=61 kept=32 -> /home/coder/workspace/ucsb-ai-benchmarks/data/scicode_results.jsonl
+skipped: mode=dummy x1, no-model-usage x17, status=cancelled x4, status=error x2, status=started x5
+SERVICE   MODEL                         SPLIT         N RESOLVE SUBSTEP OUT/TASK MIN/TASK
+AICOMMONS amazon-nova-lite              test         65    3.1%   16.2%     1799     0.89  2026-09-15T02-20-58-00-00_scicode_j8KefCk3sD9JE4pzFy9vCs.eval
+AICOMMONS amazon-nova-micro             test         65    1.5%   11.7%     1898     3.10  2026-09-14T23-22-06-00-00_scicode_4f7pkvBufpUNcEu7gQFWbE.eval
+AICOMMONS amazon-nova-pro               test         65    3.1%   23.0%     1374     0.86  2026-09-16T03-32-22-00-00_scicode_a6qWZcrd87BEouiLFRCp8t.eval
+AICOMMONS claude-v5-opus                test         65   16.9%   49.1%     2746     1.01  2026-09-15T05-47-07-00-00_scicode_Tyu4iFUSwdWCycBtKjGXF3.eval
+AICOMMONS openai-gpt-oss-120b           test         65    4.6%   35.4%     4458     2.24  2026-09-15T04-05-06-00-00_scicode_Vt9VoU2E9z8JacF7LY3noi.eval
+CIT       Qwen3-Coder-Next              validation   15   33.3%   52.0%     1576     0.40 (rea 0)  2026-08-05T03-14-52-00-00_scicode_gUiiATPKeMXkbVLgVU4xQH.eval
+CIT       Qwen3-Coder-Next              test         65    9.2%   34.4%     3523     2.21  2026-09-15T05-54-42-00-00_scicode_Cbrzh32hmvLnR5g4Yok8RY.eval
+CIT       gemma-4-26b-a4b-it            test         65    4.6%   29.9%     4572     2.55 (rea 0)  2026-09-15T02-06-07-00-00_scicode_mauarr86EVuaX4AQx6VZpD.eval
+CIT       gemma-4-31b                   test         65   16.9%   40.2%     2833    17.01 (rea 0)  2026-08-05T00-35-21-00-00_scicode_MMgTafAs3RDnVsWrKF5gA8.eval
+CIT       gemma-4-31b                   validation   15   60.0%   72.0%     1600     0.77 (rea 0)  2026-08-05T03-02-39-00-00_scicode_fbapphYRAEoWHYcHAiiHxW.eval
+CIT       gemma-4-31b                   test         65   15.4%   40.5%     2769     3.17  2026-09-14T23-19-02-00-00_scicode_G3gah84E6HmCJ3TrHBQwf6.eval
+CIT       gpt-oss-120b                  validation   15   46.7%   68.0%     2774     0.54  2026-08-05T03-16-55-00-00_scicode_PByFiv7jaVgk7CHxqucdsg.eval
+CIT       gpt-oss-120b                  test         65    9.2%   36.8%     5903     3.74  2026-09-15T04-04-17-00-00_scicode_9rPpgAPXnCn5KnPbyU7ns7.eval
+CIT       granite-4.1-30b               validation   15   40.0%   48.0%     1027     0.57 (rea 0)  2026-08-05T03-20-04-00-00_scicode_KQyBAWgTo9TQi7tLWJU34Y.eval
+CIT       qwen3.8-27b                   test         65    7.7%   37.8%     3159     4.27 (rea 0)  2026-09-16T03-35-35-00-00_scicode_5B9uY4yviQKtftHnoWTtEn.eval
+DREAMLAB  gemini-3.5-flash              validation   15   66.7%   80.0%     9678     0.99 (rea 8491)  2026-08-05T02-37-02-00-00_scicode_VEUw5HmwibTNqfjxFU8CeY.eval
+DREAMLAB  gemini-3.6-flash              validation   15   66.7%   78.0%     9070     0.81 (rea 8055)  2026-08-05T02-44-11-00-00_scicode_22HtCAjnqFx8bpCzGVb9m4.eval
+GRIT      deepseek-r1:latest            validation   15   26.7%   42.0%    19836    20.18 (rea 0)  2026-08-05T04-32-35-00-00_scicode_8UozQgeecMsp62zY9ym6b7.eval
+GRIT      gemma3:latest                 validation    1    0.0%    0.0%     3173     0.49 (rea 0)  2026-08-05T04-29-05-00-00_scicode_grKxcZycZ8uBMGobPpdb55.eval
+GRIT      gemma3:latest                 validation   15    0.0%    6.0%     1362     1.03 (rea 0)  2026-08-05T16-51-15-00-00_scicode_U7ZYu7ghwwNqZEwzFXqFXo.eval
+GRIT      gemma3:latest                 validation   15    0.0%    6.0%     1151     0.93 (rea 0)  2026-08-06T16-39-42-00-00_scicode_KVxURW56tdxkVESzFPEHBF.eval
+GRIT      gemma3:latest                 test         65    0.0%    6.2%     1896     2.10 (rea 0)  2026-09-15T02-06-35-00-00_scicode_ZDhvJ8EzL2WWTRmcjw6cfa.eval
+GRIT      gpt-oss:20b                   validation   15   40.0%   56.0%     3551     3.21 (rea 0)  2026-08-05T16-55-49-00-00_scicode_QQd5Pg56mFNNzJsWvzgtZC.eval
+GRIT      llama3.1:8b                   validation   15    6.7%   14.0%     1875     1.71 (rea 0)  2026-08-05T21-10-35-00-00_scicode_UyT475zL7aB8uksAg3vvLY.eval
+GRIT      llama3:latest                 validation   15    0.0%   12.0%      727    51.62 (rea 0)  2026-08-05T17-54-27-00-00_scicode_c8f78LEYxTRbBB9SrPs6vr.eval
+GRIT      llama3:latest                 test         65    0.0%    8.2%     1175     1.63 (rea 0)  2026-09-14T23-46-41-00-00_scicode_NEpAL8XhWgSxWvAfdtiDHd.eval
+GRIT      mistral:latest                validation   15    0.0%    8.0%     1206    24.92 (rea 0)  2026-08-05T22-05-28-00-00_scicode_849dNmoY3rS53D8Tgwv2zg.eval
+GRIT      phi4:latest                   validation   15   33.3%   44.0%     2058     3.70 (rea 0)  2026-08-05T20-41-03-00-00_scicode_GkEDk6YGh4tGESnFztZknu.eval
+GRIT      qwen3-coder-next:latest       validation   15   40.0%   48.0%     1617     2.71 (rea 0)  2026-08-05T22-40-24-00-00_scicode_CVH9RbH4sm3RPXX4Yg4MEV.eval
+GRIT      qwen3-coder:latest            validation   15   26.7%   42.0%     1255     1.15 (rea 0)  2026-08-05T21-34-33-00-00_scicode_AsrmP5s57m4R4JGV2BZp3d.eval
+GRIT      qwen3.5:latest                validation   15   26.7%   40.0%    24687    19.71 (rea 0)  2026-08-05T22-57-14-00-00_scicode_kpY6MjLB72NEQv5TBJiVSj.eval
+GRIT      qwen3:latest                  validation   15   33.3%   46.0%    15890    19.78 (rea 0)  2026-08-05T19-49-04-00-00_scicode_fnrRFYnU9od7aa9VjmV4fo.eval
+$ uv run python scripts/export_scicode_details.py  [cwd=/home/coder/workspace/ucsb-ai-benchmarks]
+scanned=61 wrote=32 -> /home/coder/workspace/ucsb-ai-benchmarks/data/details/scicode
+skipped: mode=dummy x1, no-model-usage x17, status=cancelled x4, status=error x2, status=started x5
