@@ -9,9 +9,9 @@ SUITES = ("performance", "rise", "scicode")
 
 PERF_RUNNER = ["uv", "run", "python", "scripts/perfBench.py"]
 RISE_RUNNER = ["uv", "run", "rise_eval/run_rise_ucsb.py"]
-SCICODE_RUNNER = ["bash", "SciCode/eval/inspect_ai/run_scicode_evals.sh"]
+SCICODE_RUNNER = ["bash", "scicode_eval/run_scicode_evals.sh"]
 RISE_COLLECT_ARGV = ["uv", "run", "rise_eval/collect_rise_results.py"]
-SCICODE_COLLECT_ARGV = ["uv", "run", "python", "SciCode/eval/inspect_ai/collect_scicode_results.py"]
+SCICODE_COLLECT_ARGV = ["uv", "run", "python", "scicode_eval/collect_scicode_results.py"]
 SCICODE_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_scicode_details.py"]
 PERF_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_performance_details.py"]
 PROBE_ARGV = ["uv", "run", "python", "scripts/check_model_vision.py"]

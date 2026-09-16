@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Export per-run SciCode detail shards for the dashboard drill-down panels.
 
-Walks ``SciCode/eval/inspect_ai/logs/**.eval`` (excluding ``_smoke``), uses
+Walks ``logs/scicode/**.eval`` (excluding ``_smoke``), uses
 ``inspect_ai.log.read_eval_log`` with the same skip rules as
 ``collect_scicode_results.py`` (``status=success``, mode not in
 ``{dummy, gold}``, has model usage), and writes one distilled JSON per run:
@@ -30,10 +30,10 @@ from inspect_ai.log import read_eval_log
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
-DEFAULT_LOG_DIR = REPO_ROOT / "SciCode" / "eval" / "inspect_ai" / "logs"
+DEFAULT_LOG_DIR = REPO_ROOT / "logs" / "scicode"
 DEFAULT_OUT_DIR = REPO_ROOT / "data" / "details" / "scicode"
 
-sys.path.insert(0, str(REPO_ROOT / "SciCode" / "eval" / "inspect_ai"))
+sys.path.insert(0, str(REPO_ROOT / "scicode_eval"))
 from collect_scicode_results import (  # noqa: E402
     SKIP_MODES,
     derive_service_model,

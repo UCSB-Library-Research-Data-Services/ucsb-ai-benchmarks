@@ -23,8 +23,12 @@ $$
 \text{Sub-problem Correctness} = \frac{\sum_{i=1}^{P} C_i}{\sum_{i=1}^{P} S_i}
 $$
 
-## Evaluated models 
+**Setup for a new machine:** `git submodule update --init`, `uv sync`,
+copy repo-root `.env` with `<SERVICE>_KEY` entries, download `test_data.h5`
+from the Google Drive link into `SciCode/eval/data/test_data.h5`. Harness
+lives in `scicode_eval/`; logs in `logs/scicode/`; outputs in `tmp/scicode/`.
 
+## Evaluated models 
 ## CIT
 
 - gemma-4-31b

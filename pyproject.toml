@@ -15,8 +15,12 @@ dependencies = [
     "pandas>=3.0.5",
     "pytest>=9.1.1",
     "python-dotenv>=1.2.2",
+    "scicode",
     "seaborn>=0.13.2",
 ]
+
+[tool.uv.sources]
+scicode = { path = "SciCode", editable = true }
 
 [project.scripts]
 bench = "bench.cli:main"

@@ -1,10 +1,10 @@
-import glob
+from pathlib import Path
 from inspect_ai.log import read_eval_log
 
 print('| Model | Split | Background? | Subproblem Correctness | Problem Correctness | Total Tokens |')
 print('|---|---|---|---|---|---|')
 
-for f in sorted(glob.glob('SciCode/eval/inspect_ai/logs/*.eval')):
+for f in sorted(str(p) for p in Path("logs/scicode").rglob("*.eval") if "_smoke" not in p.parts):
     try:
         log = read_eval_log(f)
         model = log.eval.model
