@@ -19,7 +19,7 @@ wheels/
 # temporary files
 tmp/
 temp_*
-logs/
+logs/scicode/_smoke/
 rise_eval/results/
 dashboard/.vscode/extensions.json
 dashboard/.vscode/launch.json
