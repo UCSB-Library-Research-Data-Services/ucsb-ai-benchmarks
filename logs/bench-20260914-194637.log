@@ -1,0 +1,33 @@
+$ bash SciCode/eval/inspect_ai/run_scicode_evals.sh --split validation --limit 2 --service CIT --model gemma-4-31b  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+split=validation with_background=True mode=normal log_dir=./logs/_smoke out_base=./tmp/_smoke runs=1
+[1/1] CIT gemma-4-31b
+/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/SciCode/src/scicode/gen/models.py:4: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+Monitor from another shell: inspect ctl task list   (inspect ctl --help)
+[09/14/26 19:46:59] WARNING  Metric sub_problem_correctness should logger.py:278
+                             be updated to take list[SampleScore].              
+                             Metrics with list[Score] are                       
+                             deprecated.                                        
+╭──────────────────────────────────────────────────────────────────────────────╮
+│scicode (2 samples): openai-api/cit/gemma-4-31b                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+max_connections: 4, max_tokens: 32784, temperature: 0.0, split: validation,     
+output_dir: ./tmp/_smoke/CIT/gemma-4-31b, with_background: True, mode: normal,  
+dataset: SciCode1/SciCode                                                       
+                                                                                
+total time:                         0:02:17                                     
+openai-api/cit/gemma-4-31b          43,992 tokens [I: 38,225, O: 5,767]         
+                                                                                
+scicode_scorer                  Problem Correctness                             
+sub_problem_correctness  0.583  mean                 0.500                      
+                                                                                
+Log: logs/_smoke/2026-09-15T02-46-49-00-00_scicode_Yovuz7TGCfLc8WWATWSipw.eval  
+                                                                                  OK: CIT gemma-4-31b
+---- summary: 1/1 succeeded ----

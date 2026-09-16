@@ -1,0 +1,3 @@
+$ uv run python scripts/export_performance_details.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+models=37 wrote=37 -> /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/details/performance
+skipped: dreamlab x30

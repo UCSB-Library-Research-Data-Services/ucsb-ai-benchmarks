@@ -1,0 +1,1 @@
+$ uv run python scripts/perfBench.py --service CIT --models gemma-4-31b  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]

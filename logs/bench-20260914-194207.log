@@ -1,0 +1,2 @@
+$ bash SciCode/eval/inspect_ai/run_scicode_evals.sh  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run python SciCode/eval/inspect_ai/collect_scicode_results.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]

@@ -1,0 +1,4 @@
+$ uv run python scripts/perfBench.py --task 3 --service CIT --models gemma-4-31b  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run rise_eval/run_rise_ucsb.py --limit-objects 2 --text-only --service CIT --model gemma-4-31b  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run rise_eval/collect_rise_results.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run python scripts/perfBench.py --workers 8  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]

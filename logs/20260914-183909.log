@@ -1,0 +1,22 @@
+2026-09-14 18:39:09,774 INFO:ai_client.pricing:Loaded pricing data from /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/RISE/scripts/data/pricing.json
+2026-09-14 18:39:09,779 INFO:ai_client.pricing:Loaded pricing data from /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/RISE/scripts/data/pricing.json
+2026-09-14 18:39:10,925 INFO:root:Running book_advert_xml (openai/qwen3.8-27b)...
+2026-09-14 18:39:10,926 INFO:root:Found 2 objects to process (workers=4).
+2026-09-14 18:39:10,926 INFO:root:[line_1] Processing U0006, line_1...
+2026-09-14 18:39:10,926 INFO:root:[line_10] Processing U0006, line_10...
+2026-09-14 18:39:10,927 INFO:root:Final prompt:
+Fix this xml. Add xml-tags if faulty where it makes sense.
+Format your response as JSON. Use the keys 'fixed_xml', 'number_of_fixes', 'explanation'.
+2026-09-14 18:39:10,927 INFO:root:Final prompt:
+Fix this xml. Add xml-tags if faulty where it makes sense.
+Format your response as JSON. Use the keys 'fixed_xml', 'number_of_fixes', 'explanation'.
+2026-09-14 18:39:14,089 INFO:httpx:HTTP Request: POST https://api.ai.college.ucsb.edu/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 18:39:14,102 WARNING:ai_client.pricing:No pricing found for provider='openai', model='qwen3.8-27b' or base model 'qwen3.8-27b'
+2026-09-14 18:39:14,105 INFO:root:Saved answer to /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/rise_eval/results/2026-09-14/U0006/request_U0006_line_1.json
+2026-09-14 18:39:14,105 INFO:root:[line_1] Finished with score: {'fuzzy': 100.0, 'field_scores': {'fixed_xml': {'response': '<ITEM>37.<BIBL><TITLE>EineTossanischeBibel</TITLE></BIBL></ITEM>', 'ground_truth': '<ITEM>37.<BIBL><TITLE>EineTossanischeBibel</TITLE></BIBL></ITEM>', 'score': 100.0}}}
+2026-09-14 18:39:19,674 INFO:httpx:HTTP Request: POST https://api.ai.college.ucsb.edu/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 18:39:19,677 WARNING:ai_client.pricing:No pricing found for provider='openai', model='qwen3.8-27b' or base model 'qwen3.8-27b'
+2026-09-14 18:39:19,680 INFO:root:Saved answer to /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/rise_eval/results/2026-09-14/U0006/request_U0006_line_10.json
+2026-09-14 18:39:19,680 INFO:root:[line_10] Finished with score: {'fuzzy': 97.68637532133675, 'field_scores': {'fixed_xml': {'response': '<ITEM>HerrPeterPaupieBuchhändlerinHaag,thuthiemitzuwissen,daßdie4.ErstenTheileseinerneuenEditiondes<BIBL><TITLE>LottresJuives</TITLE></BIBL>bereitsfertig,unddiezweyletsterenunterderPresseseyen,underimStandedenenSchweitzerischenHerrenSubscribentensamtlicheTheileinnächstbevorstehendemMonathAprillohnewelternAufschub,auszuliefernzukönnen.BisdahinkönnennochfernerePraenumerationenindenrnBericht-HäusererderEydgnoßschafftangenommenwerden;samtliche<VOLUME>6.</VOLUME>TheilediesesschönenvermehrtenundmitverschiedenenKupfferengeziertenWerckeskostendieHerrenPraenumerantenmehrnichtals<PRIZE>4.Francken</PRIZE>,nemlich<PRIZE>1.Franckenvon9.Bz.gleith</PRICE>und<PRIZE>3.FranckenbeyEmpfangdesselben</PRIZE>,nachgehendsaberwirdselbigesunter<PRIZE>6.Francken</PRIZE>nichterlassen.</ITEM>', 'ground_truth': '<ITEM>HerrPeterPaupieBuchh√§ndlerinHaag,thuthiemitzuwissen,da√üdie4.ErstenTheileseinerneuenEditiondes<BIBL><TITLE>LottresJuives</TITLE></BIBL>bereitsfertig,unddiezweyletsterenunterderPresseseyen,underimStandedenenSchweitzerischenHerrenSubscribentensamtlicheTheileinn√§chstbevorstehendemMonathAprillohnewelternAufschub,ausl√ºffernzuk√∂nnen.Bi√üdahink√∂nnennochfernerePraenumerationenindenrnBericht-H√§usererderEydgno√üschafftangenommenwerden;samtliche<VOLUME>6.</VOLUME>Theilediesessch√∂nenvermehrtenundmitverschiedenenKupfferengeziertenWerckeskostendieHerrenPraenumerantenmehrnichtals<PRIZE>4.Francken</PRIZE>,nemlich<PRIZE>1.Franckenvon9.Bz.gleith</PRIZE>und<PRIZE>3.FranckenbeyEmpfangdesselben</PRIZE>,nachgehendsaberwirdselbigesunter<PRIZE>6.Francken</PRIZE>nichterlassen.</ITEM>', 'score': 97.68637532133675}}}
+2026-09-14 18:39:19,680 INFO:root:Benchmark score: {'fuzzy': 98.84318766066838, 'n': 2}
+2026-09-14 18:39:19,680 INFO:root:Cost summary: {'total_input_tokens': 563, 'total_output_tokens': 490, 'total_tokens': 1053, 'input_cost_usd': 0.0, 'output_cost_usd': 0.0, 'total_cost_usd': 0.0}

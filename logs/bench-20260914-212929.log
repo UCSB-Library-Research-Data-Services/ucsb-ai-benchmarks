@@ -1,0 +1,12 @@
+$ uv run rise_eval/collect_rise_results.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+Wrote 57 detail shard(s) to /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/details/rise
+
+Wrote 57 row(s) to /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/rise_results.jsonl
+
+Mean normalized scores (0-100):
+service             bibliographic_data           book_advert_xml           fraktur_adverts
+AICommons                 49.86 (n=14)              64.61 (n=18)              63.80 (n=14)
+CIT                        60.13 (n=3)               96.56 (n=5)               50.37 (n=3)
+
+Skipped runs (1):
+  2026-09-14/U0012: missing scoring.json

@@ -1,0 +1,10 @@
+2026-09-14 19:46:28,867 INFO:ai_client.pricing:Loaded pricing data from /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/RISE/scripts/data/pricing.json
+2026-09-14 19:46:28,873 INFO:ai_client.pricing:Loaded pricing data from /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/RISE/scripts/data/pricing.json
+2026-09-14 19:46:28,948 INFO:root:Running book_advert_xml (openai/gemma-4-31b)...
+2026-09-14 19:46:28,949 INFO:root:Found 2 objects to process (workers=4).
+2026-09-14 19:46:28,949 INFO:root:[line_1] Skipping U0001, line_1...
+2026-09-14 19:46:28,950 WARNING:ai_client.pricing:No pricing found for provider='openai', model='gemma-4-31b' or base model 'gemma-4-31b'
+2026-09-14 19:46:28,950 INFO:root:[line_10] Skipping U0001, line_10...
+2026-09-14 19:46:28,951 WARNING:ai_client.pricing:No pricing found for provider='openai', model='gemma-4-31b' or base model 'gemma-4-31b'
+2026-09-14 19:46:28,951 INFO:root:Benchmark score: {'fuzzy': 98.7789203084833, 'n': 2}
+2026-09-14 19:46:28,951 INFO:root:Cost summary: {'total_input_tokens': 589, 'total_output_tokens': 685, 'total_tokens': 1274, 'input_cost_usd': 0.0, 'output_cost_usd': 0.0, 'total_cost_usd': 0.0}
