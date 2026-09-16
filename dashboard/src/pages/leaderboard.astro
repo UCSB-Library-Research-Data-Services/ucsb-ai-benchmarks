@@ -1,6 +1,7 @@
 ---
 import { LeaderboardTable } from '../components/LeaderboardTable';
 import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import { parsePerformanceResults, aggregatePerformanceData } from '../lib/leaderboard';
 import type { LeaderboardData } from '../lib/leaderboard';
 import '../styles/global.css';
@@ -112,5 +113,6 @@ try {
         <p>Please wait while we fetch the performance data.</p>
       </div>
     )}
+    <SiteFooter />
   </body>
 </html>

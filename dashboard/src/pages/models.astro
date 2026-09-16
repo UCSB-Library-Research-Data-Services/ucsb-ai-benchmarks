@@ -1,6 +1,7 @@
 ---
 import { ModelsCatalog } from '../components/ModelsCatalog';
 import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import { providerColor, providerAnchor } from '../lib/catalog';
 import type { Catalog } from '../lib/catalog';
 import * as fs from 'fs';
@@ -215,18 +216,6 @@ const providers = catalog?.providers ?? [];
         font-size: 0.8em;
       }
 
-      footer {
-        border-top: 1px solid #e2e8f0;
-        padding: 1.75rem 0 2.25rem;
-        background-color: #ffffff;
-      }
-
-      footer p {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        text-align: center;
-      }
-
       @media (max-width: 800px) {
         .card-grid {
           grid-template-columns: 1fr;
@@ -336,8 +325,6 @@ const providers = catalog?.providers ?? [];
       )}
     </main>
 
-    <footer>
-      <p>UCSB AI Benchmarks · Built for the UCSB community · Results update as new evaluation runs complete</p>
-    </footer>
+    <SiteFooter />
   </body>
 </html>

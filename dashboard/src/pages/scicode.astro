@@ -1,6 +1,7 @@
 ---
 import { ScicodeLeaderboardTable } from '../components/ScicodeLeaderboardTable';
 import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import { parseScicodeResults, aggregateScicodeData } from '../lib/scicode';
 import type { ScicodeLeaderboardData } from '../lib/scicode';
 import '../styles/global.css';
@@ -106,5 +107,6 @@ try {
         <p>Please wait while we fetch the SciCode results.</p>
       </div>
     )}
+    <SiteFooter />
   </body>
 </html>

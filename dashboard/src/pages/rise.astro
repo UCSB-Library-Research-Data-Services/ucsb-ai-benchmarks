@@ -1,6 +1,7 @@
 ---
 import { RiseLeaderboardTable } from '../components/RiseLeaderboardTable';
 import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import { parseRiseResults, aggregateRiseData, getRiseDataPath } from '../lib/rise';
 import type { RiseLeaderboardData } from '../lib/rise';
 import '../styles/global.css';
@@ -105,5 +106,6 @@ try {
         <p>Please wait while we fetch the RISE results.</p>
       </div>
     )}
+    <SiteFooter />
   </body>
 </html>

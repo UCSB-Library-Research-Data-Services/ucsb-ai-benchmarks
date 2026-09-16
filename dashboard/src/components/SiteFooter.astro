@@ -1,0 +1,170 @@
+---
+const repoUrl = 'https://github.com/UCSB-Library-Research-Data-Services/ucsb-ai-benchmarks';
+const rdsUrl = 'https://www.library.ucsb.edu/research-data-services';
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <section class="ack">
+      <h2>Acknowledgments</h2>
+      <p>
+        This project is possible thanks to the support of UCSB
+        <a href="https://aicommons.ucsb.edu/home" target="_blank" rel="noopener noreferrer">AICommons</a>
+        initiative, and UCSB Library DreamLab's
+        <a href="https://dreamlab.ucsb.edu/" target="_blank" rel="noopener noreferrer">CoderWorkspaces</a>.
+      </p>
+    </section>
+
+    <div class="footer-meta">
+      <a class="footer-rds" href={rdsUrl} target="_blank" rel="noopener noreferrer">
+        <img
+          src="https://raw.githubusercontent.com/UCSB-Library-Research-Data-Services/rds-ws-catalogue/refs/heads/main/assets/imgs/HexSticker-RDS.png"
+          alt="UCSB Library Research Data Services logo"
+          class="footer-badge"
+          loading="lazy"
+        />
+        <span>UCSB Library Research Data Services</span>
+      </a>
+
+      <span class="footer-license">
+        <span class="license-label">License:</span>
+        <a
+          href="https://creativecommons.org/licenses/by-nc/4.0/deed.en"
+          class="footer-cc-license"
+          target="_blank"
+          rel="license noopener noreferrer"
+        >
+          <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" class="cc-icon" loading="lazy" />
+          <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" class="cc-icon" loading="lazy" />
+          <img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="NC" class="cc-icon" loading="lazy" />
+          <span>CC BY-NC 4.0</span>
+        </a>
+      </span>
+
+      <a class="footer-repo" href={repoUrl} target="_blank" rel="noopener noreferrer">
+        UCSB-Library-Research-Data-Services/ucsb-ai-benchmarks
+      </a>
+    </div>
+
+    <p class="tagline">UCSB AI Benchmarks · Built for the UCSB community · Results update as new evaluation runs complete</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    padding: 2.25rem 0 2.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .footer-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .ack h2 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+  }
+
+  .ack p {
+    font-size: 0.9rem;
+    color: #475569;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .ack a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .ack a:hover {
+    text-decoration: underline;
+  }
+
+  .footer-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem 1.75rem;
+    margin: 1.5rem auto 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed #e2e8f0;
+    max-width: 52rem;
+  }
+
+  .footer-rds {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+  }
+
+  .footer-rds:hover {
+    color: #2563eb;
+  }
+
+  .footer-badge {
+    height: 3.25rem;
+    width: auto;
+  }
+
+  .footer-license {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  .footer-cc-license {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+  }
+
+  .footer-cc-license:hover {
+    color: #2563eb;
+  }
+
+  .cc-icon {
+    height: 1.15rem;
+    width: auto;
+    display: inline-block;
+  }
+
+  .footer-repo {
+    font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  .footer-repo:hover {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  .tagline {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+</style>

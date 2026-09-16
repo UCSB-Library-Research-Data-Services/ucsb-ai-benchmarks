@@ -1,6 +1,7 @@
 ---
 // Frontpage for the UCSB AI Benchmarks dashboard.
 import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 
 const link = (path: string) => `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/${path}`;
 
@@ -221,19 +222,6 @@ const leaderboards = [
         color: #2563eb;
       }
 
-      /* Footer */
-      footer {
-        border-top: 1px solid #e2e8f0;
-        padding: 1.75rem 0 2.25rem;
-        background-color: #ffffff;
-      }
-
-      footer p {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        text-align: center;
-      }
-
       @media (max-width: 800px) {
         .card-grid,
         .why-points {
@@ -308,8 +296,6 @@ const leaderboards = [
       </section>
     </main>
 
-    <footer>
-      <p>UCSB AI Benchmarks · Built for the UCSB community · Results update as new evaluation runs complete</p>
-    </footer>
+    <SiteFooter />
   </body>
 </html>
