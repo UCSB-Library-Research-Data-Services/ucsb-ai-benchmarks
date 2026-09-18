@@ -58,6 +58,23 @@ SERVICES = {
             "claude-v5-opus",
             "claude-v5-sonnet"
         ]
+        },
+    "NRP": {
+        "url": "https://ellm.nrp-nautilus.io/v1",
+        "key": os.getenv("NRP_KEY"),
+        "models": [
+            "gemma-small",
+            "gemma4-12b",
+            "glm-5",
+            "qwen3",
+            "qwen3-small",
+            "gemma-small-e4b",
+            "gpt-oss",
+            "gemma",
+            "kimi",
+            "minimax-m2",
+            "deepseek-v4-flash"
+        ]
         }
-}
+    }
 
