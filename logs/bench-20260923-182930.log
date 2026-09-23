@@ -1,0 +1,1 @@
+$ uv run python scripts/perfBench.py --service NRP  [cwd=/home/coder/ucsb-ai-benchmarks]

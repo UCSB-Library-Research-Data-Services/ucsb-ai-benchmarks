@@ -1,0 +1,3 @@
+$ bash scicode_eval/run_scicode_evals.sh --service NRP  [cwd=/home/coder/ucsb-ai-benchmarks]
+$ uv run python scicode_eval/collect_scicode_results.py  [cwd=/home/coder/ucsb-ai-benchmarks]
+$ uv run python scripts/export_scicode_details.py  [cwd=/home/coder/ucsb-ai-benchmarks]

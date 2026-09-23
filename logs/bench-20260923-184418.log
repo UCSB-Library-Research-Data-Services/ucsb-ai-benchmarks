@@ -1,0 +1,1 @@
+$ bash scicode_eval/run_scicode_evals.sh --service NRP  [cwd=/home/coder/ucsb-ai-benchmarks]
