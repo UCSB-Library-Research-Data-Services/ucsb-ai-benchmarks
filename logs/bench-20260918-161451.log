@@ -1,0 +1,188 @@
+$ uv run python scripts/perfBench.py --task 3 --service NRP  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+[+] Successfully loaded 15 prompts from data/performance.jsonl.
+[*] Limiting benchmark to first 3 prompt(s) for task mode.
+====================================================================================================
+UCSB LLM Gateway Performance Benchmark Suite
+Services: 1 | Runs: 11 | Prompts: 3
+Total benchmark runs: 11 | Workers per run: 4
+Output: /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/performance_results.jsonl
+====================================================================================================
+[*] Loaded 780 existing result(s) from data/performance_results.jsonl
+
+[1/11] Service: NRP | Model: gemma-small
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: gemma-small | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: gemma-small | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: gemma-small | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 1.452s | Gen TPS: 69.94 tps | Gen Tokens: 561
+    -> Success | TTFT: 1.350s | Gen TPS: 69.34 tps | Gen Tokens: 576
+    -> Success | TTFT: 1.485s | Gen TPS: 70.67 tps | Gen Tokens: 578
+  Completed: 3 results
+
+[2/11] Service: NRP | Model: gemma4-12b
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: gemma4-12b | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: gemma4-12b | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: gemma4-12b | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 0.576s | Gen TPS: 60.19 tps | Gen Tokens: 499
+    -> Success | TTFT: 0.341s | Gen TPS: 58.82 tps | Gen Tokens: 509
+    -> Success | TTFT: 0.576s | Gen TPS: 61.00 tps | Gen Tokens: 611
+  Completed: 3 results
+
+[3/11] Service: NRP | Model: glm-5
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: glm-5 | ID: heidegger_technology_02 (philosophy)...
+[*] Benchmarking NRP | Model: glm-5 | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: glm-5 | ID: neurobiology_gender_03_en (neurobiology)...
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+  Completed: 3 results
+
+[4/11] Service: NRP | Model: qwen3
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: qwen3 | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: qwen3 | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: qwen3 | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 18.282s | Gen TPS: 64.75 tps | Gen Tokens: 1188
+    -> Success | TTFT: 35.505s | Gen TPS: 93.29 tps | Gen Tokens: 1938
+    -> Success | TTFT: 70.075s | Gen TPS: 229.03 tps | Gen Tokens: 3131
+  Completed: 3 results
+
+[5/11] Service: NRP | Model: qwen3-small
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: qwen3-small | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: qwen3-small | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: qwen3-small | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 15.542s | Gen TPS: 162.30 tps | Gen Tokens: 1650
+    -> Success | TTFT: 82.187s | Gen TPS: 746.03 tps | Gen Tokens: 6739
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+  Completed: 3 results
+
+[6/11] Service: NRP | Model: gemma-small-e4b
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: gemma-small-e4b | ID: heidegger_technology_02 (philosophy)...
+[*] Benchmarking NRP | Model: gemma-small-e4b | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: gemma-small-e4b | ID: neurobiology_gender_03_en (neurobiology)...
+    -> Success | TTFT: 0.254s | Gen TPS: 61.98 tps | Gen Tokens: 891
+    -> Success | TTFT: 0.305s | Gen TPS: 62.18 tps | Gen Tokens: 1332
+    -> Success | TTFT: 0.308s | Gen TPS: 62.14 tps | Gen Tokens: 1427
+  Completed: 3 results
+
+[7/11] Service: NRP | Model: gpt-oss
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: gpt-oss | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: gpt-oss | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: gpt-oss | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 4.464s | Gen TPS: 26.47 tps | Gen Tokens: 774
+    -> Success | TTFT: 4.558s | Gen TPS: 25.97 tps | Gen Tokens: 959
+    -> Success | TTFT: 6.444s | Gen TPS: 27.23 tps | Gen Tokens: 996
+  Completed: 3 results
+
+[8/11] Service: NRP | Model: gemma
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: gemma | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: gemma | ID: heidegger_technology_02 (philosophy)...
+[*] Benchmarking NRP | Model: gemma | ID: fermat_proof_01 (advanced_math)...
+    -> Success | TTFT: 13.362s | Gen TPS: 131.33 tps | Gen Tokens: 1267
+    -> Success | TTFT: 13.328s | Gen TPS: 130.81 tps | Gen Tokens: 1280
+    -> Success | TTFT: 15.618s | Gen TPS: 151.64 tps | Gen Tokens: 1371
+  Completed: 3 results
+
+[9/11] Service: NRP | Model: kimi
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: kimi | ID: heidegger_technology_02 (philosophy)...
+[*] Benchmarking NRP | Model: kimi | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: kimi | ID: fermat_proof_01 (advanced_math)...
+    -> Success | TTFT: 14.845s | Gen TPS: 25.46 tps | Gen Tokens: 874
+    -> Success | TTFT: 31.037s | Gen TPS: 35.16 tps | Gen Tokens: 1127
+    -> Success | TTFT: 79.996s | Gen TPS: 55.61 tps | Gen Tokens: 2114
+  Completed: 3 results
+
+[10/11] Service: NRP | Model: minimax-m2
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: minimax-m2 | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: minimax-m2 | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: minimax-m2 | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 6.417s | Gen TPS: 144.07 tps | Gen Tokens: 1124
+    -> Success | TTFT: 2.933s | Gen TPS: 98.11 tps | Gen Tokens: 1213
+    -> Success | TTFT: 7.080s | Gen TPS: 146.75 tps | Gen Tokens: 1221
+  Completed: 3 results
+
+[11/11] Service: NRP | Model: deepseek-v4-flash
+  Workers: 4 | Prompts: 3
+[*] Benchmarking NRP | Model: deepseek-v4-flash | ID: neurobiology_gender_03_en (neurobiology)...
+[*] Benchmarking NRP | Model: deepseek-v4-flash | ID: fermat_proof_01 (advanced_math)...
+[*] Benchmarking NRP | Model: deepseek-v4-flash | ID: heidegger_technology_02 (philosophy)...
+    -> Success | TTFT: 59.075s | Gen TPS: 689.04 tps | Gen Tokens: 6271
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+    [-] Failed: peer closed connection without sending complete message body (incomplete chunked read)
+  Completed: 3 results
+
+====================================================================================================
+BENCHMARK COMPLETED SUCCESSFULLY!
+Results saved to: /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/performance_results.jsonl
+Total results: 813
+
+========================================================================================================================
+AGGREGATED PERFORMANCE METRICS
+========================================================================================================================
+Service         Model                     Count  Avg TTFT (s)   Avg ITL (ms)   Avg Gen TPS    Avg Total TPS 
+------------------------------------------------------------------------------------------------------------------------
+AICommons       amazon-nova-lite          15     0.766          4.22           248.19         299.72        
+AICommons       amazon-nova-micro         15     0.841          3.81           268.83         309.49        
+AICommons       amazon-nova-pro           15     0.869          5.59           181.34         225.36        
+AICommons       claude-v4.5-haiku         15     1.152          8.23           133.42         156.07        
+AICommons       claude-v4.6-opus          15     1.790          18.25          59.43          68.86         
+AICommons       claude-v4.6-sonnet        15     1.411          14.21          76.09          87.63         
+AICommons       claude-v5-opus            14     3.877          19.41          53.82          62.48         
+AICommons       claude-v5-sonnet          15     2.184          16.29          64.17          76.24         
+AICommons       gpt-3.5-turbo             15     1.010          8.28           131.46         154.71        
+AICommons       gpt-3.5-turbo-16k         15     1.032          8.22           133.01         156.10        
+AICommons       gpt-4                     15     1.401          14.33          75.28          86.94         
+AICommons       gpt-4-turbo               15     1.385          14.14          75.14          87.78         
+AICommons       gpt-4o                    15     3.130          14.76          73.02          80.97         
+AICommons       llama-4-maverick-17b-instruct 15     0.776          3.98           254.33         303.50        
+AICommons       llama-4-scout-17b-instruct 15     0.788          4.65           219.70         265.40        
+AICommons       openai-gpt-oss-120b       15     1.106          4.45           244.49         260.56        
+AICommons       openai-gpt-oss-20b        15     1.059          4.58           235.99         258.78        
+AICommons       qwen3-32b                 15     2.460          7.79           145.51         155.54        
+CIT             Qwen3-Coder-Next          30     0.307          7.97           131.77         168.51        
+CIT             gemma-4-26b-a4b-it        15     0.221          5.19           193.85         267.49        
+CIT             gemma-4-31b               30     0.537          24.28          41.21          60.87         
+CIT             gpt-oss-120b              30     2.794          6.32           165.44         165.90        
+CIT             granite-4.1-30b           15     0.348          21.73          46.03          65.82         
+CIT             mistral-small-4-119b-2603 15     0.481          13.21          75.96          102.46        
+CIT             qwen3.6-35b-a3b           15     14.548         6.93           147.15         93.81         
+CIT             qwen3.8-27b               15     0.253          21.34          46.90          65.02         
+GRIT            deepseek-r1:latest        30     122.889        4.30           346.25         39.04         
+GRIT            gemma3:latest             30     17.530         6.21           162.08         62.69         
+GRIT            gpt-oss:20b               30     43.526         5.05           210.78         49.29         
+GRIT            llama3.1:8b               15     18.210         8.20           121.94         55.20         
+GRIT            llama3:latest             30     15.038         7.80           128.24         62.92         
+GRIT            mistral:latest            30     17.432         7.28           137.32         57.09         
+GRIT            phi4:latest               30     34.538         14.19          70.49          27.04         
+GRIT            qwen3-coder-next:latest   30     58.928         10.71          93.41          28.41         
+GRIT            qwen3-coder:latest        30     35.090         10.31          112.73         42.01         
+GRIT            qwen3.5:latest            15     224.487        3.10           431.44         29.25         
+GRIT            qwen3:latest              33     185.321        3.49           416.80         46.65         
+NRP             deepseek-v4-flash         1      59.075         1.45           689.04         103.72        
+NRP             gemma                     3      14.103         7.28           137.93         72.72         
+NRP             gemma-small               3      1.429          14.29          69.98          101.29        
+NRP             gemma-small-e4b           3      0.289          16.10          62.10          84.74         
+NRP             gemma4-12b                3      0.498          16.67          60.00          101.08        
+NRP             gpt-oss                   3      5.155          37.66          26.56          34.74         
+NRP             kimi                      3      41.959         28.56          38.74          22.55         
+NRP             minimax-m2                3      5.477          7.98           129.64         107.39        
+NRP             qwen3                     3      41.287         10.18          129.02         42.39         
+NRP             qwen3-small               2      48.864         3.75           454.16         80.70         
+dreamlab        gemini-3.5-flash          15     22.056         1.71           770.11         184.23        
+dreamlab        gemini-3.6-flash          15     16.234         1.62           773.39         215.60        
+========================================================================================================================
+
+[!] Warning: 19 errors occurred during benchmarking.
+    Check the output file for details.
+====================================================================================================
+$ uv run python scripts/export_performance_details.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+models=48 wrote=48 -> /Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks/data/details/performance
+skipped: dreamlab x30

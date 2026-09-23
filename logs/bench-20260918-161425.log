@@ -1,0 +1,2 @@
+$ uv run python scripts/perfBench.py --service NRP  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run python scripts/export_performance_details.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
