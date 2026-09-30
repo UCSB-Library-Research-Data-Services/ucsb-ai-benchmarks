@@ -7,11 +7,18 @@ const link = (path: string) => `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/
 
 const leaderboards = [
   {
-    title: 'Performance',
+    title: 'Operational QoS',
     tag: 'Speed & latency',
     description:
-      'A suite of simple benchmark tests that measures the speed of the models currently served by each provider — time to first token, inter-token latency, and generation throughput.',
+      'Operational quality-of-service telemetry that characterizes the end-user experience of each provider\u2019s infrastructure \u2014 time to first token, inter-token latency, and generation throughput.',
     href: link('leaderboard'),
+  },
+  {
+    title: 'General Capability (lm-eval)',
+    tag: 'General capability',
+    description:
+      'Standardized general-capability benchmarks (MMLU, GSM8K, ARC-Challenge, HellaSwag, WinoGrande, TruthfulQA) from the lm-evaluation-harness, anchoring results against community reference scores.',
+    href: link('lmeval'),
   },
   {
     title: 'SciCode',
@@ -165,7 +172,7 @@ const leaderboards = [
 
       .card-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 1.25rem;
       }
 

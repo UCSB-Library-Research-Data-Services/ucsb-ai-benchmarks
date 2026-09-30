@@ -1,6 +1,6 @@
 ---
 interface Props {
-  active?: 'home' | 'performance' | 'scicode' | 'rise' | 'models';
+  active?: 'home' | 'performance' | 'lmeval' | 'scicode' | 'rise' | 'models';
   sections?: { href: string; label: string }[];
 }
 
@@ -11,7 +11,8 @@ const link = (path: string) => `${base}/${path}`;
 
 const items = [
   { key: 'home', href: `${base}/`, label: 'Home' },
-  { key: 'performance', href: link('leaderboard'), label: 'Performance' },
+  { key: 'performance', href: link('leaderboard'), label: 'Operational QoS' },
+  { key: 'lmeval', href: link('lmeval'), label: 'General Capability' },
   { key: 'scicode', href: link('scicode'), label: 'SciCode' },
   { key: 'rise', href: link('rise'), label: 'RISE' },
   { key: 'models', href: link('models'), label: 'Models & Providers' },
