@@ -1,0 +1,2 @@
+$ bash lmeval_eval/run_lmeval.sh --service CIT --model gemma-4-31b  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
+$ uv run python lmeval_eval/collect_lmeval_results.py  [cwd=/Users/jmeloflorez-local/Research/UCSB-AI-Benchmarks]
