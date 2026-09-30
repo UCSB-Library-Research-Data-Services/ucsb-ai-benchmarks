@@ -7,6 +7,7 @@ import { RunDetailPanel } from './RunDetailPanel';
 
 interface LeaderboardProps {
   data: LeaderboardData;
+  deprecatedModels?: string[];
 }
 
 type Measurement = 'avgTTFT' | 'avgITL' | 'avgGenTPS' | 'avgTotalTPS';
@@ -213,15 +214,29 @@ function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
   );
 }
 
-export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
+export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedModels }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
   const [onlyLatest, setOnlyLatest] = useState(false);
+  const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: null, dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const deprecatedSet = useMemo(
+    () => new Set(deprecatedModels ?? []),
+    [deprecatedModels]
+  );
+
+  const isDeprecated = (row: AggregatedMetrics) => {
+    // row.model = "Provider model_name", row.provider = "Provider"
+    const rawModel = row.model.startsWith(row.provider + ' ')
+      ? row.model.slice(row.provider.length + 1)
+      : row.model;
+    return deprecatedSet.has(`${row.provider}|${rawModel}`);
+  };
 
   const toggleDetail = (provider: string, model: string, col: string | null) => {
     const key = `${provider}|${model}|${col ?? 'overall'}`;
@@ -248,6 +263,9 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
     let rows = isAllMode
       ? data.rows
       : data.rows.filter(row => selectedProviders!.has(row.provider));
+    if (!showDeprecated && deprecatedSet.size > 0) {
+      rows = rows.filter(row => !isDeprecated(row));
+    }
     if (onlyLatest) {
       const latestMap = new Map<string, AggregatedMetrics>();
       for (const row of rows) {
@@ -259,7 +277,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
       rows = Array.from(latestMap.values());
     }
     return rows;
-  }, [data.rows, selectedProviders, isAllMode, onlyLatest]);
+  }, [data.rows, selectedProviders, isAllMode, onlyLatest, showDeprecated, deprecatedSet]);
 
   // Compute per-column min/max for performance bars
   const colStats = useMemo(() => {
@@ -575,6 +593,44 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
             Most recent only
           </label>
         </div>
+
+        {/* Show deprecated toggle */}
+        {deprecatedSet.size > 0 && (
+          <div style={{ flexShrink: 0 }}>
+            <div
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#64748b',
+                marginBottom: '0.5rem',
+              }}
+            >
+              History
+            </div>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: '#475569',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showDeprecated}
+                onChange={e => setShowDeprecated(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
+              />
+              Show deprecated
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Results count */}

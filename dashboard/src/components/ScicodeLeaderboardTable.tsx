@@ -7,6 +7,7 @@ import { RunDetailPanel } from './RunDetailPanel';
 
 interface ScicodeProps {
   data: ScicodeLeaderboardData;
+  deprecatedModels?: string[];
 }
 
 type Measurement =
@@ -318,9 +319,10 @@ const splitHints: Record<SplitFilter, string> = {
 const TIME_TOOLTIP =
   'Average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.';
 
-export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
+export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [splitFilter, setSplitFilter] = useState<SplitFilter>('all');
+  const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<{ key: Measurement; dir: SortDir }>({
     key: 'mainResolveRate',
     dir: 'desc',
@@ -329,6 +331,11 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const deprecatedSet = useMemo(
+    () => new Set(deprecatedModels ?? []),
+    [deprecatedModels]
+  );
 
   const toggleDetail = (provider: string, model: string, split: string) => {
     const key = `${provider}|${model}|${split}`;
@@ -350,6 +357,9 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
 
   const visibleRows = useMemo(() => {
     let rows = data.rows;
+    if (!showDeprecated && deprecatedSet.size > 0) {
+      rows = rows.filter(row => !deprecatedSet.has(`${row.provider}|${row.model}`));
+    }
     if (splitFilter !== 'all') {
       rows = rows.filter(row => row.split === splitFilter);
     } else {
@@ -372,7 +382,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
       rows = rows.filter(row => selectedProviders!.has(row.provider));
     }
     return rows;
-  }, [data.rows, splitFilter, selectedProviders, isAllMode]);
+  }, [data.rows, splitFilter, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
 
   const totalVisiblePairs = useMemo(() => {
     const source =
@@ -725,6 +735,43 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data }) => {
             ))}
           </select>
         </div>
+        {/* Show deprecated toggle */}
+        {deprecatedSet.size > 0 && (
+          <div style={{ flexShrink: 0 }}>
+            <div
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#64748b',
+                marginBottom: '0.5rem',
+              }}
+            >
+              History
+            </div>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: '#475569',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showDeprecated}
+                onChange={e => setShowDeprecated(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
+              />
+              Show deprecated
+            </label>
+          </div>
+        )}
       </div>
 
       <div

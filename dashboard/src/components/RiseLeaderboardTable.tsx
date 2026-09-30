@@ -7,6 +7,7 @@ import { RunDetailPanel } from './RunDetailPanel';
 
 interface RiseLeaderboardProps {
   data: RiseLeaderboardData;
+  deprecatedModels?: string[];
 }
 
 type VisionFilter = 'all' | 'vision' | 'text';
@@ -244,14 +245,20 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   );
 }
 
-export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) => {
+export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [visionFilter, setVisionFilter] = useState<VisionFilter>('all');
+  const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const isAllMode = selectedProviders === null;
+
+  const deprecatedSet = useMemo(
+    () => new Set(deprecatedModels ?? []),
+    [deprecatedModels]
+  );
 
   const toggleDetail = (rowKey: string, benchmark: string) => {
     const key = `${rowKey}|${benchmark}`;
@@ -286,13 +293,16 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
       isAllMode
         ? data.rows
         : data.rows.filter(row => selectedProviders!.has(row.service));
+    if (!showDeprecated && deprecatedSet.size > 0) {
+      rows = rows.filter(row => !deprecatedSet.has(`${row.service}|${row.model}`));
+    }
     if (visionFilter === 'vision') {
       rows = rows.filter(row => row.vision === true);
     } else if (visionFilter === 'text') {
       rows = rows.filter(row => row.vision === false);
     }
     return rows;
-  }, [data.rows, selectedProviders, isAllMode, visionFilter]);
+  }, [data.rows, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
 
   const sortedRows = useMemo(() => {
     const scoreOf = (row: (typeof filteredRows)[number], col: string): number | null => {
@@ -568,6 +578,44 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data }) =
             })}
           </div>
         </div>
+
+        {/* Show deprecated toggle */}
+        {deprecatedSet.size > 0 && (
+          <div style={{ flexShrink: 0 }}>
+            <div
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#64748b',
+                marginBottom: '0.5rem',
+              }}
+            >
+              History
+            </div>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: '#475569',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showDeprecated}
+                onChange={e => setShowDeprecated(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
+              />
+              Show deprecated
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Results count */}

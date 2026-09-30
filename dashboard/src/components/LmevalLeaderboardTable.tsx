@@ -5,6 +5,7 @@ import { withBase } from '../lib/paths';
 
 interface LmevalProps {
   data: LmevalLeaderboardData;
+  deprecatedModels?: string[];
 }
 
 type Metric =
@@ -213,8 +214,9 @@ const allMetrics: Metric[] = [
   'truthfulqa_mc2',
 ];
 
-export const LmevalLeaderboardTable: React.FC<LmevalProps> = ({ data }) => {
+export const LmevalLeaderboardTable: React.FC<LmevalProps> = ({ data, deprecatedModels }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
+  const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<{ key: Metric; dir: SortDir }>({
     key: 'composite_score',
     dir: 'desc',
@@ -222,6 +224,11 @@ export const LmevalLeaderboardTable: React.FC<LmevalProps> = ({ data }) => {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const isAllMode = selectedProviders === null;
+
+  const deprecatedSet = useMemo(
+    () => new Set(deprecatedModels ?? []),
+    [deprecatedModels]
+  );
 
   const handleColSort = (key: Metric) => {
     setSort(prev => {
@@ -237,8 +244,11 @@ export const LmevalLeaderboardTable: React.FC<LmevalProps> = ({ data }) => {
     if (!isAllMode) {
       rows = rows.filter(row => selectedProviders!.has(row.provider));
     }
+    if (!showDeprecated && deprecatedSet.size > 0) {
+      rows = rows.filter(row => !deprecatedSet.has(`${row.provider}|${row.model}`));
+    }
     return rows;
-  }, [data.rows, selectedProviders, isAllMode]);
+  }, [data.rows, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
 
   const colStats = useMemo(() => {
     const bounds = (f: (r: LmevalRow) => number | null) => {
@@ -482,6 +492,43 @@ export const LmevalLeaderboardTable: React.FC<LmevalProps> = ({ data }) => {
             })}
           </div>
         </div>
+        {/* Show deprecated toggle */}
+        {deprecatedSet.size > 0 && (
+          <div style={{ flexShrink: 0 }}>
+            <div
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#64748b',
+                marginBottom: '0.5rem',
+              }}
+            >
+              History
+            </div>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: '#475569',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showDeprecated}
+                onChange={e => setShowDeprecated(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
+              />
+              Show deprecated
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Status bar */}

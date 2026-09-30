@@ -127,6 +127,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
   const [query, setQuery] = useState('');
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [highlighted, setHighlighted] = useState<string | null>(null);
+  const [showDeprecated, setShowDeprecated] = useState(false);
 
   const canonicalIds = useMemo(() => providers.map(p => p.id).sort(), [providers]);
   const isAllMode = selectedProviders === null;
@@ -160,14 +161,17 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
     }
   };
 
+  const deprecatedCount = useMemo(() => models.filter(m => m.deprecated).length, [models]);
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return models.filter(m => {
+      if (!showDeprecated && m.deprecated) return false;
       if (!isAllMode && !selectedProviders!.has(m.service)) return false;
       if (q && !m.model.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [models, query, selectedProviders, isAllMode]);
+  }, [models, query, selectedProviders, isAllMode, showDeprecated]);
 
   const grouped = useMemo(() => {
     const order = new Map(providers.map((p, i) => [p.id, i]));
@@ -289,6 +293,30 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
             })}
           </div>
         </div>
+        {deprecatedCount > 0 && (
+          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'flex-end' }}>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 500,
+                color: '#475569',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showDeprecated}
+                onChange={e => setShowDeprecated(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: ACCENT, cursor: 'pointer' }}
+              />
+              Show deprecated ({deprecatedCount})
+            </label>
+          </div>
+        )}
       </div>
 
       <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1.5rem' }}>
@@ -343,6 +371,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                       padding: '1rem 1.1rem',
                       boxShadow: isHi ? '0 0 0 4px rgba(37,99,235,0.15)' : '0 1px 3px rgba(0,0,0,0.06)',
                       transition: 'box-shadow 0.3s, border-color 0.3s',
+                      opacity: m.deprecated ? 0.7 : 1,
                     }}
                   >
                     <div
@@ -358,6 +387,26 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                       {m.model}
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.6rem' }}>
+                      {m.deprecated && (
+                        <span
+                          title="This model is deprecated — no longer actively benchmarked"
+                          style={{
+                            display: 'inline-block',
+                            padding: '0.1rem 0.45rem',
+                            borderRadius: '4px',
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                            background: '#fef2f2',
+                            color: '#991b1b',
+                            border: '1px solid #fca5a5',
+                            flexShrink: 0,
+                          }}
+                        >
+                          deprecated
+                        </span>
+                      )}
                       <VisionBadge vision={m.vision} status={m.vision_status} />
                       {m.owned_by && <OwnerBadge ownedBy={m.owned_by} />}
                       {m.max_output_tokens !== null && m.max_output_tokens !== undefined && (
