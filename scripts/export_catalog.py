@@ -169,7 +169,8 @@ def main():
     provider_rows = []
 
     for name, cfg in services.items():
-        roster = list(cfg.get("models") or [])
+        excluded_set = set(cfg.get("excluded_models") or [])
+        roster = [m for m in (cfg.get("models") or []) if m not in excluded_set]
         roster_set = set(roster)
         deprecated_set = set(cfg.get("deprecated_models") or [])
         api_models = None
@@ -203,7 +204,7 @@ def main():
         for m in [entry["id"] for entry in api_models] + roster + deprecated_list \
                 + sorted(perf_by_svc.get(name, set())) \
                 + sorted(scicode_by_svc.get(name, set())) + sorted(rise_by_svc.get(name, set())):
-            if m not in union:
+            if m not in union and m not in excluded_set:
                 union.append(m)
 
         for model in sorted(union):

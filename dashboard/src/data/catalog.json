@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T21:03:05+00:00",
+  "generated_at": "2026-09-30T21:42:11+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -10,7 +10,7 @@
       "model_types": "",
       "access": "",
       "status": "active",
-      "model_count": 11,
+      "model_count": 8,
       "benchmarked_count": 8
     },
     {
@@ -22,7 +22,7 @@
       "model_types": "",
       "access": "",
       "status": "active",
-      "model_count": 17,
+      "model_count": 15,
       "benchmarked_count": 11
     },
     {
@@ -377,24 +377,6 @@
     },
     {
       "service": "CIT",
-      "model": "bge-reranker",
-      "slug": "cit--bge-reranker",
-      "in_api": true,
-      "in_roster": false,
-      "deprecated": false,
-      "owned_by": "openai",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
-        "scicode": false,
-        "rise": false
-      }
-    },
-    {
-      "service": "CIT",
       "model": "gemma-4-26b-a4b-it",
       "slug": "cit--gemma-4-26b-a4b-it",
       "in_api": true,
@@ -409,24 +391,6 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
-    },
-    {
-      "service": "CIT",
-      "model": "gemma-4-26b-a4b-it-qat",
-      "slug": "cit--gemma-4-26b-a4b-it-qat",
-      "in_api": true,
-      "in_roster": false,
-      "deprecated": false,
-      "owned_by": "openai",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
-        "scicode": false,
-        "rise": false
       }
     },
     {
@@ -521,24 +485,6 @@
     },
     {
       "service": "CIT",
-      "model": "qwen3-embedding-8b",
-      "slug": "cit--qwen3-embedding-8b",
-      "in_api": true,
-      "in_roster": false,
-      "deprecated": false,
-      "owned_by": "openai",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
-        "scicode": false,
-        "rise": false
-      }
-    },
-    {
-      "service": "CIT",
       "model": "qwen3.6-35b-a3b",
       "slug": "cit--qwen3.6-35b-a3b",
       "in_api": false,
@@ -571,24 +517,6 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
-    },
-    {
-      "service": "GRIT",
-      "model": "all-the-things",
-      "slug": "grit--all-the-things",
-      "in_api": true,
-      "in_roster": false,
-      "deprecated": false,
-      "owned_by": "arena",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
-        "scicode": false,
-        "rise": false
       }
     },
     {
@@ -633,24 +561,6 @@
       "slug": "grit--gemma4_31b",
       "in_api": true,
       "in_roster": true,
-      "deprecated": false,
-      "owned_by": "ollama",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
-        "scicode": false,
-        "rise": false
-      }
-    },
-    {
-      "service": "GRIT",
-      "model": "glm-ocr:latest",
-      "slug": "grit--glm-ocr_latest",
-      "in_api": true,
-      "in_roster": false,
       "deprecated": false,
       "owned_by": "ollama",
       "vision": null,
