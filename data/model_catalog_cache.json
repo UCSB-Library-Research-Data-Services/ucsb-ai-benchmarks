@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T01:08:05+00:00",
+  "generated_at": "2026-09-30T18:57:57+00:00",
   "description": "Last-good GET /v1/models responses per service (entries: {id, owned_by}). Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
@@ -16,15 +16,15 @@
         "owned_by": "openai"
       },
       {
-        "id": "Qwen3-Coder-Next",
-        "owned_by": "openai"
-      },
-      {
         "id": "qwen3.8-27b",
         "owned_by": "openai"
       },
       {
         "id": "gemma-4-26b-a4b-it",
+        "owned_by": "openai"
+      },
+      {
+        "id": "gemma-4-26b-a4b-it-qat",
         "owned_by": "openai"
       },
       {
@@ -34,15 +34,19 @@
     ],
     "GRIT": [
       {
+        "id": "gpt-oss:120b",
+        "owned_by": "ollama"
+      },
+      {
+        "id": "qwen3.8:latest",
+        "owned_by": "ollama"
+      },
+      {
         "id": "glm-ocr:latest",
         "owned_by": "ollama"
       },
       {
         "id": "gemma4:31b",
-        "owned_by": "ollama"
-      },
-      {
-        "id": "qwen3.5:latest",
         "owned_by": "ollama"
       },
       {
@@ -54,19 +58,11 @@
         "owned_by": "ollama"
       },
       {
-        "id": "qwen3-coder:latest",
-        "owned_by": "ollama"
-      },
-      {
         "id": "llama3.1:8b",
         "owned_by": "ollama"
       },
       {
         "id": "phi4:latest",
-        "owned_by": "ollama"
-      },
-      {
-        "id": "qwen3:latest",
         "owned_by": "ollama"
       },
       {
@@ -78,15 +74,7 @@
         "owned_by": "ollama"
       },
       {
-        "id": "gemma3:latest",
-        "owned_by": "ollama"
-      },
-      {
         "id": "gpt-oss:20b",
-        "owned_by": "ollama"
-      },
-      {
-        "id": "deepseek-r1:latest",
         "owned_by": "ollama"
       },
       {
@@ -166,6 +154,60 @@
       {
         "id": "gpt-4o",
         "owned_by": "openai-alias"
+      }
+    ],
+    "NRP": [
+      {
+        "id": "gpt-oss",
+        "owned_by": "SDSC"
+      },
+      {
+        "id": "gemma",
+        "owned_by": "SDSC"
+      },
+      {
+        "id": "kimi",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "minimax-m2",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "gemma-small",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "gemma4-small",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "gemma4-12b",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "glm-5",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-embedding",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-small",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "gemma-small-e4b",
+        "owned_by": "MassedCompute-mfsada"
       }
     ]
   }
