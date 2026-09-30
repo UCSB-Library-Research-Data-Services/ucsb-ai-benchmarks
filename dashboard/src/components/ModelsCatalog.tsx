@@ -434,7 +434,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                       {m.benchmarked.performance && (
                         <a href={withBase('leaderboard')} style={{ fontSize: '0.75rem', fontWeight: 600, color: ACCENT, textDecoration: 'none' }}>
-                          Performance →
+                          Operational QoS →
                         </a>
                       )}
                       {m.benchmarked.scicode && (
