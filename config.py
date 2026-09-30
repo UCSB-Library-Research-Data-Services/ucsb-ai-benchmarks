@@ -18,7 +18,12 @@ SERVICES = {
             "qwen3.6-35b-a3b",
             "qwen3.8-27b",
             "gemma-4-26b-a4b-it"
-        ]
+        ],
+        "excluded_models": [
+            "bge-reranker",
+            "gemma-4-26b-a4b-it-qat",
+            "qwen3-embedding-8b"
+            ],
         },
     "GRIT": {
         "url": "https://llm.grit.ucsb.edu/api/v1",
@@ -41,7 +46,11 @@ SERVICES = {
             'qwen3:latest',
             'deepseek-r1:latest',
             'gemma3:latest',
-        ]
+        ],
+        "excluded_models": [
+            "all-the-things",
+            "glm-ocr:latest"
+        ],
         },
     "AICommons":{
         "url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
