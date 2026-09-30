@@ -4,7 +4,19 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { parseRiseResults, aggregateRiseData, getRiseDataPath } from '../lib/rise';
 import type { RiseLeaderboardData } from '../lib/rise';
+import { deprecatedModelKeys } from '../lib/catalog';
+import type { Catalog } from '../lib/catalog';
+import * as fs from 'fs';
 import '../styles/global.css';
+
+let deprecatedModels: string[] = [];
+try {
+  const catalogPath = process.cwd() + '/src/data/catalog.json';
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8')) as Catalog;
+  deprecatedModels = [...deprecatedModelKeys(catalog.models)];
+} catch (e) {
+  console.error('Error loading catalog for deprecated models:', e);
+}
 
 // Load data at build time
 let riseData: RiseLeaderboardData | null = null;
@@ -98,7 +110,7 @@ try {
       </div>
     ) : riseData ? (
       <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
-        <RiseLeaderboardTable client:load data={riseData} />
+        <RiseLeaderboardTable client:load data={riseData} deprecatedModels={deprecatedModels} />
       </div>
     ) : (
       <div class="error-container">

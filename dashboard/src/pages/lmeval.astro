@@ -4,7 +4,19 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { parseLmevalResults, aggregateLmevalData } from '../lib/lmeval';
 import type { LmevalLeaderboardData } from '../lib/lmeval';
+import { deprecatedModelKeys } from '../lib/catalog';
+import type { Catalog } from '../lib/catalog';
+import * as fs from 'fs';
 import '../styles/global.css';
+
+let deprecatedModels: string[] = [];
+try {
+  const catalogPath = process.cwd() + '/src/data/catalog.json';
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8')) as Catalog;
+  deprecatedModels = [...deprecatedModelKeys(catalog.models)];
+} catch (e) {
+  console.error('Error loading catalog for deprecated models:', e);
+}
 
 let lmevalData: LmevalLeaderboardData | null = null;
 let error: string | null = null;
@@ -70,7 +82,7 @@ try {
       </div>
     ) : lmevalData ? (
       <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
-        <LmevalLeaderboardTable client:load data={lmevalData} />
+        <LmevalLeaderboardTable client:load data={lmevalData} deprecatedModels={deprecatedModels} />
       </div>
     ) : (
       <div class="error-container">
