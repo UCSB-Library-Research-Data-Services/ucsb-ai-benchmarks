@@ -10,6 +10,7 @@ export interface CatalogModel {
   slug: string;
   in_api: boolean;
   in_roster: boolean;
+  deprecated: boolean;
   owned_by: string | null;
   vision: boolean | null;
   vision_status: string | null;
@@ -58,4 +59,18 @@ export function modelAnchor(service: string, model: string): string {
 
 export function providerAnchor(id: string): string {
   return `provider-${id.toLowerCase()}`;
+}
+
+/**
+ * Build a Set of "service|model" keys for every deprecated model in the catalog.
+ * Leaderboard components use this to hide deprecated rows by default.
+ */
+export function deprecatedModelKeys(models: CatalogModel[]): Set<string> {
+  const keys = new Set<string>();
+  for (const m of models) {
+    if (m.deprecated) {
+      keys.add(`${m.service}|${m.model}`);
+    }
+  }
+  return keys;
 }
