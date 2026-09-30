@@ -171,6 +171,7 @@ def main():
     for name, cfg in services.items():
         roster = list(cfg.get("models") or [])
         roster_set = set(roster)
+        deprecated_set = set(cfg.get("deprecated_models") or [])
         api_models = None
         source = "roster"
 
@@ -197,8 +198,10 @@ def main():
 
         api_set = {entry["id"] for entry in api_models}
         owned_by = {entry["id"]: entry.get("owned_by") for entry in api_models if entry.get("owned_by")}
+        deprecated_list = list(cfg.get("deprecated_models") or [])
         union = []
-        for m in [entry["id"] for entry in api_models] + roster + sorted(perf_by_svc.get(name, set())) \
+        for m in [entry["id"] for entry in api_models] + roster + deprecated_list \
+                + sorted(perf_by_svc.get(name, set())) \
                 + sorted(scicode_by_svc.get(name, set())) + sorted(rise_by_svc.get(name, set())):
             if m not in union:
                 union.append(m)
@@ -213,6 +216,7 @@ def main():
                 "slug": model_slug(name, model),
                 "in_api": model in api_set,
                 "in_roster": model in roster_set,
+                "deprecated": model in deprecated_set,
                 "owned_by": owned_by.get(model),
                 "vision": vision,
                 "vision_status": cap.get("status") if cap else None,
