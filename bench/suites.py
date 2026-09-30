@@ -5,13 +5,15 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-SUITES = ("performance", "rise", "scicode")
+SUITES = ("performance", "rise", "scicode", "lmeval")
 
 PERF_RUNNER = ["uv", "run", "python", "scripts/perfBench.py"]
 RISE_RUNNER = ["uv", "run", "rise_eval/run_rise_ucsb.py"]
 SCICODE_RUNNER = ["bash", "scicode_eval/run_scicode_evals.sh"]
 RISE_COLLECT_ARGV = ["uv", "run", "rise_eval/collect_rise_results.py"]
 SCICODE_COLLECT_ARGV = ["uv", "run", "python", "scicode_eval/collect_scicode_results.py"]
+LMEVAL_RUNNER = ["bash", "lmeval_eval/run_lmeval.sh"]
+LMEVAL_COLLECT_ARGV = ["uv", "run", "python", "lmeval_eval/collect_lmeval_results.py"]
 SCICODE_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_scicode_details.py"]
 PERF_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_performance_details.py"]
 PROBE_ARGV = ["uv", "run", "python", "scripts/check_model_vision.py"]
@@ -22,6 +24,7 @@ DASHBOARD_DIR = REPO_ROOT / "dashboard"
 PERF_RESULTS = REPO_ROOT / "data" / "performance_results.jsonl"
 RISE_RESULTS = REPO_ROOT / "data" / "rise_results.jsonl"
 SCICODE_RESULTS = REPO_ROOT / "data" / "scicode_results.jsonl"
+LMEVAL_RESULTS = REPO_ROOT / "data" / "lmeval_results.jsonl"
 
 
 def load_roster():
@@ -146,6 +149,17 @@ def build_run_argv(suite, service=None, model=None, smoke=False, passthrough=(),
         if model and not _has_flag(passthrough, "--model"):
             argv += ["--model", model]
         return argv
+    if suite == "lmeval":
+        argv = list(LMEVAL_RUNNER)
+        if smoke:
+            if not _has_flag(passthrough, "--limit"):
+                argv += ["--limit", "10"]
+        argv += passthrough
+        if service and not _has_flag(passthrough, "--service"):
+            argv += ["--service", service]
+        if model and not _has_flag(passthrough, "--model"):
+            argv += ["--model", model]
+        return argv
     raise ValueError("unknown suite %r" % (suite,))
 
 
@@ -157,6 +171,8 @@ def build_collect_argv(suite):
         return list(RISE_COLLECT_ARGV)
     if suite == "scicode":
         return list(SCICODE_COLLECT_ARGV)
+    if suite == "lmeval":
+        return list(LMEVAL_COLLECT_ARGV)
     raise ValueError("unknown suite %r" % (suite,))
 
 
