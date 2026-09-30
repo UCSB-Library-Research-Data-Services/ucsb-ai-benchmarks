@@ -357,7 +357,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 margin: 0,
               }}
             >
-              Performance Leaderboard
+              Operational QoS
             </h1>
             <p
               style={{
@@ -367,7 +367,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data }) => {
                 lineHeight: 1.5,
               }}
             >
-              Inference performance allows users to evaluate how long a model takes to process average prompts from a particular inference provider.{' '}
+              These metrics characterize the end-user experience of each provider's infrastructure — time to first token, generation throughput, and inter-token latency — not model capability.{' '}
               {isDescExpanded ? (
                 <>
                   <br /><br />
