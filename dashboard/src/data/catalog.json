@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T01:08:05+00:00",
+  "generated_at": "2026-09-30T18:57:57+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -10,7 +10,7 @@
       "model_types": "",
       "access": "",
       "status": "active",
-      "model_count": 10,
+      "model_count": 11,
       "benchmarked_count": 8
     },
     {
@@ -22,7 +22,7 @@
       "model_types": "",
       "access": "",
       "status": "active",
-      "model_count": 15,
+      "model_count": 17,
       "benchmarked_count": 11
     },
     {
@@ -36,6 +36,18 @@
       "status": "active",
       "model_count": 18,
       "benchmarked_count": 18
+    },
+    {
+      "id": "NRP",
+      "name": "NRP",
+      "description": "",
+      "website": "",
+      "api_url": "https://ellm.nrp-nautilus.io/v1",
+      "model_types": "",
+      "access": "",
+      "status": "active",
+      "model_count": 13,
+      "benchmarked_count": 11
     }
   ],
   "models": [
@@ -86,7 +98,7 @@
       "max_output_tokens_source": "gateway HTTP 400: 'The maximum tokens you requested exceeds the model limit of 10000' (RISE run 2026-09-14, logs/20260914-184731.log)",
       "benchmarked": {
         "performance": true,
-        "scicode": false,
+        "scicode": true,
         "rise": true
       }
     },
@@ -381,6 +393,23 @@
     },
     {
       "service": "CIT",
+      "model": "gemma-4-26b-a4b-it-qat",
+      "slug": "cit--gemma-4-26b-a4b-it-qat",
+      "in_api": true,
+      "in_roster": false,
+      "owned_by": "openai",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "CIT",
       "model": "gemma-4-31b",
       "slug": "cit--gemma-4-31b",
       "in_api": true,
@@ -451,9 +480,9 @@
       "service": "CIT",
       "model": "Qwen3-Coder-Next",
       "slug": "cit--qwen3-coder-next",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "openai",
+      "owned_by": null,
       "vision": false,
       "vision_status": "rejects",
       "max_output_tokens": null,
@@ -511,7 +540,7 @@
       "max_output_tokens_source": null,
       "benchmarked": {
         "performance": true,
-        "scicode": false,
+        "scicode": true,
         "rise": true
       }
     },
@@ -536,9 +565,9 @@
       "service": "GRIT",
       "model": "deepseek-r1:latest",
       "slug": "grit--deepseek-r1_latest",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "ollama",
+      "owned_by": null,
       "vision": false,
       "vision_status": "rejects",
       "max_output_tokens": null,
@@ -553,9 +582,9 @@
       "service": "GRIT",
       "model": "gemma3:latest",
       "slug": "grit--gemma3_latest",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "ollama",
+      "owned_by": null,
       "vision": true,
       "vision_status": "sees",
       "max_output_tokens": null,
@@ -587,6 +616,23 @@
       "service": "GRIT",
       "model": "glm-ocr:latest",
       "slug": "grit--glm-ocr_latest",
+      "in_api": true,
+      "in_roster": false,
+      "owned_by": "ollama",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
+      "model": "gpt-oss:120b",
+      "slug": "grit--gpt-oss_120b",
       "in_api": true,
       "in_roster": false,
       "owned_by": "ollama",
@@ -723,9 +769,9 @@
       "service": "GRIT",
       "model": "qwen3-coder:latest",
       "slug": "grit--qwen3-coder_latest",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "ollama",
+      "owned_by": null,
       "vision": false,
       "vision_status": "rejects",
       "max_output_tokens": null,
@@ -740,9 +786,9 @@
       "service": "GRIT",
       "model": "qwen3.5:latest",
       "slug": "grit--qwen3.5_latest",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "ollama",
+      "owned_by": null,
       "vision": true,
       "vision_status": "sees",
       "max_output_tokens": null,
@@ -755,11 +801,28 @@
     },
     {
       "service": "GRIT",
+      "model": "qwen3.8:latest",
+      "slug": "grit--qwen3.8_latest",
+      "in_api": true,
+      "in_roster": false,
+      "owned_by": "ollama",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "GRIT",
       "model": "qwen3:latest",
       "slug": "grit--qwen3_latest",
-      "in_api": true,
+      "in_api": false,
       "in_roster": true,
-      "owned_by": "ollama",
+      "owned_by": null,
       "vision": false,
       "vision_status": "rejects",
       "max_output_tokens": null,
@@ -768,6 +831,227 @@
         "performance": true,
         "scicode": true,
         "rise": true
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "deepseek-v4-flash",
+      "slug": "nrp--deepseek-v4-flash",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gemma",
+      "slug": "nrp--gemma",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "SDSC",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gemma-small",
+      "slug": "nrp--gemma-small",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gemma-small-e4b",
+      "slug": "nrp--gemma-small-e4b",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "MassedCompute-mfsada",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gemma4-12b",
+      "slug": "nrp--gemma4-12b",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gemma4-small",
+      "slug": "nrp--gemma4-small",
+      "in_api": true,
+      "in_roster": false,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "glm-5",
+      "slug": "nrp--glm-5",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "gpt-oss",
+      "slug": "nrp--gpt-oss",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "SDSC",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "kimi",
+      "slug": "nrp--kimi",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "minimax-m2",
+      "slug": "nrp--minimax-m2",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3",
+      "slug": "nrp--qwen3",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3-embedding",
+      "slug": "nrp--qwen3-embedding",
+      "in_api": true,
+      "in_roster": false,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      }
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3-small",
+      "slug": "nrp--qwen3-small",
+      "in_api": true,
+      "in_roster": true,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": true,
+        "scicode": false,
+        "rise": false
       }
     }
   ]
