@@ -1,0 +1,83 @@
+---
+import { LmevalLeaderboardTable } from '../components/LmevalLeaderboardTable';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { parseLmevalResults, aggregateLmevalData } from '../lib/lmeval';
+import type { LmevalLeaderboardData } from '../lib/lmeval';
+import '../styles/global.css';
+
+let lmevalData: LmevalLeaderboardData | null = null;
+let error: string | null = null;
+
+try {
+  const dashboardDir = process.cwd();
+  const projectRoot = dashboardDir.replace('/dashboard', '');
+  const dataPath = projectRoot + '/data/lmeval_results.jsonl';
+
+  console.log('Loading from:', dataPath);
+
+  const results = parseLmevalResults(dataPath);
+  lmevalData = aggregateLmevalData(results);
+} catch (e) {
+  error = `Error loading lm-eval leaderboard: ${e instanceof Error ? e.message : 'Unknown error'}`;
+  console.error(error, e);
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>General Capability (lm-eval)</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f1f5f9;
+        color: #1e293b;
+      }
+
+      .error-container {
+        background-color: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 2rem auto;
+        max-width: 80rem;
+      }
+
+      .error-container h2 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <SiteNav active="lmeval" />
+    {error ? (
+      <div class="error-container">
+        <h2>Error Loading lm-eval Leaderboard</h2>
+        <p>{error}</p>
+      </div>
+    ) : lmevalData ? (
+      <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
+        <LmevalLeaderboardTable client:load data={lmevalData} />
+      </div>
+    ) : (
+      <div class="error-container">
+        <h2>Loading lm-eval Leaderboard...</h2>
+        <p>Please wait while we fetch the lm-eval results.</p>
+      </div>
+    )}
+    <SiteFooter />
+  </body>
+</html>
