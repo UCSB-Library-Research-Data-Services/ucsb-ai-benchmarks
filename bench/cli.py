@@ -26,7 +26,7 @@ def _build_parser():
     p_run.add_argument("--service", default=None, help="limit to one service in config.py (case-insensitive)")
     p_run.add_argument("--model", default=None, help="exact config.py name or unique substring (case-insensitive)")
     p_run.add_argument("--no-collect", action="store_true", help="skip auto-collect after the run")
-    p_run.add_argument("--smoke", action="store_true", help="cheap check: perf --task 3, rise --limit-objects 2 --text-only, scicode --split validation --limit 2")
+    p_run.add_argument("--smoke", action="store_true", help="cheap check: perf --task 3, rise --limit-objects 2 --text-only, scicode --split validation --limit 2, lmeval --limit 10")
     p_run.add_argument("--dry-run", action="store_true", help="print resolved argv without executing")
 
     p_collect = sub.add_parser("collect", help="collect results into data/*.jsonl (idempotent rewrites)")
@@ -162,7 +162,7 @@ def _cmd_list(args):
             return 2
     cap_table, _ = suites.load_capabilities()
     counts = {}
-    for path in (suites.PERF_RESULTS, suites.RISE_RESULTS, suites.SCICODE_RESULTS):
+    for path in (suites.PERF_RESULTS, suites.RISE_RESULTS, suites.SCICODE_RESULTS, suites.LMEVAL_RESULTS):
         for key, n in suites.count_jsonl(path).items():
             counts[key] = counts.get(key, 0) + n
     print("%-10s %-28s %-8s %5s" % ("SERVICE", "MODEL", "VISION", "ROWS"))
