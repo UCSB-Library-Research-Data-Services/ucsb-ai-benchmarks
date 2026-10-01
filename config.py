@@ -94,7 +94,12 @@ SERVICES = {
             "minimax-m2",
             "deepseek-v4-flash"
         ],
-        "deprecated_models": []
+        "deprecated_models": [
+            "gemma4-small"
+        ],
+        "excluded_models": [
+            "qwen3-embedding"
+        ]
         }
     }
 
