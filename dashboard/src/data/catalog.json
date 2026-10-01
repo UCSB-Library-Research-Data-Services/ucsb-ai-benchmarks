@@ -1,14 +1,19 @@
 {
-  "generated_at": "2026-09-30T21:42:11+00:00",
+  "generated_at": "2026-10-01T21:12:34+00:00",
   "providers": [
     {
       "id": "CIT",
       "name": "CIT",
-      "description": "",
-      "website": "",
+      "description": "CIT provides access to open-weight LLMs.",
+      "website": "TBD",
       "api_url": "https://api.ai.college.ucsb.edu/v1",
-      "model_types": "",
-      "access": "",
+      "model_types": [
+        "Open Weight"
+      ],
+      "access": [
+        "Researchers",
+        "Faculty"
+      ],
       "status": "active",
       "model_count": 8,
       "benchmarked_count": 8
@@ -16,11 +21,16 @@
     {
       "id": "GRIT",
       "name": "GRIT",
-      "description": "",
-      "website": "",
+      "description": "GRIT is a centrally managed, GPU-accelerated AI service that provides researchers and staff with secure, high-performance access to large language models.",
+      "website": "https://bookstack.grit.ucsb.edu/books/hpc-usage/page/grit-llm",
       "api_url": "https://llm.grit.ucsb.edu/api/v1",
-      "model_types": "",
-      "access": "",
+      "model_types": [
+        "Open Weight"
+      ],
+      "access": [
+        "Researchers",
+        "Faculty"
+      ],
       "status": "active",
       "model_count": 15,
       "benchmarked_count": 11
@@ -28,11 +38,18 @@
     {
       "id": "AICommons",
       "name": "AICommons",
-      "description": "",
-      "website": "",
+      "description": "AICommons is a university-approved environment where students, faculty, and staff can explore frontier AI models.",
+      "website": "https://aicommons.ucsb.edu/home",
       "api_url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
-      "model_types": "",
-      "access": "",
+      "model_types": [
+        "Open Weight",
+        "Proprietary"
+      ],
+      "access": [
+        "Researchers",
+        "Faculty",
+        "Students"
+      ],
       "status": "active",
       "model_count": 18,
       "benchmarked_count": 18
@@ -40,11 +57,16 @@
     {
       "id": "NRP",
       "name": "NRP",
-      "description": "",
-      "website": "",
+      "description": "NRP provides researchers and faculty with access to LLMs through the NRP Nautilus platform.",
+      "website": "https://nrp.ai/llms/",
       "api_url": "https://ellm.nrp-nautilus.io/v1",
-      "model_types": "",
-      "access": "",
+      "model_types": [
+        "Open Weight"
+      ],
+      "access": [
+        "Researchers",
+        "Faculty"
+      ],
       "status": "active",
       "model_count": 13,
       "benchmarked_count": 11

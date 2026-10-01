@@ -1,26 +1,38 @@
 {
   "CIT": {
     "name": "CIT",
-    "description": "",
-    "website": "",
-    "model_types": "",
-    "access": "",
+    "description": "CIT provides access to open-weight LLMs.",
+    "website": "TBD",
+    "model_types": ["Open Weight"],
+    "access": ["Researchers", "Faculty"],
+    "WebUI": "https://chat.ai.college.ucsb.edu/",
     "status": "active"
   },
   "GRIT": {
     "name": "GRIT",
-    "description": "",
-    "website": "",
-    "model_types": "",
-    "access": "",
+    "description": "GRIT is a centrally managed, GPU-accelerated AI service that provides researchers and staff with secure, high-performance access to large language models.",
+    "website": "https://bookstack.grit.ucsb.edu/books/hpc-usage/page/grit-llm",
+    "model_types": ["Open Weight"],
+    "access": ["Researchers", "Faculty"],
+    "WebUI": "https://llm.grit.ucsb.edu/",
     "status": "active"
   },
   "AICommons": {
     "name": "AICommons",
-    "description": "",
-    "website": "",
-    "model_types": "",
-    "access": "",
+    "description": "AICommons is a university-approved environment where students, faculty, and staff can explore frontier AI models.",
+    "website": "https://aicommons.ucsb.edu/home",
+    "model_types": ["Open Weight", "Proprietary"],
+    "access": ["Researchers", "Faculty", "Students"],
+    "WebUI": "https://app.aicommons.ucsb.edu/",
+    "status": "active"
+  },
+  "NRP": {
+    "name": "NRP",
+    "description": "NRP provides researchers and faculty with access to LLMs through the NRP Nautilus platform.",
+    "website": "https://nrp.ai/llms/",
+    "model_types": ["Open Weight"],
+    "access": ["Researchers", "Faculty"],
+    "WebUI": "https://nrp-openwebui.nrp-nautilus.io/",
     "status": "active"
   }
 }
