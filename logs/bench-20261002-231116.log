@@ -1,0 +1,1513 @@
+$ bash lmeval_eval/run_lmeval.sh --service NRP  [cwd=/home/coder/ucsb-ai-benchmarks]
+tasks=mmlu,gsm8k,arc_challenge,hellaswag,winogrande,truthfulqa_mc2 log_dir=logs/lmeval/2026-10-02 runs=11
+  warning: no tokenizer for NRP/gemma-small; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[1/11] NRP gemma-small
+2026-10-02:23:11:53 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:11:53 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:11:53 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'gemma-small', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:11:53 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:11:53 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:11:53 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma-small/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a3e-7bfaec0328bdf406333af3d1;3ef513e3-f905-4c53-8311-16b578364582)
+
+Repository Not Found for url: https://huggingface.co/gemma-small/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: gemma-small is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma-small/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a3e-113e7ef956a467f104df2f21;18fff574-e4b9-4027-b11b-7cfc4885574a)
+
+Repository Not Found for url: https://huggingface.co/gemma-small/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: gemma-small is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP gemma-small (continuing)
+  warning: no tokenizer for NRP/gemma4-12b; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[2/11] NRP gemma4-12b
+2026-10-02:23:12:08 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:12:08 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:12:08 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'gemma4-12b', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:12:08 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:12:08 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:12:08 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma4-12b/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a49-6bb84d3a3ac192e560ae2c96;d78b5f16-11ef-4e1e-b376-946577bc0c9d)
+
+Repository Not Found for url: https://huggingface.co/gemma4-12b/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: gemma4-12b is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma4-12b/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a49-030c6ece023ccb1861e50cfa;82bbb45d-0e7a-495c-8eb9-e8f566cb89f5)
+
+Repository Not Found for url: https://huggingface.co/gemma4-12b/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: gemma4-12b is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP gemma4-12b (continuing)
+  warning: no tokenizer for NRP/glm-5; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[3/11] NRP glm-5
+2026-10-02:23:12:18 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:12:18 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:12:18 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'glm-5', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:12:19 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:12:19 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:12:19 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/glm-5/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a54-272be3dc7351584c76eaed1b;a3a3d202-bd9d-49de-a793-468ce3df2dec)
+
+Repository Not Found for url: https://huggingface.co/glm-5/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: glm-5 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/glm-5/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a54-42b3cd206808c41e383c10fe;afd9d752-c5d0-4ef8-9f3f-8e9738d13f6f)
+
+Repository Not Found for url: https://huggingface.co/glm-5/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: glm-5 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP glm-5 (continuing)
+  warning: no tokenizer for NRP/qwen3; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[4/11] NRP qwen3
+2026-10-02:23:12:29 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:12:29 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:12:29 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'qwen3', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:12:29 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:12:29 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:12:29 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/qwen3/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a5f-15769cd731328dd800ddc60a;dd2675ba-b663-41e9-938c-034a052adae5)
+
+Repository Not Found for url: https://huggingface.co/qwen3/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: qwen3 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/qwen3/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a5f-1402938d360e97fe29925482;f5978690-74d2-45ed-a46d-b30bea37d4b5)
+
+Repository Not Found for url: https://huggingface.co/qwen3/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: qwen3 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP qwen3 (continuing)
+  warning: no tokenizer for NRP/qwen3-small; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[5/11] NRP qwen3-small
+2026-10-02:23:12:40 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:12:40 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:12:40 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'qwen3-small', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:12:40 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:12:40 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:12:40 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/qwen3-small/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a69-422b94273e86d1702244016b;52e4fd7e-c82b-4a46-8d62-840545defc30)
+
+Repository Not Found for url: https://huggingface.co/qwen3-small/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: qwen3-small is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/qwen3-small/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a6a-56ca8da9677743ef29aaf1a0;9fad5ffe-4b24-42fb-9eca-00291bd2981d)
+
+Repository Not Found for url: https://huggingface.co/qwen3-small/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: qwen3-small is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP qwen3-small (continuing)
+  warning: no tokenizer for NRP/gemma-small-e4b; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[6/11] NRP gemma-small-e4b
+2026-10-02:23:12:51 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:12:51 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:12:51 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'gemma-small-e4b', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:12:51 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:12:51 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:12:51 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma-small-e4b/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a74-132356fe4948869f2e179131;54a58e81-ae12-4720-84e6-2d4ae5a7bc0e)
+
+Repository Not Found for url: https://huggingface.co/gemma-small-e4b/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: gemma-small-e4b is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma-small-e4b/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a74-0c16b1a1539434b75b818b76;fce476c1-72fe-4aee-8056-970f42ee0c19)
+
+Repository Not Found for url: https://huggingface.co/gemma-small-e4b/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: gemma-small-e4b is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP gemma-small-e4b (continuing)
+  warning: no tokenizer for NRP/gpt-oss; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[7/11] NRP gpt-oss
+2026-10-02:23:13:02 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:13:02 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:13:02 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'gpt-oss', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:13:02 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:13:02 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:13:02 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gpt-oss/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a7f-786ad7b710e6c3f50cd8c72c;6991029b-cac9-4701-a1b8-0cadbb8aa05f)
+
+Repository Not Found for url: https://huggingface.co/gpt-oss/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: gpt-oss is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gpt-oss/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a80-2879e0d3026c9896033f22e0;172f1c85-dd02-4cbb-9933-5e35341b43c3)
+
+Repository Not Found for url: https://huggingface.co/gpt-oss/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: gpt-oss is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP gpt-oss (continuing)
+  warning: no tokenizer for NRP/gemma; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[8/11] NRP gemma
+2026-10-02:23:13:14 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:13:14 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:13:14 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'gemma', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:13:14 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:13:14 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:13:14 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a8b-4f4bcaad0433e56a62e8fceb;c9a4dae3-5d92-483a-bbf7-6d49127652a0)
+
+Repository Not Found for url: https://huggingface.co/gemma/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: gemma is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/gemma/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a8b-020ecaca1a1da871304b2a9f;2f5c6143-8d79-4046-a4ec-05cd8fbab12f)
+
+Repository Not Found for url: https://huggingface.co/gemma/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: gemma is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP gemma (continuing)
+  warning: no tokenizer for NRP/kimi; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[9/11] NRP kimi
+2026-10-02:23:13:25 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:13:25 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:13:25 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'kimi', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:13:25 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:13:25 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:13:25 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/kimi/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a96-68cd8ba22b60c7f81ffa36a7;6a0be09a-d928-435e-9cc2-07cf3acb1a67)
+
+Repository Not Found for url: https://huggingface.co/kimi/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: kimi is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/kimi/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03a96-1af2ad4e1d58ccdb009d2922;3f1ab8db-e87c-434b-a283-b53e0366808e)
+
+Repository Not Found for url: https://huggingface.co/kimi/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: kimi is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP kimi (continuing)
+  warning: no tokenizer for NRP/minimax-m2; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[10/11] NRP minimax-m2
+2026-10-02:23:13:36 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:13:36 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:13:36 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'minimax-m2', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:13:36 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:13:36 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:13:36 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/minimax-m2/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03aa1-147b5d26376e7bda2e272c6c;0ee75599-8ef8-4a55-b76f-229b9d3b52aa)
+
+Repository Not Found for url: https://huggingface.co/minimax-m2/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: minimax-m2 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/minimax-m2/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03aa1-7fd7a3e53c73f2ba590f4e71;c9574a3c-a087-448c-9617-d73d6ac9f726)
+
+Repository Not Found for url: https://huggingface.co/minimax-m2/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: minimax-m2 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP minimax-m2 (continuing)
+  warning: no tokenizer for NRP/deepseek-v4-flash; gateway tokenizers are unavailable, so this run will likely fail. Pass --tokenizer or --tokenizer-map.
+[11/11] NRP deepseek-v4-flash
+2026-10-02:23:13:46 INFO     [_cli.run:392] Selected Tasks: ['mmlu', 'gsm8k', 'arc_challenge', 'hellaswag', 'winogrande', 'truthfulqa_mc2']
+2026-10-02:23:13:46 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-10-02:23:13:46 INFO     [evaluator:239] Initializing local-completions model, with arguments: {'model': 'deepseek-v4-flash', 'base_url': 'https://ellm.nrp-nautilus.io/v1/completions', 'num_concurrent': 4, 'tokenized_requests': False, 'tokenizer_backend': 'auto'}
+2026-10-02:23:13:46 INFO     [models.openai_completions:42] Remote tokenizer not supported. Using huggingface tokenizer backend.
+2026-10-02:23:13:46 INFO     [models.api_models:176] Using max length 2048 - 1
+2026-10-02:23:13:46 INFO     [models.api_models:197] Using tokenizer huggingface
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/deepseek-v4-flash/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03aac-06a17f3b7f14812e6b6a13e1;62a1f832-d72e-428f-9b8c-c22f7acb320e)
+
+Repository Not Found for url: https://huggingface.co/deepseek-v4-flash/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+OSError: deepseek-v4-flash is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+
+During handling of the above exception, another exception occurred:
+
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/deepseek-v4-flash/resolve/main/config.json'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+    ~~~~~~~~~~~~~~~^
+        path_or_repo_id,
+        ^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        tqdm_class=tqdm_class,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1035, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+        # Destination
+    ...<15 lines>...
+        dry_run=dry_run,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1182, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/huggingface_hub/file_download.py", line 1919, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-6ac03aac-1a981c0559c6bff56c6aad08;482bf197-9a7d-433d-896f-5c633e723edf)
+
+Repository Not Found for url: https://huggingface.co/deepseek-v4-flash/resolve/main/config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated and your token has the required permissions.
+For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/coder/ucsb-ai-benchmarks/.venv/bin/lm_eval", line 10, in <module>
+    sys.exit(cli_evaluate())
+             ~~~~~~~~~~~~^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
+    parser.execute(args)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/harness.py", line 60, in execute
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/_cli/run.py", line 395, in _execute
+    results = simple_evaluate(
+        model=cfg.model,
+    ...<32 lines>...
+        metadata=cfg.metadata,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/utils.py", line 580, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/evaluator.py", line 242, in simple_evaluate
+    lm = lm_eval.api.registry.get_model(model).create_from_arg_obj(
+        model_args,
+    ...<4 lines>...
+        },
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/api/model.py", line 169, in create_from_arg_obj
+    return cls(**arg_dict, **additional_config)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/openai_completions.py", line 52, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        base_url=base_url,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/lm_eval/models/api_models.py", line 206, in __init__
+    self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.tokenizer or self.model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        use_fast=use_fast_tokenizer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/models/auto/tokenization_auto.py", line 811, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 742, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 792, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/configuration_utils.py", line 844, in _get_config_dict
+    resolved_config_file = cached_file(
+        pretrained_model_name_or_path,
+    ...<8 lines>...
+        subfolder=subfolder,
+    )
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/coder/ucsb-ai-benchmarks/.venv/lib/python3.14/site-packages/transformers/utils/hub.py", line 569, in cached_files
+    raise OSError(
+    ...<4 lines>...
+    ) from e
+OSError: deepseek-v4-flash is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+  FAIL: NRP deepseek-v4-flash (continuing)
+---- summary: 0/11 succeeded ----
+failed:
+  NRP/gemma-small
+failed:
+  NRP/gemma4-12b
+failed:
+  NRP/glm-5
+failed:
+  NRP/qwen3
+failed:
+  NRP/qwen3-small
+failed:
+  NRP/gemma-small-e4b
+failed:
+  NRP/gpt-oss
+failed:
+  NRP/gemma
+failed:
+  NRP/kimi
+failed:
+  NRP/minimax-m2
+failed:
+  NRP/deepseek-v4-flash
+$ uv run python lmeval_eval/collect_lmeval_results.py  [cwd=/home/coder/ucsb-ai-benchmarks]
+scanned=0 kept=0 -> /home/coder/ucsb-ai-benchmarks/data/lmeval_results.jsonl
+SERVICE     MODEL                          COMPOSITE    MMLU   GSM8K   ARC-C   HELLA    WINO  TQAMC2
