@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T21:45:49+00:00",
+  "generated_at": "2026-10-02T00:18:36+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -33,7 +33,7 @@
       ],
       "status": "active",
       "model_count": 15,
-      "benchmarked_count": 11
+      "benchmarked_count": 15
     },
     {
       "id": "AICommons",
@@ -68,7 +68,7 @@
         "Faculty"
       ],
       "status": "active",
-      "model_count": 13,
+      "model_count": 12,
       "benchmarked_count": 11
     }
   ],
@@ -590,7 +590,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       }
@@ -608,7 +608,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       }
@@ -680,7 +680,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       }
@@ -788,7 +788,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       }
@@ -907,7 +907,7 @@
       "slug": "nrp--gemma4-small",
       "in_api": true,
       "in_roster": false,
-      "deprecated": false,
+      "deprecated": true,
       "owned_by": "NRP",
       "vision": null,
       "vision_status": null,
@@ -1005,24 +1005,6 @@
       "max_output_tokens_source": null,
       "benchmarked": {
         "performance": true,
-        "scicode": false,
-        "rise": false
-      }
-    },
-    {
-      "service": "NRP",
-      "model": "qwen3-embedding",
-      "slug": "nrp--qwen3-embedding",
-      "in_api": true,
-      "in_roster": false,
-      "deprecated": false,
-      "owned_by": "NRP",
-      "vision": null,
-      "vision_status": null,
-      "max_output_tokens": null,
-      "max_output_tokens_source": null,
-      "benchmarked": {
-        "performance": false,
         "scicode": false,
         "rise": false
       }

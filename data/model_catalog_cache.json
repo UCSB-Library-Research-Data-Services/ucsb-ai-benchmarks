@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T21:45:49+00:00",
+  "generated_at": "2026-10-02T00:18:36+00:00",
   "description": "Last-good GET /v1/models responses per service (entries: {id, owned_by}). Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
@@ -158,10 +158,6 @@
     ],
     "NRP": [
       {
-        "id": "glm-5",
-        "owned_by": "NRP"
-      },
-      {
         "id": "qwen3",
         "owned_by": "NRP"
       },
@@ -207,6 +203,10 @@
       },
       {
         "id": "gemma4-12b",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "glm-5",
         "owned_by": "NRP"
       }
     ]
