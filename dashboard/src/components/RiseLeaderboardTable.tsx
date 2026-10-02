@@ -26,6 +26,13 @@ const ACCENT = '#2563eb';
 const AVG_TOOLTIP =
   'Normalized to a 0-100 scale per benchmark ranking metric: fuzzy as-is, F1 x 100, CER inverted to 100 - CER x 100. Avg is the mean over completed benchmarks (nulls excluded).';
 
+// RISE dates are date-only strings; format in UTC to avoid a timezone day shift.
+function fmtDate(ts: string): string {
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+
 function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' }) {
   if (sortDir !== 'desc') {
     return (
@@ -438,7 +445,7 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(5, 1fr)',
             gap: '0.75rem',
             marginTop: '1.5rem',
           }}
@@ -447,6 +454,11 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
           <StatCard label="Benchmarks" value={data.stats.benchmarks.length} accent="#10b981" />
           <StatCard label="Models" value={data.stats.totalModels} accent="#8b5cf6" />
           <StatCard label="Providers" value={data.stats.providers.length} accent="#f59e0b" />
+          <StatCard
+            label="Last Run"
+            value={data.stats.latestRun ? fmtDate(data.stats.latestRun) : '—'}
+            accent="#ef4444"
+          />
         </div>
       </div>
 
@@ -773,6 +785,21 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                   </th>
                 );
               })}
+              <th
+                style={{
+                  padding: '0.7rem 1rem',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#64748b',
+                  whiteSpace: 'nowrap',
+                  background: '#f1f5f9',
+                }}
+              >
+                Last Run
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -791,7 +818,7 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                   ? '#ffffff'
                   : '#f8fafc';
               const rowKey = `${row.service}|${row.model}`;
-              const colCount = 4 + data.allBenchmarks.length;
+              const colCount = 5 + data.allBenchmarks.length;
               return (
                 <React.Fragment key={rowKey}>
                 <tr
@@ -982,6 +1009,16 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                       </td>
                     );
                   })}
+                  <td
+                    style={{
+                      padding: '0.65rem 1rem',
+                      whiteSpace: 'nowrap',
+                      color: '#64748b',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {row.lastRun ? fmtDate(row.lastRun) : '—'}
+                  </td>
                 </tr>
                 {(() => {
                   if (!openKey) return null;

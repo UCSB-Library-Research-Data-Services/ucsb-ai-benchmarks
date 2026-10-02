@@ -45,6 +45,7 @@ export interface LeaderboardStats {
   totalProviders: number;
   providers: string[];
   categories: string[];
+  latestRun: string | null;
 }
 
 export interface LeaderboardData {
@@ -188,6 +189,10 @@ export function aggregatePerformanceData(
     totalProviders: providersSet.size,
     providers: Array.from(providersSet).sort(),
     categories: Array.from(categoriesSet).sort(),
+    latestRun: rows.reduce<string | null>(
+      (latest, r) => (latest === null || new Date(r.latestTimestamp) > new Date(latest) ? r.latestTimestamp : latest),
+      null,
+    ),
   };
 
   const allCategories = Array.from(categoriesSet).sort();

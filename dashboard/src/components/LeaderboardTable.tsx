@@ -44,6 +44,12 @@ function providerColor(providers: string[], name: string): string {
   return PROVIDER_PALETTE[idx % PROVIDER_PALETTE.length];
 }
 
+function fmtDate(ts: string): string {
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' }) {
   if (rank === 1 && sortDir === 'desc') {
     return (
@@ -422,7 +428,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(5, 1fr)',
             gap: '0.75rem',
             marginTop: '1.5rem',
           }}
@@ -431,6 +437,11 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
           <StatCard label="Benchmarks" value={data.stats.totalBenchmarks} accent="#10b981" />
           <StatCard label="Models" value={data.stats.totalModels} accent="#8b5cf6" />
           <StatCard label="Providers" value={data.stats.totalProviders} accent="#f59e0b" />
+          <StatCard
+            label="Last Run"
+            value={data.stats.latestRun ? fmtDate(data.stats.latestRun) : '—'}
+            accent="#ef4444"
+          />
         </div>
       </div>
 
@@ -796,6 +807,21 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
                   </th>
                 );
               })}
+              <th
+                style={{
+                  padding: '0.7rem 1rem',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#64748b',
+                  whiteSpace: 'nowrap',
+                  background: '#f1f5f9',
+                }}
+              >
+                Last Run
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -804,7 +830,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
               const provColor = providerColor(data.stats.providers, row.provider);
               const isEven = idx % 2 === 0;
               const rowKey = `${row.provider}|${row.model}`;
-              const colCount = 4 + data.allCategories.length;
+              const colCount = 5 + data.allCategories.length;
               const clickableCell = (
                 children: React.ReactNode,
                 col: string | null,
@@ -1032,6 +1058,16 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
                       </td>
                     );
                   })}
+                  <td
+                    style={{
+                      padding: '0.65rem 1rem',
+                      whiteSpace: 'nowrap',
+                      color: '#64748b',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {fmtDate(row.latestTimestamp)}
+                  </td>
                 </tr>
                 {detailCol && (
                   <tr key={`${rowKey}-${detailCol}-detail`}>

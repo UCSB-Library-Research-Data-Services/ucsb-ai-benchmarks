@@ -40,6 +40,7 @@ export interface RiseStats {
   totalModels: number;
   providers: string[];
   benchmarks: string[];
+  latestRun: string | null;
 }
 
 export interface RiseLeaderboardData {
@@ -174,6 +175,10 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     totalModels: modelRuns.size,
     providers: Array.from(new Set(results.map(r => r.service))).sort(),
     benchmarks: Array.from(benchmarksInData).sort(),
+    latestRun: rows.reduce<string | null>(
+      (latest, r) => (r.lastRun && (latest === null || r.lastRun > latest) ? r.lastRun : latest),
+      null,
+    ),
   };
 
   return { stats, rows, allBenchmarks };
