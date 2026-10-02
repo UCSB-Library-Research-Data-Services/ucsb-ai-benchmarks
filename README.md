@@ -1,39 +1,14 @@
+# UCSB AI Benchmarks
 
-## Benchmarks
+The rapid development of foundation models (FMs) and growing interest in integrating AI into academic research have made AI benchmarks a standard way to evaluate model performance, especially for complex research tasks such as scientific coding, multimodal data extraction, data analysis, and specialized literature summarization. 
 
-### SciCode
+A benchmark can be understood as a combination of tasks and a metric or score (Raji et al., 2021, p. 2). The quality of the benchmark is directly tied to the design of the dataset and the metrics used to evaluate performance (Reuel et al., 2024). Although most benchmarks include some indication of QoS, such as TTFT or TPS, the goal of benchmarks is to provide a consistent metric that allows comparison of how multiple models perform on particular tasks, regardless of QoS. 
 
-SciCode is a scientist-curated benchmark consisting of 80 "authentic laboratory problems across 16 scientific disciplines, developed by domain experts," introduced in the research paper **[SciCode: A Research Coding Benchmark Curated by Scientists](https://arxiv.org/abs/2407.13168)**. The problems dataset is available on [HuggingFace](https://huggingface.co/datasets/SciCode1/SciCode).
+The current stage and development trend of foundation models have prompted academic institutions to provide gateways and inference engines to serve researchers, scholars, and the general community, enabling testing and use of these models in more controlled environments. The ability to interact with models that run on-premises or operate under strict data-sharing agreements can attract researchers who want to use AI capabilities while maintaining more control over the data that is transferred as input and the results provided as output. If we add agentic tools to the mix, researcher-designed guardrails are paramount to guarantee data security, integrity, and access.
 
-**Methodology:** SciCode evaluates LLMs on multi-step scientific code generation by sequentially prompting the model for each sub-problem step, injecting its prior code outputs as dependencies, and validating correctness against ground-truth reference values loaded from an HDF5 database ([`test_data.h5`](https://github.com/scicode-bench/SciCode/tree/main#instructions-to-evaluate-a-new-model-using-inspect_ai-recommended)).
+This project wants to explore the question of how institutionally provided AI gateways and inference perform directly over consumer-grade machines and standard internet connections. This involves not only QoS, but also whether a model's behavior degrades compared with when run in “optimal” conditions, which can be associated with the hardware and compression of a model in specific circumstances, not always accessible via API metadata. The overall goal of this project is to provide a tool that helps users identify the optimal model for specific tasks using metrics that align with their UX, and to give providers a cross-department comparison to evaluate performance and plan accordingly.
 
-SciCode provide three types of evaluations:
+## References
 
-- With and without scientific background: Scientific background provide base knowledge that hypothetically can enahnce the inherent knowledge base of the model being tested, and provide more chances for the task to succeed.
-- Gold vs. generated solutions to previous subproblems: "Each main problem in SciCode factorizes into multiple subproblems, and solutions to previous problems provide vital information for solving the current one. SciCode enables use of gold or generated solutions to previous subproblems. Gold solutions focus only on the current problem, while generated ones provide a more realistic evaluation setting and are more challenging due to error accumulation." (Tian et al., 2024, p. 6)
-- Main vs. subproblem levels: "(1) The LM is considered to have successfully solved the main problem when all subproblem solutions are correct and the integrated solution to the main problem is correct. (2) Alternatively, SciCode can assess at a subproblem level, evaluating a subproblem independently of other subproblems or its main problem" (Tian et al., 2024, p. 6)
-
-
-**Metrics:** Two primary metrics are evaluated:
-
-1. Problem correctness: Binary score (1 or 0) indicating whether a model successfully completed all sub-steps of a problem.
-2. Sub-problem correctness: A micro-averaged metric computed over individual sub-steps:
-
-$$
-\text{Sub-problem Correctness} = \frac{\sum_{i=1}^{P} C_i}{\sum_{i=1}^{P} S_i}
-$$
-
-**Setup for a new machine:** `git submodule update --init`, `uv sync`,
-copy repo-root `.env` with `<SERVICE>_KEY` entries, download `test_data.h5`
-from the Google Drive link into `SciCode/eval/data/test_data.h5`. Harness
-lives in `scicode_eval/`; logs in `logs/scicode/`; outputs in `tmp/scicode/`.
-
-## Evaluated models 
-## CIT
-
-- gemma-4-31b
-- mistral-small-4-119b-2603
-- granite-4.1-30b
-- Qwen3-Coder-Next
-- qwen3.6-35b-a3b
-- gpt-oss-120b
+Raji, I. D., Bender, E. M., Paullada, A., Denton, E., & Hanna, A. (2021). AI and the Everything in the Whole Wide World Benchmark (arXiv:2111.15366). arXiv. https://doi.org/10.48550/arXiv.2111.15366 
+Reuel, A., Hardy, A., Smith, C., Lamparth, M., Hardy, M., & Kochenderfer, M. J. (2024). BetterBench: Assessing AI Benchmarks, Uncovering Issues, and Establishing Best Practices (arXiv:2411.12990). arXiv. https://doi.org/10.48550/arXiv.2411.12990 
