@@ -189,8 +189,12 @@ def collect_one(result_path: Path, log_dir: Path) -> tuple[dict | None, str]:
     total_tokens = None
     wall_time_sec = None
     # lm-eval may include runtime info in the top-level data
+    # lm-eval reports `total_evaluation_time_seconds` as a string (e.g. "0.03").
     if "total_evaluation_time_seconds" in data:
-        wall_time_sec = round(data["total_evaluation_time_seconds"], 1)
+        try:
+            wall_time_sec = round(float(data["total_evaluation_time_seconds"]), 1)
+        except (TypeError, ValueError):
+            wall_time_sec = None
 
     # Derive timestamp from file modification time or directory date
     timestamp = datetime.fromtimestamp(

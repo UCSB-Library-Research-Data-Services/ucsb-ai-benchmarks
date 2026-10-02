@@ -18,6 +18,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "scicode",
     "seaborn>=0.13.2",
+    "transformers>=4.1",
 ]
 
 [tool.uv.sources]
