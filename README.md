@@ -1,6 +1,6 @@
 # UCSB AI Benchmarks
 
-Tools and benchmark suites for evaluating AI models available through UCSB services. The repository runs performance, RISE, SciCode, and lm-evaluation-harness workloads, collects results under `data/`, and includes an [Astro](https://astro.build/) dashboard.
+Tools and benchmark suites for evaluating AI models available through UCSB services. The repository runs performance, RISE, and SciCode workloads, collects results under `data/`, and includes an [Astro](https://astro.build/) dashboard.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ uv run bench list
 uv run bench run performance --service GRIT --model llava:7b
 ```
 
-Available suites are `performance`, `rise`, `scicode`, and `lmeval`. Use `--smoke` for a smaller test run, `--dry-run` to print the command without running it, or `uv run bench --help` for CLI options. Runs are logged under `logs/`; collected results are written under `data/`.
+Available suites are `performance`, `rise`, and `scicode`. Use `--smoke` for a smaller test run, `--dry-run` to print the command without running it, or `uv run bench --help` for CLI options. Runs are logged under `logs/`; collected results are written under `data/`.
 
 ## Dashboard
 

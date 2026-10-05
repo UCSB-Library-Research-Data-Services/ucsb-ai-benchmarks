@@ -48,7 +48,7 @@ def test_resolve_model_scoped_to_service(roster):
 
 
 def test_normalize_suites_default_and_subset():
-    assert suites.normalize_suites(None) == ["performance", "rise", "scicode", "lmeval"]
+    assert suites.normalize_suites(None) == ["performance", "rise", "scicode"]
     assert suites.normalize_suites("scicode,performance") == ["performance", "scicode"]
 
 
@@ -107,20 +107,6 @@ def test_passthrough_appended_once(roster):
     assert "--service" in argv
 
 
-def test_lmeval_smoke_argv():
-    argv = suites.build_run_argv("lmeval", "NRP", "gemma-small", True, [])
-    assert argv[:2] == ["bash", "lmeval_eval/run_lmeval.sh"]
-    assert "--limit" in argv and "10" in argv
-    assert "--service" in argv and "NRP" in argv
-    assert "--model" in argv and "gemma-small" in argv
-
-
-def test_lmeval_full_argv_has_no_smoke_flags():
-    argv = suites.build_run_argv("lmeval", "NRP", "gemma-small", False, [])
-    assert "--limit" not in argv
-    assert "--model-type" not in argv
-
-
 def test_redact_secrets_removes_bearer_and_sk():
     from bench.runner import redact_secrets
     line = "Authorization: Bearer sk-abc123def456 host=NRP"
@@ -134,7 +120,6 @@ def test_collect_argv_matrix():
     assert suites.build_collect_argv("performance") == ["uv", "run", "python", "scripts/export_performance_details.py"]
     assert suites.build_collect_argv("rise") == ["uv", "run", "rise_eval/collect_rise_results.py"]
     assert suites.build_collect_argv("scicode") == ["uv", "run", "python", "scicode_eval/collect_scicode_results.py"]
-    assert suites.build_collect_argv("lmeval") == ["uv", "run", "python", "lmeval_eval/collect_lmeval_results.py"]
 
 
 def test_collect_argvs_matrix():
@@ -145,9 +130,6 @@ def test_collect_argvs_matrix():
     assert suites.build_collect_argvs("scicode") == [
         ["uv", "run", "python", "scicode_eval/collect_scicode_results.py"],
         ["uv", "run", "python", "scripts/export_scicode_details.py"],
-    ]
-    assert suites.build_collect_argvs("lmeval") == [
-        ["uv", "run", "python", "lmeval_eval/collect_lmeval_results.py"]
     ]
 
 
