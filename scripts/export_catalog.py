@@ -83,6 +83,57 @@ def read_jsonl_models(path):
     return seen
 
 
+def read_rise_models_by_status(path):
+    """Partition RISE models into (rise_passed, rise_flagged) sets of (service_lower, model).
+
+    Deduplicates by (service_lower, model, benchmark) keeping the latest (date, test_id),
+    matching aggregateRiseData in dashboard/src/lib/rise.ts. Models with avg <= 0 across
+    all scored runs are placed in rise_flagged; models with avg > 0 (or no numeric scores)
+    are placed in rise_passed.
+    """
+    if not path.exists():
+        print(f"[!] {path.name}: not found, skipping")
+        return set(), set()
+
+    latest_by_key = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            d = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        service = d.get("service")
+        model = d.get("model")
+        benchmark = d.get("benchmark")
+        if not (service and model and benchmark):
+            continue
+        svc_lower = str(service).lower()
+        if "dreamlab" in svc_lower:
+            continue
+        key = (svc_lower, str(model), str(benchmark))
+        date = str(d.get("date") or "")
+        test_id = str(d.get("test_id") or "")
+        existing = latest_by_key.get(key)
+        if existing is None or (date, test_id) > (existing[0], existing[1]):
+            latest_by_key[key] = (date, test_id, d.get("normalized_score"))
+
+    scores_by_model = {}
+    for (svc_lower, model, _), (_, _, score) in latest_by_key.items():
+        scores_by_model.setdefault((svc_lower, model), []).append(score)
+
+    passed = set()
+    flagged = set()
+    for pair, scores in scores_by_model.items():
+        numeric = [s for s in scores if isinstance(s, (int, float))]
+        avg = (sum(numeric) / len(numeric)) if numeric else None
+        if avg is not None and avg <= 0:
+            flagged.add(pair)
+        else:
+            passed.add(pair)
+    return passed, flagged
+
+
 def load_model_limits(path):
     """model -> (max_output_tokens, source) from the curated limits file ({} when unreadable)."""
     try:
@@ -148,7 +199,8 @@ def main():
 
     perf_seen = read_jsonl_models(PERF_PATH)
     scicode_seen = read_jsonl_models(SCICODE_PATH)
-    rise_seen = read_jsonl_models(RISE_PATH)
+    rise_passed, rise_flagged = read_rise_models_by_status(RISE_PATH)
+    rise_seen = rise_passed | rise_flagged
 
     canonical = {name.lower(): name for name in services}
 
@@ -162,6 +214,8 @@ def main():
     perf_by_svc = bucket(perf_seen)
     scicode_by_svc = bucket(scicode_seen)
     rise_by_svc = bucket(rise_seen)
+    rise_passed_by_svc = bucket(rise_passed)
+    rise_flagged_by_svc = bucket(rise_flagged)
     model_limits = load_model_limits(MODEL_LIMITS_PATH)
 
     new_cache = dict(cache)
@@ -226,8 +280,9 @@ def main():
                 "benchmarked": {
                     "performance": model in perf_by_svc.get(name, set()),
                     "scicode": model in scicode_by_svc.get(name, set()),
-                    "rise": model in rise_by_svc.get(name, set()),
+                    "rise": model in rise_passed_by_svc.get(name, set()),
                 },
+                "rise_flagged": model in rise_flagged_by_svc.get(name, set()),
             })
 
         meta = providers_meta.get(name, {})
