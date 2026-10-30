@@ -4,6 +4,32 @@ import os
 load_dotenv()
 
 SERVICES = {
+    "AICommons":{
+        "url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
+        "key": os.getenv("AICOMMONS_KEY"),
+        "models": [
+            "qwen3-32b",
+            "openai-gpt-oss-20b",
+            "openai-gpt-oss-120b",
+            "llama-4-scout-17b-instruct",
+            "llama-4-maverick-17b-instruct",
+            "claude-v4.6-sonnet",
+            "claude-v4.6-opus",
+            "claude-v4.5-haiku",
+            "amazon-nova-pro",
+            "amazon-nova-micro",
+            "amazon-nova-lite",
+            "claude-v5-opus",
+            "claude-v5-sonnet"
+        ],
+        "deprecated_models": [
+            "gpt-4o",
+            "gpt-4-turbo",
+            "gpt-4",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo",
+        ]
+        },
     "CIT": {
         "url": "https://api.ai.college.ucsb.edu/v1",
         "key": os.getenv("CIT_KEY"),
@@ -24,6 +50,29 @@ SERVICES = {
             "gemma-4-26b-a4b-it-qat",
             "qwen3-embedding-8b"
             ],
+        },
+    "NRP": {
+        "url": "https://ellm.nrp-nautilus.io/v1",
+        "key": os.getenv("NRP_KEY"),
+        "models": [
+            "gemma-small",
+            "gemma4-12b",
+            "glm-5",
+            "qwen3",
+            "qwen3-small",
+            "gemma-small-e4b",
+            "gpt-oss",
+            "gemma",
+            "kimi",
+            "minimax-m2",
+            "deepseek-v4-flash"
+        ],
+        "deprecated_models": [
+            "gemma4-small"
+        ],
+        "excluded_models": [
+            "qwen3-embedding"
+        ]
         },
     "GRIT": {
         "url": "https://llm.grit.ucsb.edu/api/v1",
@@ -51,55 +100,6 @@ SERVICES = {
             "all-the-things",
             "glm-ocr:latest"
         ],
-        },
-    "AICommons":{
-        "url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
-        "key": os.getenv("AICOMMONS_KEY"),
-        "models": [
-            "qwen3-32b",
-            "openai-gpt-oss-20b",
-            "openai-gpt-oss-120b",
-            "llama-4-scout-17b-instruct",
-            "llama-4-maverick-17b-instruct",
-            "claude-v4.6-sonnet",
-            "claude-v4.6-opus",
-            "claude-v4.5-haiku",
-            "amazon-nova-pro",
-            "amazon-nova-micro",
-            "amazon-nova-lite",
-            "claude-v5-opus",
-            "claude-v5-sonnet"
-        ],
-        "deprecated_models": [
-            "gpt-4o",
-            "gpt-4-turbo",
-            "gpt-4",
-            "gpt-3.5-turbo-16k",
-            "gpt-3.5-turbo",
-        ]
-        },
-    "NRP": {
-        "url": "https://ellm.nrp-nautilus.io/v1",
-        "key": os.getenv("NRP_KEY"),
-        "models": [
-            "gemma-small",
-            "gemma4-12b",
-            "glm-5",
-            "qwen3",
-            "qwen3-small",
-            "gemma-small-e4b",
-            "gpt-oss",
-            "gemma",
-            "kimi",
-            "minimax-m2",
-            "deepseek-v4-flash"
-        ],
-        "deprecated_models": [
-            "gemma4-small"
-        ],
-        "excluded_models": [
-            "qwen3-embedding"
-        ]
         }
     }
 
