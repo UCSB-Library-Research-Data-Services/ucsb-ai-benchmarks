@@ -279,3 +279,109 @@ def test_rise_build_combos_skips_completed_and_allocates_monotonic_ids(tmp_path)
     assert not [s for s in skipped_regen if s["reason"] == "already-completed"]
     assert len(planned_regen) == len(planned) + 3
 
+
+def test_rise_collect_multi_machine_preserves_existing_rows_and_shards(tmp_path):
+    from rise_eval import collect_rise_results
+
+    out_jsonl = tmp_path / "rise_results.jsonl"
+    details_dir = tmp_path / "details" / "rise"
+    results_dir = tmp_path / "results"
+    cap_path = tmp_path / "capabilities.json"
+
+    # Existing row + detail shard from Machine A (no raw run_dir on Machine B)
+    existing_row = {
+        "service": "CIT",
+        "model": "gemma-4-31b",
+        "benchmark": "book_advert_xml",
+        "test_id": "U0001",
+        "date": "2026-09-14",
+        "normalized_score": 98.7,
+        "vision": True,
+        "vision_status": "old_status",
+        "vision_note": "old_note",
+        "raw_scoring": {"fuzzy": 0.987},
+        "num_inputs": 1,
+        "num_scored": 1,
+        "tokens": {"input": 10, "output": 5, "total": 15},
+        "cost_usd": 0.001,
+        "timing": {"mean_response_s": 1.0, "total_response_s": 1.0, "slowest_response_s": 1.0, "span_s": None},
+    }
+    out_jsonl.write_text(json.dumps(existing_row) + "\n")
+
+    shard_u0001 = details_dir / "2026-09-14" / "U0001.json"
+    shard_u0001.parent.mkdir(parents=True)
+    shard_u0001.write_text(json.dumps({
+        **existing_row,
+        "requests": [{"line": 1, "text": "preserved request", "score": 0.987}],
+    }))
+    # Stale orphan shard that is not in rise_results.jsonl or results_dir
+    orphan_shard = details_dir / "2026-09-14" / "U9999.json"
+    orphan_shard.write_text(json.dumps({"test_id": "U9999", "requests": []}))
+
+    cap_path.write_text(json.dumps({
+        "models": [
+            {"service": "CIT", "model": "gemma-4-31b", "status": "sees", "note": "updated note", "tools": {"vision": True}},
+            {"service": "NRP", "model": "qwen3-vl", "status": "sees", "note": "nrp note", "tools": {"vision": True}},
+        ]
+    }))
+
+    # Scenario 1: results_dir does not exist at all on Machine B
+    rc = collect_rise_results.main([
+        "--results-dir", str(results_dir),
+        "--out", str(out_jsonl),
+        "--details-dir", str(details_dir),
+        "--capabilities", str(cap_path),
+    ])
+    assert rc == 0
+    rows_after_empty = [json.loads(line) for line in out_jsonl.read_text().splitlines() if line.strip()]
+    assert len(rows_after_empty) == 1
+    assert rows_after_empty[0]["test_id"] == "U0001"
+    assert rows_after_empty[0]["vision_status"] == "sees"
+    assert rows_after_empty[0]["vision_note"] == "updated note"
+    assert shard_u0001.is_file()
+    assert json.loads(shard_u0001.read_text())["requests"] == [{"line": 1, "text": "preserved request", "score": 0.987}]
+    assert not orphan_shard.exists()
+
+    # Scenario 2: Machine B runs a new benchmark (U0002) locally
+    run_u0002 = results_dir / "2026-10-29" / "U0002"
+    run_u0002.mkdir(parents=True)
+    (run_u0002 / "run_meta.json").write_text(json.dumps({
+        "service": "NRP", "model": "qwen3-vl", "benchmark": "bibliographic_data",
+    }))
+    (run_u0002 / "scoring.json").write_text(json.dumps({"fuzzy": 0.75}))
+    (run_u0002 / "request_U0002_line_1.json").write_text(json.dumps({
+        "text": "new request", "parsed": {"a": 1}, "score": 0.75,
+        "usage": {"input_tokens": 20, "output_tokens": 10, "total_tokens": 30},
+        "duration": 2.5, "finish_reason": "stop", "timestamp": "2026-10-29T12:00:00",
+    }))
+
+    rc = collect_rise_results.main([
+        "--results-dir", str(results_dir),
+        "--out", str(out_jsonl),
+        "--details-dir", str(details_dir),
+        "--capabilities", str(cap_path),
+    ])
+    assert rc == 0
+    merged = [json.loads(line) for line in out_jsonl.read_text().splitlines() if line.strip()]
+    assert [r["test_id"] for r in merged] == ["U0001", "U0002"]
+    assert shard_u0001.is_file()
+    assert json.loads(shard_u0001.read_text())["requests"] == [{"line": 1, "text": "preserved request", "score": 0.987}]
+    shard_u0002 = details_dir / "2026-10-29" / "U0002.json"
+    assert shard_u0002.is_file()
+    assert len(json.loads(shard_u0002.read_text())["requests"]) == 1
+
+    # Scenario 3: --replace drops preserved rows not in results_dir and prunes their shards
+    rc = collect_rise_results.main([
+        "--results-dir", str(results_dir),
+        "--out", str(out_jsonl),
+        "--details-dir", str(details_dir),
+        "--capabilities", str(cap_path),
+        "--replace",
+    ])
+    assert rc == 0
+    replaced = [json.loads(line) for line in out_jsonl.read_text().splitlines() if line.strip()]
+    assert [r["test_id"] for r in replaced] == ["U0002"]
+    assert not shard_u0001.exists()
+    assert shard_u0002.is_file()
+
+
