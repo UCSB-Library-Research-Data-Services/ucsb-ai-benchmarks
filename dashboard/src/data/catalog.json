@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T00:45:22+00:00",
+  "generated_at": "2026-10-30T01:38:17+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -68,7 +68,7 @@
         "Faculty"
       ],
       "status": "active",
-      "model_count": 12,
+      "model_count": 16,
       "benchmarked_count": 11
     }
   ],
@@ -930,6 +930,25 @@
     },
     {
       "service": "NRP",
+      "model": "gemma-vl",
+      "slug": "nrp--gemma-vl",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "SDSC",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
       "model": "gemma4-12b",
       "slug": "nrp--gemma4-12b",
       "in_api": true,
@@ -1025,6 +1044,25 @@
     },
     {
       "service": "NRP",
+      "model": "minimax",
+      "slug": "nrp--minimax",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
       "model": "minimax-m2",
       "slug": "nrp--minimax-m2",
       "in_api": true,
@@ -1075,6 +1113,44 @@
       "max_output_tokens_source": null,
       "benchmarked": {
         "performance": true,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3-vl",
+      "slug": "nrp--qwen3-vl",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
+      "model": "service",
+      "slug": "nrp--service",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "NRP",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
         "scicode": false,
         "rise": false
       },

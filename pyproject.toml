@@ -28,3 +28,6 @@ bench = "bench.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["bench"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
