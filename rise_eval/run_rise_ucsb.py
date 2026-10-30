@@ -40,6 +40,7 @@ import importlib.util
 import json
 import logging
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -49,18 +50,28 @@ RISE_ROOT = REPO_ROOT / "RISE"
 RESULTS_DIR = REPO_ROOT / "rise_eval" / "results"
 DEFAULT_CAPABILITIES = REPO_ROOT / "data" / "model_capabilities.json"
 DEFAULT_MODEL_LIMITS = REPO_ROOT / "data" / "model_limits.json"
+DEFAULT_RESULTS_JSONL = REPO_ROOT / "data" / "rise_results.jsonl"
+DEFAULT_MAX_OUTPUT_TOKENS = 32768
 
 sys.path.insert(0, str(RISE_ROOT))
 sys.path.insert(0, str(RISE_ROOT / "scripts"))
 sys.path.insert(0, str(REPO_ROOT))
 
-# RISE imports resolve only after sys.path setup above.
-from scripts.benchmark_base import Benchmark, DefaultBenchmark, FatalProviderError  # noqa: E402
+# RISE imports resolve only after sys.path setup above; fall back cleanly when imported
+# from the root Python 3.14 .venv during unit tests where ai_client is not installed.
+try:
+    from scripts.benchmark_base import Benchmark, DefaultBenchmark, FatalProviderError  # noqa: E402
+except ModuleNotFoundError:  # pragma: no cover
+    Benchmark = None
+    DefaultBenchmark = None
+
+    class FatalProviderError(RuntimeError):
+        pass
 
 logger = logging.getLogger("run_rise_ucsb")
 
-# Pilot subset (user decision; verified against non-legacy openai CSV rows T0446/T0007/T0079
-# and each benchmark's meta.json ranking config at implementation time).
+# 6-benchmark RISE suite (verified against upstream RISE/benchmarks/benchmarks_tests.csv
+# and each benchmark's meta.json ranking config).
 PILOT_BENCHMARKS = [
     {
         "name": "book_advert_xml",
@@ -88,6 +99,33 @@ PILOT_BENCHMARKS = [
         "prompt_file": "prompt_optimized.txt",
         "requires_vision": True,
         "ranking": "cer asc",
+    },
+    {
+        "name": "medieval_manuscripts",
+        "dataclass": "Document",
+        "temperature": "0.0",
+        "role_description": "You are a historian with expertise in medieval manuscripts and paleography",
+        "prompt_file": "prompt.txt",
+        "requires_vision": True,
+        "ranking": "cer asc",
+    },
+    {
+        "name": "general_meeting_minutes",
+        "dataclass": "MinutesPage",
+        "temperature": "0.0",
+        "role_description": "You are a historian with expertise in analyzing and summarizing historical meeting minutes",
+        "prompt_file": "prompt.txt",
+        "requires_vision": True,
+        "ranking": "fuzzy desc",
+    },
+    {
+        "name": "magazine_pages",
+        "dataclass": "MagazinePage",
+        "temperature": "0.0",
+        "role_description": "You are a historian with expertise in analyzing and summarizing historical magazine pages",
+        "prompt_file": "prompt.txt",
+        "requires_vision": True,
+        "ranking": "f1 desc",
     },
 ]
 
@@ -120,21 +158,160 @@ def load_model_limits(path):
     return limits
 
 
-def build_combos(services, gates, force):
+def _parse_u_id(test_id):
+    if not isinstance(test_id, str):
+        return 0
+    m = re.match(r"^U(\d+)$", test_id)
+    return int(m.group(1)) if m else 0
+
+
+def _score_from_raw(scoring, ranking_str):
+    if not isinstance(scoring, dict) or scoring.get("score") == "niy":
+        return None
+    parts = (ranking_str or "fuzzy desc").split()
+    metric = parts[0] if parts else "fuzzy"
+    order = parts[1] if len(parts) > 1 else "desc"
+    val = scoring.get(metric)
+    if val is None or val == "niy":
+        return None
+    try:
+        val = float(val)
+    except (TypeError, ValueError):
+        return None
+    if val > 1.0:
+        norm = val if order == "desc" else max(0.0, 100.0 - val)
+    else:
+        norm = val * 100.0 if order == "desc" else max(0.0, 100.0 - val * 100.0)
+    return min(100.0, max(0.0, norm))
+
+
+def scan_existing_runs(results_dir=RESULTS_DIR, results_jsonl=DEFAULT_RESULTS_JSONL, today=None):
+    """Scan data/rise_results.jsonl and rise_eval/results/*/* for completed runs and U#### IDs.
+
+    Returns:
+      completed: dict[(service, model, benchmark)] -> {"test_id": str, "date": str, "score": float}
+                 for runs with normalized_score > 0.
+      today_partial: dict[(service, model, benchmark)] -> str (test_id under today's date dir
+                 that has not yet produced a >0 score, so same-day partial runs resume in place).
+      max_uid: int (highest numeric suffix among all observed U#### IDs).
+    """
+    if today is None:
+        today = datetime.now().strftime("%Y-%m-%d")
+    ranking_by_bench = {b["name"]: b["ranking"] for b in PILOT_BENCHMARKS}
+    completed = {}
+    today_partial = {}
+    max_uid = 0
+
+    if results_jsonl and Path(results_jsonl).is_file():
+        try:
+            with open(results_jsonl, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    tid = row.get("test_id")
+                    max_uid = max(max_uid, _parse_u_id(tid))
+                    key = (row.get("service"), row.get("model"), row.get("benchmark"))
+                    score = row.get("normalized_score")
+                    if all(key) and isinstance(score, (int, float)) and score > 0:
+                        prev = completed.get(key)
+                        row_date = row.get("date") or ""
+                        if not prev or (row_date, tid or "") >= (prev["date"], prev["test_id"]):
+                            completed[key] = {"test_id": tid, "date": row_date, "score": float(score)}
+        except OSError as e:
+            logger.warning("Could not read %s: %s", results_jsonl, e)
+
+    if results_dir and Path(results_dir).is_dir():
+        for date_dir in sorted(p for p in Path(results_dir).iterdir() if p.is_dir()):
+            date_str = date_dir.name
+            for run_dir in sorted(p for p in date_dir.iterdir() if p.is_dir()):
+                tid = run_dir.name
+                max_uid = max(max_uid, _parse_u_id(tid))
+                meta_path = run_dir / "run_meta.json"
+                if not meta_path.is_file():
+                    continue
+                try:
+                    with open(meta_path, "r", encoding="utf-8") as f:
+                        meta = json.load(f)
+                except (OSError, json.JSONDecodeError):
+                    continue
+                key = (meta.get("service"), meta.get("model"), meta.get("benchmark"))
+                if not all(key):
+                    continue
+                scoring_path = run_dir / "scoring.json"
+                score = None
+                if scoring_path.is_file():
+                    try:
+                        with open(scoring_path, "r", encoding="utf-8") as f:
+                            scoring = json.load(f)
+                        score = _score_from_raw(scoring, ranking_by_bench.get(key[2], "fuzzy desc"))
+                    except (OSError, json.JSONDecodeError):
+                        score = None
+                if isinstance(score, (int, float)) and score > 0:
+                    prev = completed.get(key)
+                    if not prev or (date_str, tid) >= (prev["date"], prev["test_id"]):
+                        completed[key] = {"test_id": tid, "date": date_str, "score": float(score)}
+                elif date_str == today:
+                    today_partial[key] = tid
+
+    return completed, today_partial, max_uid
+
+
+def build_combos(
+    services,
+    gates,
+    force,
+    regenerate=False,
+    results_dir=RESULTS_DIR,
+    results_jsonl=DEFAULT_RESULTS_JSONL,
+    today=None,
+):
     """Planned and skipped combos over the full (unfiltered) model manifest.
 
     Gate rules (fail closed):
       - capabilities entry missing or vision is null  -> skip ALL benchmarks (unknown-model);
         a model added to config.py without a capabilities entry never runs silently.
       - vision is false                               -> text-only book_advert_xml only (no-vision).
-      - vision is true                                -> full pilot.
+      - vision is true                                -> full 6-benchmark suite.
+      - completed run with normalized_score > 0 on any date (unless regenerate=True)
+                                                      -> skip (already-completed).
     --force turns gate failures into planned-with-warning for the combos it is applied to.
-    U-namespace IDs are assigned over this unfiltered surviving set so filtered runs reuse
-    the same stable run directories (and resume correctly).
+    New U-namespace IDs start monotonically after the highest existing U#### across
+    rise_eval/results/ and data/rise_results.jsonl (reusing today's U#### when resuming a
+    same-day partial run).
     """
+    completed, today_partial, max_uid = scan_existing_runs(
+        results_dir=results_dir, results_jsonl=results_jsonl, today=today
+    )
     planned = []
     skipped = []
-    counter = 0
+    counter = max_uid
+
+    def _plan_or_skip_completed(service_name, model, bench, vision):
+        nonlocal counter
+        key = (service_name, model, bench["name"])
+        if not regenerate and key in completed:
+            info = completed[key]
+            skipped.append({
+                "service": service_name, "model": model, "benchmark": bench["name"],
+                "reason": "already-completed",
+                "detail": f"completed in {info['date']}/{info['test_id']} (score={info['score']:.1f})",
+            })
+            return
+        if key in today_partial:
+            tid = today_partial[key]
+        else:
+            counter += 1
+            tid = f"U{counter:04d}"
+        planned.append({
+            "service": service_name, "model": model, "benchmark": bench,
+            "vision": vision, "test_id": tid,
+        })
+
     for service_name, service in services.items():
         for model in service["models"]:
             vision = gates.get((service_name.lower(), model))
@@ -143,16 +320,11 @@ def build_combos(services, gates, force):
                     skipped.append({
                         "service": service_name, "model": model, "benchmark": bench["name"],
                         "reason": "unknown-model",
-                        "detail": f"no capabilities entry or vision=null; blocks ALL runs until re-probed",
+                        "detail": "no capabilities entry or vision=null; blocks ALL runs until re-probed",
                     })
                 continue
             if vision is not True and not force:
-                planned.append({
-                    "service": service_name, "model": model, "benchmark": PILOT_BENCHMARKS[0],
-                    "vision": vision,
-                })
-                counter += 1
-                planned[-1]["test_id"] = f"U{counter:04d}"
+                _plan_or_skip_completed(service_name, model, PILOT_BENCHMARKS[0], vision)
                 for bench in PILOT_BENCHMARKS[1:]:
                     skipped.append({
                         "service": service_name, "model": model, "benchmark": bench["name"],
@@ -164,12 +336,7 @@ def build_combos(services, gates, force):
                 logger.warning("VISION GATE FORCED for %s/%s (vision=%s) — re-testing after gateway upgrade?",
                                service_name, model, vision)
             for bench in PILOT_BENCHMARKS:
-                planned.append({
-                    "service": service_name, "model": model, "benchmark": bench,
-                    "vision": vision,
-                })
-                counter += 1
-                planned[-1]["test_id"] = f"U{counter:04d}"
+                _plan_or_skip_completed(service_name, model, bench, vision)
     return planned, skipped
 
 
@@ -245,9 +412,7 @@ def run_combo(combo, services, args, model_limits):
     out_dir = RESULTS_DIR / datetime.now().strftime("%Y-%m-%d") / combo["test_id"]
 
     rules = {"base_url": service["url"]}
-    cap = model_limits.get(combo["model"])
-    if cap:
-        rules["max_tokens"] = cap
+    rules["max_tokens"] = model_limits.get(combo["model"], DEFAULT_MAX_OUTPUT_TOKENS)
 
     test_config = {
         "id": combo["test_id"],
@@ -299,8 +464,11 @@ def print_plan_header(planned, skipped):
 
 
 def main():
+    import config  # root config.py loads root .env; keys are never printed
+    services = config.SERVICES
+
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--service", choices=["CIT", "GRIT", "AICommons"], help="limit to one service")
+    parser.add_argument("--service", choices=list(services.keys()), help="limit to one service")
     parser.add_argument("--model", help="substring filter on model name (case-insensitive)")
     parser.add_argument("--benchmark", help="limit to one benchmark name")
     parser.add_argument("--text-only", action="store_true", help="only book_advert_xml")
@@ -323,12 +491,9 @@ def main():
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s:%(name)s:%(message)s")
 
-    import config  # root config.py loads root .env; keys are never printed
-    services = config.SERVICES
-
     gates = load_vision_gates(args.capabilities)
     model_limits = load_model_limits(args.model_limits)
-    planned, skipped = build_combos(services, gates, args.force)
+    planned, skipped = build_combos(services, gates, args.force, regenerate=args.regenerate)
     planned, skipped = filter_combos(planned, skipped, args)
 
     print_plan_header(planned, skipped)
