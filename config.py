@@ -55,23 +55,27 @@ SERVICES = {
         "url": "https://ellm.nrp-nautilus.io/v1",
         "key": os.getenv("NRP_KEY"),
         "models": [
-            "qwen3-small",
             "qwen3",
             "glm-5",
             "deepseek-v4-flash",
+            "minimax",
             "minimax-m2",
-            "gemma",
             "gemma4-12b",
             "gemma-small",
             "gpt-oss",
             "gemma-small-e4b",
             "kimi",
+            "gemma",
+            "qwen3-small",
+            "qwen3-vl",
+            "gemma-vl"
         ],
         "deprecated_models": [
-            "gemma4-small"
+            "gemma4-small",
         ],
         "excluded_models": [
-            "qwen3-embedding"
+            "qwen3-embedding",
+            "service"   
         ]
         },
     "GRIT": {
