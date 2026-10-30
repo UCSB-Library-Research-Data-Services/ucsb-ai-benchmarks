@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T02:14:23+00:00",
+  "generated_at": "2026-10-30T23:24:17+00:00",
   "fixture": "tests/vision/CCundinamarca_page_1.png",
   "description": "Model tool capabilities. Only 'vision' is probed (fixture transcription test); other tools are placeholders (false). Benchmark scripts should skip a model when a required tool is not true.",
   "models": [
@@ -590,6 +590,19 @@
     },
     {
       "service": "NRP",
+      "model": "gemma-vl",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "NRP",
       "model": "gemma4-12b",
       "tools": {
         "vision": true,
@@ -642,6 +655,19 @@
     },
     {
       "service": "NRP",
+      "model": "minimax",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "NRP",
       "model": "minimax-m2",
       "tools": {
         "vision": true,
@@ -669,6 +695,19 @@
     {
       "service": "NRP",
       "model": "qwen3-small",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3-vl",
       "tools": {
         "vision": true,
         "web_search": false,
