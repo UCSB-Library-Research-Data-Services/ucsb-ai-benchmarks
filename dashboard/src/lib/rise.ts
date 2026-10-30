@@ -67,24 +67,89 @@ export const BENCHMARK_TITLES: Record<string, string> = {
   personnel_cards: 'Personnel Cards',
 };
 
-// Pilot columns first, then the reserved expansion titles in stable order.
+export interface BenchmarkMeta {
+  tag: string;
+  description: string;
+}
+
+// Active 6-benchmark suite first, then the 6 reserved expansion titles in stable order.
 export const BENCHMARK_ORDER = [
   'book_advert_xml',
   'bibliographic_data',
   'fraktur_adverts',
+  'medieval_manuscripts',
+  'general_meeting_minutes',
+  'magazine_pages',
   'library_cards',
   'business_letters',
-  'magazine_pages',
   'blacklist_cards',
   'company_lists',
   'duty_rosters',
-  'general_meeting_minutes',
-  'medieval_manuscripts',
   'personnel_cards',
 ];
 
+export const BENCHMARK_META: Record<string, BenchmarkMeta> = {
+  book_advert_xml: {
+    tag: 'Text XML · Fuzzy',
+    description: 'Text-only XML data correction of 50 historical book advertisements (fuzzy match, 0-100).',
+  },
+  bibliographic_data: {
+    tag: 'Printed List · Fuzzy',
+    description: 'Structured extraction from 5 printed English bibliography pages (fuzzy match, 0-100).',
+  },
+  fraktur_adverts: {
+    tag: 'Fraktur OCR · CER',
+    description: 'Transcription of 5 printed German Fraktur advertisements (100 - CER x 100).',
+  },
+  medieval_manuscripts: {
+    tag: 'Handwritten HTR · CER',
+    description: '15th-century German manuscript transcription and marginalia segmentation across 12 folios (100 - CER x 100).',
+  },
+  general_meeting_minutes: {
+    tag: 'Table Extraction · Fuzzy',
+    description: 'Multilingual (IT/FR/DE) typed + handwritten shareholder table and signature extraction across 9 pages (fuzzy match, 0-100).',
+  },
+  magazine_pages: {
+    tag: 'Ad Boxes · IoU F1',
+    description: 'Spatial bounding-box detection of advertisements across 46 magazine pages (IoU >= 0.5 F1 x 100).',
+  },
+  library_cards: {
+    tag: 'Catalog Cards · Fuzzy',
+    description: 'Structured bibliographic extraction from handwritten/typed library catalog cards (fuzzy match, 0-100).',
+  },
+  business_letters: {
+    tag: 'Handwritten NER · F1',
+    description: 'Entity extraction from handwritten historical business correspondence (F1 x 100).',
+  },
+  blacklist_cards: {
+    tag: 'Index Cards · Fuzzy',
+    description: 'Structured field extraction from historical index cards (fuzzy match, 0-100).',
+  },
+  company_lists: {
+    tag: 'Directory Tables · Fuzzy',
+    description: 'Tabular extraction from printed company directory pages (fuzzy match, 0-100).',
+  },
+  duty_rosters: {
+    tag: 'Roster Tables · Fuzzy',
+    description: 'Structured extraction from historical duty roster tables (fuzzy match, 0-100).',
+  },
+  personnel_cards: {
+    tag: 'Personnel Forms · Fuzzy',
+    description: 'Multi-field extraction from historical personnel record cards (fuzzy match, 0-100).',
+  },
+};
+
 export function benchmarkTitle(name: string): string {
   return BENCHMARK_TITLES[name] ?? name.replace(/_/g, ' ');
+}
+
+export function benchmarkMeta(name: string): BenchmarkMeta {
+  return (
+    BENCHMARK_META[name] ?? {
+      tag: '0-100',
+      description: benchmarkTitle(name),
+    }
+  );
 }
 
 export function parseRiseResults(filePath: string): RiseResult[] {
@@ -162,7 +227,12 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
 
   const rows = allRows
     .filter(r => r.avg === null || r.avg > 0)
-    .sort((a, b) => (b.avg ?? -Infinity) - (a.avg ?? -Infinity));
+    .sort((a, b) => {
+      const aMulti = a.vision === true || a.runs > 1 ? 1 : 0;
+      const bMulti = b.vision === true || b.runs > 1 ? 1 : 0;
+      if (aMulti !== bMulti) return bMulti - aMulti;
+      return (b.avg ?? -Infinity) - (a.avg ?? -Infinity);
+    });
 
   const flaggedModels = allRows
     .filter(r => r.avg !== null && r.avg <= 0)
