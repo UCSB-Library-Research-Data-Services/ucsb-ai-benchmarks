@@ -17,6 +17,7 @@ export interface CatalogModel {
   max_output_tokens: number | null;
   max_output_tokens_source: string | null;
   benchmarked: CatalogBenchmarked;
+  rise_flagged?: boolean;
 }
 
 export interface CatalogProvider {

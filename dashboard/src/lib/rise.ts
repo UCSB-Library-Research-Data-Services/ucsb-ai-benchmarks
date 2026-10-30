@@ -46,6 +46,7 @@ export interface RiseStats {
 export interface RiseLeaderboardData {
   stats: RiseStats;
   rows: RiseRow[];
+  flaggedModels: RiseRow[];
   allBenchmarks: string[];
 }
 
@@ -132,8 +133,8 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     modelRuns.get(key)!.push(result);
   }
 
-  const rows: RiseRow[] = [];
-  for (const [key, runs] of modelRuns.entries()) {
+  const allRows: RiseRow[] = [];
+  for (const [, runs] of modelRuns.entries()) {
     const benchmarks: Record<string, number | null> = {};
     const runRefs: Record<string, { test_id: string; date: string }> = {};
     let lastRun = '';
@@ -147,7 +148,7 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     const scores = Object.values(benchmarks).filter(
       (v): v is number => v !== null && v !== undefined
     );
-    rows.push({
+    allRows.push({
       service: runs[0].service,
       model: runs[0].model,
       vision: runs[0].vision,
@@ -159,9 +160,18 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     });
   }
 
-  rows.sort((a, b) => (b.avg ?? -Infinity) - (a.avg ?? -Infinity));
+  const rows = allRows
+    .filter(r => r.avg === null || r.avg > 0)
+    .sort((a, b) => (b.avg ?? -Infinity) - (a.avg ?? -Infinity));
 
-  const benchmarksInData = new Set(results.map(r => r.benchmark));
+  const flaggedModels = allRows
+    .filter(r => r.avg !== null && r.avg <= 0)
+    .sort((a, b) => a.service.localeCompare(b.service) || a.model.localeCompare(b.model));
+
+  const flaggedKeys = new Set(flaggedModels.map(r => `${r.service}|${r.model}`));
+  const activeResults = results.filter(r => !flaggedKeys.has(`${r.service}|${r.model}`));
+
+  const benchmarksInData = new Set(activeResults.map(r => r.benchmark));
   const allBenchmarks = BENCHMARK_ORDER.filter(name => benchmarksInData.has(name));
   // Benchmarks outside the reserved order still render (future-proofing).
   for (const name of Array.from(benchmarksInData).sort()) {
@@ -171,9 +181,9 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
   }
 
   const stats: RiseStats = {
-    totalRuns: results.length,
-    totalModels: modelRuns.size,
-    providers: Array.from(new Set(results.map(r => r.service))).sort(),
+    totalRuns: activeResults.length,
+    totalModels: rows.length,
+    providers: Array.from(new Set(activeResults.map(r => r.service))).sort(),
     benchmarks: Array.from(benchmarksInData).sort(),
     latestRun: rows.reduce<string | null>(
       (latest, r) => (r.lastRun && (latest === null || r.lastRun > latest) ? r.lastRun : latest),
@@ -181,7 +191,7 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     ),
   };
 
-  return { stats, rows, allBenchmarks };
+  return { stats, rows, flaggedModels, allBenchmarks };
 }
 
 export function getRiseDataPath(): string {
