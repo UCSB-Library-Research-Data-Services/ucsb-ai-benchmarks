@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { RiseLeaderboardData } from '../lib/rise';
-import { benchmarkTitle, riseDetailPath } from '../lib/rise';
+import { benchmarkMeta, benchmarkTitle, riseDetailPath } from '../lib/rise';
 import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
@@ -342,6 +342,11 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
       if (aVal === null && bVal === null) return 0;
       if (aVal === null) return 1;
       if (bVal === null) return -1;
+      if (sort.col === 'avg') {
+        const aMulti = a.vision === true || a.runs > 1 ? 1 : 0;
+        const bMulti = b.vision === true || b.runs > 1 ? 1 : 0;
+        if (aMulti !== bMulti) return bMulti - aMulti;
+      }
       return sort.dir === 'desc' ? bVal - aVal : aVal - bVal;
     });
   }, [filteredRows, sort.col, sort.dir]);
@@ -772,11 +777,12 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
               {/* Benchmark columns */}
               {data.allBenchmarks.map(benchmark => {
                 const isActive = sort.col === benchmark;
+                const meta = benchmarkMeta(benchmark);
                 return (
                   <th
                     key={benchmark}
                     onClick={() => handleColSort(benchmark)}
-                    title={benchmarkTitle(benchmark)}
+                    title={meta.description}
                     style={{
                       padding: '0.7rem 1rem',
                       textAlign: 'left',
@@ -797,7 +803,17 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                     {benchmarkTitle(benchmark)}
                     <SortIcon dir={sort.dir} active={isActive} />
                     <br />
-                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>0-100</span>
+                    <span
+                      style={{
+                        color: '#94a3b8',
+                        fontWeight: 600,
+                        fontSize: '0.58rem',
+                        letterSpacing: '0.04em',
+                        textTransform: 'none',
+                      }}
+                    >
+                      {meta.tag}
+                    </span>
                   </th>
                 );
               })}
