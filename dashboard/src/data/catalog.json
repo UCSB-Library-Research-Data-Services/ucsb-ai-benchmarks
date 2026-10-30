@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T22:56:33+00:00",
+  "generated_at": "2026-10-30T23:33:32+00:00",
   "providers": [
     {
       "id": "AICommons",
@@ -936,8 +936,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "SDSC",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -1050,8 +1050,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "NRP",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -1126,8 +1126,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "NRP",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
