@@ -8,19 +8,19 @@ SERVICES = {
         "url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
         "key": os.getenv("AICOMMONS_KEY"),
         "models": [
-            "qwen3-32b",
+            "amazon-nova-micro",
+            "llama-4-maverick-17b-instruct",
+            "amazon-nova-lite",
             "openai-gpt-oss-20b",
             "openai-gpt-oss-120b",
             "llama-4-scout-17b-instruct",
-            "llama-4-maverick-17b-instruct",
-            "claude-v4.6-sonnet",
-            "claude-v4.6-opus",
+            "qwen3-32b",
             "claude-v4.5-haiku",
             "amazon-nova-pro",
-            "amazon-nova-micro",
-            "amazon-nova-lite",
+            "claude-v5-sonnet",
+            "claude-v4.6-sonnet",
             "claude-v5-opus",
-            "claude-v5-sonnet"
+            "claude-v4.6-opus",
         ],
         "deprecated_models": [
             "gpt-4o",
@@ -34,9 +34,9 @@ SERVICES = {
         "url": "https://api.ai.college.ucsb.edu/v1",
         "key": os.getenv("CIT_KEY"),
         "models": [
-            "gemma-4-31b",
+            "gpt-oss-120b",
             "Qwen3-Coder-Next",
-            "gpt-oss-120b"
+            "gemma-4-31b"
             ],
         "deprecated_models": [
             "mistral-small-4-119b-2603",
@@ -55,17 +55,17 @@ SERVICES = {
         "url": "https://ellm.nrp-nautilus.io/v1",
         "key": os.getenv("NRP_KEY"),
         "models": [
-            "gemma-small",
-            "gemma4-12b",
-            "glm-5",
-            "qwen3",
             "qwen3-small",
-            "gemma-small-e4b",
-            "gpt-oss",
-            "gemma",
-            "kimi",
+            "qwen3",
+            "glm-5",
+            "deepseek-v4-flash",
             "minimax-m2",
-            "deepseek-v4-flash"
+            "gemma",
+            "gemma4-12b",
+            "gemma-small",
+            "gpt-oss",
+            "gemma-small-e4b",
+            "kimi",
         ],
         "deprecated_models": [
             "gemma4-small"
@@ -78,16 +78,16 @@ SERVICES = {
         "url": "https://llm.grit.ucsb.edu/api/v1",
         "key": os.getenv("GRIT_KEY"),
         "models": [
-            'gpt-oss:120b',
+            'gpt-oss:20b',
             'qwen3.8:latest',
-            'gemma4:31b',
-            'qwen3-coder-next:latest',
-            'mistral:latest',
-            'llama3.1:8b',
-            'phi4:latest',
-            'llama3:latest',
             'llava:7b',
-            'gpt-oss:20b'
+            'mistral:latest',
+            'gpt-oss:120b',
+            'llama3:latest',
+            'llama3.1:8b',
+            'qwen3-coder-next:latest',
+            'gemma4:31b',
+            'phi4:latest',
         ],
         "deprecated_models": [           
             'qwen3.5:latest',
