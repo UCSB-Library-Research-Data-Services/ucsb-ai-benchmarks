@@ -25,3 +25,7 @@ dashboard/.vscode/extensions.json
 dashboard/.vscode/launch.json
 .DS_Store
 nohup.out
+
+# Keep only relevant logs
+logs/*
+!logs/scicode/
