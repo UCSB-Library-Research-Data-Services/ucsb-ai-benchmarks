@@ -311,6 +311,22 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
     return rows;
   }, [data.rows, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
 
+  const filteredFlaggedModels = useMemo(() => {
+    let rows =
+      isAllMode
+        ? (data.flaggedModels ?? [])
+        : (data.flaggedModels ?? []).filter(row => selectedProviders!.has(row.service));
+    if (!showDeprecated && deprecatedSet.size > 0) {
+      rows = rows.filter(row => !deprecatedSet.has(`${row.service}|${row.model}`));
+    }
+    if (visionFilter === 'vision') {
+      rows = rows.filter(row => row.vision === true);
+    } else if (visionFilter === 'text') {
+      rows = rows.filter(row => row.vision === false);
+    }
+    return rows;
+  }, [data.flaggedModels, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
+
   const sortedRows = useMemo(() => {
     const scoreOf = (row: (typeof filteredRows)[number], col: string): number | null => {
       if (col === 'avg') {
@@ -1058,6 +1074,91 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
           </div>
         )}
       </div>
+
+      {/* Flagged 0-Average Models Callout */}
+      {filteredFlaggedModels.length > 0 && (
+        <div
+          style={{
+            marginTop: '1rem',
+            padding: '0.85rem 1.25rem',
+            borderRadius: '8px',
+            background: '#fffbeb',
+            border: '1px solid #fcd34d',
+            color: '#92400e',
+            fontSize: '0.78rem',
+            lineHeight: 1.5,
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: '0.35rem', color: '#78350f' }}>
+            ⚠️ Flagged Models Excluded from Rankings ({filteredFlaggedModels.length})
+          </div>
+          <div style={{ marginBottom: '0.6rem', color: '#92400e' }}>
+            These models were evaluated on RISE but scored a <strong>0.0</strong> average across all attempted
+            benchmarks due to gateway token or request constraints (e.g., output token or context window limits on
+            structured extraction requests) and are excluded from the ranked leaderboard and statistics above:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+            {filteredFlaggedModels.map(row => {
+              const provColor = providerColor(data.stats.providers, row.service);
+              return (
+                <span
+                  key={`${row.service}|${row.model}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.2rem 0.55rem',
+                    borderRadius: '6px',
+                    background: '#ffffff',
+                    border: '1px solid #fde68a',
+                    fontSize: '0.74rem',
+                  }}
+                >
+                  <a
+                    href={`${withBase('models')}#${providerAnchor(row.service)}`}
+                    title={`View ${row.service} on Models & Providers`}
+                    style={{
+                      display: 'inline-block',
+                      padding: '0.05rem 0.35rem',
+                      borderRadius: '3px',
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      background: provColor + '18',
+                      color: provColor,
+                      border: `1px solid ${provColor}40`,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {row.service}
+                  </a>
+                  <a
+                    href={`${withBase('models')}#${modelAnchor(row.service, row.model)}`}
+                    title={`View ${row.model} on Models & Providers (${row.runs} attempted run${row.runs === 1 ? '' : 's'}, 0.0 avg)`}
+                    style={{
+                      fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                      fontWeight: 600,
+                      color: '#1e293b',
+                      textDecoration: 'none',
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline';
+                      (e.currentTarget as HTMLAnchorElement).style.color = ACCENT;
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none';
+                      (e.currentTarget as HTMLAnchorElement).style.color = '#1e293b';
+                    }}
+                  >
+                    {row.model}
+                  </a>
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div

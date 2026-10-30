@@ -62,6 +62,29 @@ function MaxTokensBadge({ tokens, source }: { tokens: number; source: string | n
   );
 }
 
+function RiseFlagBadge() {
+  return (
+    <a
+      href={withBase('rise')}
+      title="Evaluated on RISE but scored 0.0 average across all attempted benchmarks due to gateway token/request constraints; excluded from rankings"
+      style={{
+        display: 'inline-block',
+        padding: '0.1rem 0.45rem',
+        borderRadius: '4px',
+        fontSize: '0.65rem',
+        fontWeight: 700,
+        background: '#fffbeb',
+        color: '#b45309',
+        border: '1px solid #fcd34d',
+        flexShrink: 0,
+        textDecoration: 'none',
+      }}
+    >
+      ⚠️ RISE (0 avg)
+    </a>
+  );
+}
+
 function VisionBadge({ vision, status }: { vision: boolean | null; status: string | null }) {
   if (vision === true) {
     return (
@@ -412,6 +435,7 @@ export const ModelsCatalog: React.FC<ModelsCatalogProps> = ({ models, providers 
                       {m.max_output_tokens !== null && m.max_output_tokens !== undefined && (
                         <MaxTokensBadge tokens={m.max_output_tokens} source={m.max_output_tokens_source} />
                       )}
+                      {m.rise_flagged && <RiseFlagBadge />}
                       {m.in_roster && !m.in_api && (
                         <span
                           title="In the config roster but not listed by the provider API"
