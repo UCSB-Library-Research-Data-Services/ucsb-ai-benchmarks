@@ -216,6 +216,102 @@ def resolve_run_identity(run_dir, test_id, csv_mapping):
     return None
 
 
+def resolve_capability(service, model, capabilities, warned_combos=None):
+    """Lookup (service, model) in capabilities and return (vision, vision_status, vision_note)."""
+    cap_key = ((service or "").lower(), model)
+    cap = capabilities.get(cap_key)
+    if cap is None:
+        if warned_combos is not None:
+            warned_combos.add((service, model))
+        return None, None, None
+    vision = cap["vision"]
+    vision_status = cap["vision_status"]
+    note = cap["vision_note"]
+    vision_note = (note[: NOTE_TRUNCATE - 1] + "…") if note and len(note) > NOTE_TRUNCATE else note
+    return vision, vision_status, vision_note
+
+
+def row_sort_key(r):
+    return (
+        str(r.get("service") or ""),
+        str(r.get("model") or ""),
+        str(r.get("benchmark") or ""),
+        str(r.get("date") or ""),
+        str(r.get("test_id") or ""),
+    )
+
+
+def load_existing_rows(
+    out_path,
+    capabilities,
+    date_filter=None,
+    test_id_filter=None,
+    ranking_configs=None,
+    warned_combos=None,
+):
+    """Read prior rows from data/rise_results.jsonl and refresh capability/score fields."""
+    if not out_path or not out_path.is_file():
+        return []
+    rows = []
+    with open(out_path, "r", encoding="utf-8") as f:
+        for line_num, line in enumerate(f, 1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as e:
+                print(f"WARNING: failed to parse {out_path}:{line_num}: {e}", file=sys.stderr)
+                continue
+            if not isinstance(row, dict) or not row.get("date") or not row.get("test_id"):
+                continue
+            if date_filter and row.get("date") != date_filter:
+                continue
+            if test_id_filter and row.get("test_id") != test_id_filter:
+                continue
+
+            service = row.get("service")
+            model = row.get("model")
+            cap_key = ((service or "").lower(), model)
+            if capabilities and cap_key in capabilities:
+                vision, vision_status, vision_note = resolve_capability(
+                    service, model, capabilities, warned_combos
+                )
+                row["vision"] = vision
+                row["vision_status"] = vision_status
+                row["vision_note"] = vision_note
+            elif capabilities:
+                if warned_combos is not None:
+                    warned_combos.add((service, model))
+                row["vision"] = None
+                row["vision_status"] = None
+                row["vision_note"] = None
+            else:
+                if warned_combos is not None:
+                    warned_combos.add((service, model))
+                row.setdefault("vision", None)
+                row.setdefault("vision_status", None)
+                row.setdefault("vision_note", None)
+
+            if ranking_configs is not None and row.get("raw_scoring"):
+                recomputed = calculate_normalized_score(
+                    row.get("raw_scoring"), row.get("benchmark"), ranking_configs
+                )
+                if recomputed is not None:
+                    row["normalized_score"] = recomputed
+
+            rows.append(row)
+    return rows
+
+
+def merge_rows(existing_rows, new_rows):
+    """Merge local collect() rows over existing JSONL rows keyed by (date, test_id)."""
+    merged = {(r["date"], r["test_id"]): r for r in existing_rows}
+    for r in new_rows:
+        merged[(r["date"], r["test_id"])] = r
+    return sorted(merged.values(), key=row_sort_key)
+
+
 def collect(results_dir, capabilities, csv_mapping, ranking_configs, date_filter=None, test_id_filter=None):
     """Yield (rows, skipped, warned_combos) over all matching run directories."""
     rows = []
@@ -223,7 +319,7 @@ def collect(results_dir, capabilities, csv_mapping, ranking_configs, date_filter
     warned_combos = set()
 
     if not results_dir.is_dir():
-        print(f"ERROR: results dir not found: {results_dir}", file=sys.stderr)
+        print(f"INFO: results dir not found: {results_dir} (no local runs collected)", file=sys.stderr)
         return rows, skipped, warned_combos
 
     for date_dir in sorted(p for p in results_dir.iterdir() if p.is_dir()):
@@ -249,17 +345,9 @@ def collect(results_dir, capabilities, csv_mapping, ranking_configs, date_filter
                 continue
 
             num_inputs, num_scored, tokens, cost_usd, timing = summarize_requests(run_dir)
-
-            cap_key = ((identity["service"] or "").lower(), identity["model"])
-            cap = capabilities.get(cap_key)
-            if cap is None:
-                warned_combos.add((identity["service"], identity["model"]))
-                vision, vision_status, vision_note = None, None, None
-            else:
-                vision = cap["vision"]
-                vision_status = cap["vision_status"]
-                note = cap["vision_note"]
-                vision_note = (note[: NOTE_TRUNCATE - 1] + "…") if note and len(note) > NOTE_TRUNCATE else note
+            vision, vision_status, vision_note = resolve_capability(
+                identity["service"], identity["model"], capabilities, warned_combos
+            )
 
             rows.append({
                 "service": identity["service"],
@@ -279,7 +367,7 @@ def collect(results_dir, capabilities, csv_mapping, ranking_configs, date_filter
                 "timing": timing,
             })
 
-    rows.sort(key=lambda r: (str(r["service"]), str(r["model"]), str(r["benchmark"]), r["date"], r["test_id"]))
+    rows.sort(key=row_sort_key)
     return rows, skipped, warned_combos
 
 
@@ -340,33 +428,51 @@ def distill_requests(run_dir, test_id):
 def write_details_shards(rows, results_dir, details_dir, prune=True):
     """Write one distilled shard per run; prune stale shards when requested.
 
-    Returns the list of shard paths written.
+    For preserved rows whose local run_dir is absent, keeps the existing
+    tracked shard in ``expected`` and leaves its ``requests`` intact.
+    Returns the list of shard paths written or preserved.
     """
     expected = set()
     for row in rows:
         run_dir = results_dir / row["date"] / row["test_id"]
-        shard = {
-            "test_id": row["test_id"],
-            "date": row["date"],
-            "service": row["service"],
-            "model": row["model"],
-            "benchmark": row["benchmark"],
-            "normalized_score": row["normalized_score"],
-            "vision_status": row["vision_status"],
-            "vision_note": row["vision_note"],
-            "num_inputs": row["num_inputs"],
-            "num_scored": row["num_scored"],
-            "tokens": row["tokens"],
-            "cost_usd": row["cost_usd"],
-            "timing": row["timing"],
-            "raw_scoring": row["raw_scoring"],
-            "requests": distill_requests(run_dir, row["test_id"]),
-        }
         shard_path = details_dir / row["date"] / (row["test_id"] + ".json")
-        expected.add(shard_path.resolve())
-        shard_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(shard_path, "w", encoding="utf-8") as f:
-            json.dump(shard, f, ensure_ascii=False)
+        if run_dir.is_dir():
+            shard = {
+                "test_id": row["test_id"],
+                "date": row["date"],
+                "service": row["service"],
+                "model": row["model"],
+                "benchmark": row["benchmark"],
+                "normalized_score": row["normalized_score"],
+                "vision_status": row.get("vision_status"),
+                "vision_note": row.get("vision_note"),
+                "num_inputs": row.get("num_inputs"),
+                "num_scored": row.get("num_scored"),
+                "tokens": row.get("tokens"),
+                "cost_usd": row.get("cost_usd"),
+                "timing": row.get("timing"),
+                "raw_scoring": row.get("raw_scoring"),
+                "requests": distill_requests(run_dir, row["test_id"]),
+            }
+            expected.add(shard_path.resolve())
+            shard_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(shard_path, "w", encoding="utf-8") as f:
+                json.dump(shard, f, ensure_ascii=False)
+        elif shard_path.is_file():
+            expected.add(shard_path.resolve())
+            existing_shard = load_json(shard_path)
+            if isinstance(existing_shard, dict):
+                for k in (
+                    "test_id", "date", "service", "model", "benchmark",
+                    "normalized_score", "vision_status", "vision_note",
+                    "num_inputs", "num_scored", "tokens", "cost_usd",
+                    "timing", "raw_scoring",
+                ):
+                    if k in row:
+                        existing_shard[k] = row[k]
+                existing_shard.setdefault("requests", [])
+                with open(shard_path, "w", encoding="utf-8") as f:
+                    json.dump(existing_shard, f, ensure_ascii=False)
     if prune and details_dir.is_dir():
         for existing in sorted(details_dir.rglob("*.json")):
             if existing.resolve() not in expected:
@@ -417,7 +523,7 @@ def print_summary(rows, skipped, warned_combos, out_path):
             print(f"  {service}/{model}")
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS_DIR)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
@@ -430,16 +536,27 @@ def main():
                         help="per-run detail shard dir (data/details/rise/<date>/<test_id>.json)")
     parser.add_argument("--no-details", action="store_true", help="skip detail shard emission")
     parser.add_argument("--no-prune", action="store_true", help="keep stale shards instead of deleting them")
-    args = parser.parse_args()
+    parser.add_argument("--replace", action="store_true",
+                        help="rebuild --out and --details-dir purely from --results-dir without preserving existing rows")
+    args = parser.parse_args(argv)
 
     ranking_configs = load_ranking_configs(args.rise_root)
     csv_mapping = load_test_csv_mapping(args.rise_root)
     capabilities = load_capabilities(args.capabilities)
 
-    rows, skipped, warned_combos = collect(
+    new_rows, skipped, warned_combos = collect(
         args.results_dir, capabilities, csv_mapping, ranking_configs,
         date_filter=args.date, test_id_filter=args.test_id,
     )
+    if args.replace:
+        rows = new_rows
+    else:
+        existing_rows = load_existing_rows(
+            args.out, capabilities,
+            date_filter=args.date, test_id_filter=args.test_id,
+            ranking_configs=ranking_configs, warned_combos=warned_combos,
+        )
+        rows = merge_rows(existing_rows, new_rows)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:
