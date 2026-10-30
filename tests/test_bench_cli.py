@@ -203,3 +203,79 @@ def test_count_jsonl(tmp_path):
     path.write_text('{"service": "CIT", "model": "m"}\nnot json\n{"service": "cit", "model": "m"}\n')
     assert suites.count_jsonl(path) == {("CIT", "m"): 2}
     assert suites.count_jsonl(tmp_path / "missing.jsonl") == {}
+
+
+def test_rise_six_benchmark_suite_configs():
+    from rise_eval import run_rise_ucsb
+
+    names = [b["name"] for b in run_rise_ucsb.PILOT_BENCHMARKS]
+    assert names == [
+        "book_advert_xml",
+        "bibliographic_data",
+        "fraktur_adverts",
+        "medieval_manuscripts",
+        "general_meeting_minutes",
+        "magazine_pages",
+    ]
+    for b in run_rise_ucsb.PILOT_BENCHMARKS:
+        bench_dir = run_rise_ucsb.RISE_ROOT / "benchmarks" / b["name"]
+        assert (bench_dir / "prompts" / b["prompt_file"]).is_file()
+        assert (bench_dir / "dataclass.py").is_file()
+
+
+def test_rise_build_combos_skips_completed_and_allocates_monotonic_ids(tmp_path):
+    from rise_eval import run_rise_ucsb
+
+    services = {
+        "CIT": {"url": "http://cit", "models": ["gemma-4-31b"]},
+        "AICommons": {"url": "http://aic", "models": ["amazon-nova-lite", "qwen3-32b"]},
+    }
+    gates = {
+        ("cit", "gemma-4-31b"): True,
+        ("aicommons", "amazon-nova-lite"): True,
+        ("aicommons", "qwen3-32b"): False,
+    }
+    jsonl = tmp_path / "rise_results.jsonl"
+    rows = [
+        {"service": "CIT", "model": "gemma-4-31b", "benchmark": "book_advert_xml", "test_id": "U0001", "date": "2026-09-14", "normalized_score": 98.7},
+        {"service": "CIT", "model": "gemma-4-31b", "benchmark": "bibliographic_data", "test_id": "U0002", "date": "2026-09-14", "normalized_score": 66.1},
+        {"service": "CIT", "model": "gemma-4-31b", "benchmark": "fraktur_adverts", "test_id": "U0003", "date": "2026-09-14", "normalized_score": 57.5},
+        {"service": "AICommons", "model": "amazon-nova-lite", "benchmark": "book_advert_xml", "test_id": "U0064", "date": "2026-09-14", "normalized_score": 0.0},
+        {"service": "AICommons", "model": "qwen3-32b", "benchmark": "book_advert_xml", "test_id": "U0042", "date": "2026-09-14", "normalized_score": 0.0},
+    ]
+    jsonl.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+
+    planned, skipped = run_rise_ucsb.build_combos(
+        services, gates, force=False, regenerate=False,
+        results_dir=results_dir, results_jsonl=jsonl, today="2026-10-29",
+    )
+    already = [s for s in skipped if s["reason"] == "already-completed"]
+    assert len(already) == 3
+    assert {(s["service"], s["model"], s["benchmark"]) for s in already} == {
+        ("CIT", "gemma-4-31b", "book_advert_xml"),
+        ("CIT", "gemma-4-31b", "bibliographic_data"),
+        ("CIT", "gemma-4-31b", "fraktur_adverts"),
+    }
+    cit_planned = [c["benchmark"]["name"] for c in planned if c["service"] == "CIT"]
+    assert cit_planned == ["medieval_manuscripts", "general_meeting_minutes", "magazine_pages"]
+
+    # Zero-scored combos from 2026-09-14 are re-planned, not skipped
+    aic_planned = [(c["model"], c["benchmark"]["name"]) for c in planned if c["service"] == "AICommons"]
+    assert ("amazon-nova-lite", "book_advert_xml") in aic_planned
+    assert ("qwen3-32b", "book_advert_xml") in aic_planned
+
+    # All allocated test IDs start after U0064 and are strictly monotonic
+    ids = [int(c["test_id"][1:]) for c in planned]
+    assert ids[0] == 65
+    assert ids == list(range(65, 65 + len(planned)))
+
+    # --regenerate disables already-completed skipping
+    planned_regen, skipped_regen = run_rise_ucsb.build_combos(
+        services, gates, force=False, regenerate=True,
+        results_dir=results_dir, results_jsonl=jsonl, today="2026-10-29",
+    )
+    assert not [s for s in skipped_regen if s["reason"] == "already-completed"]
+    assert len(planned_regen) == len(planned) + 3
+
