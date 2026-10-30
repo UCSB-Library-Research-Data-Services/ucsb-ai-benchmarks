@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T17:09:01+00:00",
+  "generated_at": "2026-10-30T00:45:22+00:00",
   "providers": [
     {
       "id": "CIT",
@@ -88,8 +88,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "AICommons",
@@ -106,8 +107,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "AICommons",
@@ -124,8 +126,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": true,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "AICommons",
@@ -143,7 +146,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -161,7 +165,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -179,7 +184,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -197,7 +203,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -215,7 +222,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -233,7 +241,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -251,7 +260,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -269,7 +279,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -287,7 +298,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -305,7 +317,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -322,8 +335,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": false,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "AICommons",
@@ -340,8 +354,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": false,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "AICommons",
@@ -359,7 +374,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -377,7 +393,8 @@
         "performance": true,
         "scicode": false,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "AICommons",
@@ -394,8 +411,9 @@
       "benchmarked": {
         "performance": true,
         "scicode": false,
-        "rise": true
-      }
+        "rise": false
+      },
+      "rise_flagged": true
     },
     {
       "service": "CIT",
@@ -413,7 +431,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -431,7 +450,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -449,7 +469,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -467,7 +488,8 @@
         "performance": true,
         "scicode": true,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -485,7 +507,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -503,7 +526,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -521,7 +545,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "CIT",
@@ -539,7 +564,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -557,7 +583,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -575,7 +602,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -593,7 +621,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -611,7 +640,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -629,7 +659,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -647,7 +678,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -665,7 +697,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -683,7 +716,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -701,7 +735,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -719,7 +754,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -737,7 +773,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -755,7 +792,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -773,7 +811,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -791,7 +830,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "GRIT",
@@ -809,7 +849,8 @@
         "performance": true,
         "scicode": true,
         "rise": true
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -827,7 +868,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -845,7 +887,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -863,7 +906,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -881,7 +925,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -899,7 +944,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -917,7 +963,8 @@
         "performance": false,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -935,7 +982,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -953,7 +1001,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -971,7 +1020,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -989,7 +1039,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -1007,7 +1058,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     },
     {
       "service": "NRP",
@@ -1025,7 +1077,8 @@
         "performance": true,
         "scicode": false,
         "rise": false
-      }
+      },
+      "rise_flagged": false
     }
   ]
 }
