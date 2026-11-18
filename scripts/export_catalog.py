@@ -172,6 +172,7 @@ def main():
     args = parser.parse_args()
 
     services = load_services()
+    services = {k: v for k, v in services.items() if v.get("role") != "baseline"}
     if args.services:
         services = {k: v for k, v in services.items() if k in args.services}
     if not services:

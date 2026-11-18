@@ -7,9 +7,9 @@ aggregates) and writes one distilled JSON per service|model:
     data/details/performance/<service>__<slugified-model>.json
 
 Each shard holds run metadata plus every individual run (metrics +
-``model_output`` truncated to 8000 chars). Like the other exporters this is
-stdlib-only and idempotent: the tree is rewritten wholly each run and stale
-shards are deleted.
+``model_output`` truncated to 8000 chars). Baseline services (config.py role
+"baseline") are never published. This is idempotent: the tree is rewritten
+wholly each run and stale shards are deleted.
 
 The panel filters runs by category client-side, so one shard serves the
 Overall cell and every category cell for that model.
@@ -33,7 +33,10 @@ DEFAULT_IN = REPO_ROOT / "data" / "performance_results.jsonl"
 DEFAULT_OUT_DIR = REPO_ROOT / "data" / "details" / "performance"
 
 DETAIL_TRUNCATE = 8000
-SKIP_SERVICES = {"dreamlab"}  # mirrors the dashboard's dreamlab filter
+
+
+sys.path.insert(0, str(REPO_ROOT))
+from config import is_baseline_service  # noqa: E402
 
 
 def slug_model(model):
@@ -76,8 +79,8 @@ def main():
                     continue
                 service = row.get("service") or "UNKNOWN"
                 model = row.get("model") or "UNKNOWN"
-                if service.lower() in SKIP_SERVICES:
-                    skipped["dreamlab"] += 1
+                if is_baseline_service(service):
+                    skipped["baseline"] += 1
                     continue
                 groups.setdefault((service, model), []).append(row)
     except OSError as e:

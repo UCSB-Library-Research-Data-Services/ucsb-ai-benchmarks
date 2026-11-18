@@ -33,11 +33,13 @@ REPO_ROOT = SCRIPT_DIR.parent
 DEFAULT_LOG_DIR = REPO_ROOT / "logs" / "scicode"
 DEFAULT_OUT_DIR = REPO_ROOT / "data" / "details" / "scicode"
 
+sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "scicode_eval"))
 from collect_scicode_results import (  # noqa: E402
     SKIP_MODES,
     derive_service_model,
 )
+from config import is_baseline_service  # noqa: E402
 
 DETAIL_TRUNCATE = 8000
 
@@ -89,6 +91,8 @@ def export_log(path):
 
     service, model = derive_service_model(
         log.eval.model, str(task_args.get("output_dir", "")))
+    if is_baseline_service(service):
+        return None, "baseline"
 
     problems = []
     for sample in log.samples or []:
