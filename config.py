@@ -3,6 +3,8 @@ import os
 
 load_dotenv()
 
+BASELINE_ROLE = "baseline"
+
 SERVICES = {
     "AICommons":{
         "url": "https://zkh52rh785.execute-api.us-east-1.amazonaws.com/v1",
@@ -104,6 +106,29 @@ SERVICES = {
             "all-the-things",
             "glm-ocr:latest"
         ],
-        }
+        },
+    "DREAMLAB" :{
+        "url": "https://litellm.dreamlab.ucsb.edu",
+        "key": os.getenv("DREAMLAB_KEY"),
+        "role": BASELINE_ROLE,
+        "models": [
+            "gemini-4-hydrogen",
+            "gemini-3.7-flash",
+            "gemini-3.5-flash-lite"
+        ]
     }
+    }
+
+
+def is_baseline_service(name):
+    if not name:
+        return False
+    return any(
+        svc.lower() == str(name).lower() and info.get("role") == BASELINE_ROLE
+        for svc, info in SERVICES.items()
+    )
+
+
+def baseline_services():
+    return [svc for svc, info in SERVICES.items() if info.get("role") == BASELINE_ROLE]
 
