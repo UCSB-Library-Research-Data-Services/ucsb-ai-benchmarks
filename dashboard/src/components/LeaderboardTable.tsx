@@ -4,10 +4,14 @@ import { performanceDetailPath } from '../lib/leaderboard';
 import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
+import { BaselineLegend } from './BaselineLegend';
+import { baselineBoundaries, bandColor, bandTooltip, PERF_METRIC_KEY } from '../lib/baseline';
+import type { BaselinesFile, Boundary } from '../lib/baseline';
 
 interface LeaderboardProps {
   data: LeaderboardData;
   deprecatedModels?: string[];
+  baselines?: BaselinesFile | null;
 }
 
 type Measurement = 'avgTTFT' | 'avgITL' | 'avgGenTPS' | 'avgTotalTPS';
@@ -95,12 +99,14 @@ function PerformanceBar({
   min,
   higherBetter,
   color,
+  title,
 }: {
   value: number;
   max: number;
   min: number;
   higherBetter: boolean;
   color: string;
+  title?: string;
 }) {
   const range = max - min || 1;
   const pct = higherBetter
@@ -109,7 +115,7 @@ function PerformanceBar({
   const clamped = Math.max(4, Math.min(100, pct));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+    <div title={title} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span
         style={{
           fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
@@ -220,7 +226,7 @@ function SortIcon({ dir, active }: { dir: SortDir | null; active: boolean }) {
   );
 }
 
-export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedModels }) => {
+export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedModels, baselines }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [measurement, setMeasurement] = useState<Measurement>('avgGenTPS');
   const [onlyLatest, setOnlyLatest] = useState(false);
@@ -318,6 +324,15 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
   };
 
   const hiBetter = higherIsBetter[measurement];
+
+  const bands = useMemo(() => {
+    const metric = PERF_METRIC_KEY[measurement];
+    const cats: Record<string, Boundary[]> = {};
+    for (const cat of data.allCategories) {
+      cats[cat] = baselineBoundaries(baselines, 'performance', metric, cat);
+    }
+    return { overall: baselineBoundaries(baselines, 'performance', metric, 'overall'), cats };
+  }, [baselines, measurement, data.allCategories]);
 
   // Sort rows: by selected column, or overall metric by default
   const sortedRows = useMemo(() => {
@@ -670,6 +685,7 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
       </div>
 
       {/* Table */}
+      <BaselineLegend higherIsBetter={hiBetter} />
       <div
         style={{
           overflowX: 'auto',
@@ -1015,7 +1031,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
                         max={colStats.max}
                         min={colStats.min}
                         higherBetter={hiBetter}
-                        color={ACCENT}
+                        color={bandColor(row[measurement], bands.overall, hiBetter)}
+                        title={bandTooltip(bands.overall, hiBetter, v => v.toFixed(v < 10 ? 2 : 1))}
                       />,
                       null,
                       sort.col === null
@@ -1047,7 +1064,8 @@ export const LeaderboardTable: React.FC<LeaderboardProps> = ({ data, deprecatedM
                               max={colStats.catStats[category]?.max ?? 0}
                               min={colStats.catStats[category]?.min ?? 0}
                               higherBetter={hiBetter}
-                              color={isActive ? ACCENT : provColor}
+                              color={bandColor(cm[measurement], bands.cats[category] ?? [], hiBetter)}
+                              title={bandTooltip(bands.cats[category] ?? [], hiBetter, v => v.toFixed(v < 10 ? 2 : 1))}
                             />,
                             category,
                             isActive

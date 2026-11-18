@@ -4,6 +4,7 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { providerColor, providerAnchor } from '../lib/catalog';
 import type { Catalog } from '../lib/catalog';
+import { loadBaselines } from '../lib/baselineData';
 import * as fs from 'fs';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
@@ -21,6 +22,39 @@ try {
 const canonicalIds = (catalog?.providers ?? []).map(p => p.id).sort();
 const models = catalog?.models ?? [];
 const providers = catalog?.providers ?? [];
+
+const baselineFile = loadBaselines();
+const fmtNum = (v: number | undefined | null, digits = 1): string =>
+  typeof v === 'number' && Number.isFinite(v) ? v.toFixed(digits) : '—';
+const latestDate = (latest: Record<string, string | null>): string => {
+  const dates = Object.values(latest).filter((d): d is string => !!d).sort();
+  return dates.length ? dates[dates.length - 1].slice(0, 10) : '—';
+};
+const firstSplitValue = (rec: Record<string, number> | undefined): number | undefined => {
+  if (!rec) return undefined;
+  if (typeof rec.test === 'number') return rec.test;
+  const k = Object.keys(rec)[0];
+  return k ? rec[k] : undefined;
+};
+const baselineTiers = Object.entries(baselineFile?.tiers ?? {}).map(([name, t]) => {
+  const perf = t.values.performance ?? {};
+  return {
+    name,
+    service: t.service,
+    runs: {
+      performance: t.runs.performance ?? 0,
+      rise: t.runs.rise ?? 0,
+      scicode: t.runs.scicode ?? 0,
+    },
+    latest: t.latest,
+    genTps: perf.generation_tps?.overall,
+    ttft: perf.ttft_sec?.overall,
+    itl: perf.itl_ms_per_token?.overall,
+    riseAvg: t.values.rise?.score?.avg,
+    resolve: firstSplitValue(t.values.scicode?.resolve),
+    substep: firstSplitValue(t.values.scicode?.substep),
+  };
+}).sort((a, b) => a.name.localeCompare(b.name));
 ---
 
 <!DOCTYPE html>
@@ -323,6 +357,54 @@ const providers = catalog?.providers ?? [];
           </div>
         </div>
       )}
+
+      <section id="baselines" class="block container">
+        <h2 class="section-heading">DREAMLAB baselines</h2>
+        <p class="section-sub">
+          Reference tiers used to colour the leaderboard bars. Not ranked and not shown as leaderboard rows.
+          Values are headline means from the latest runs; latency tiers are different model sizes, so latency
+          bands mostly reflect size, while RISE and SciCode bands are the quality signal.
+        </p>
+        {baselineTiers.length === 0 ? (
+          <div class="error-box">
+            <strong>No baseline data yet.</strong>
+            <p>Run <code>uv run bench run all --service DREAMLAB</code> then <code>uv run bench collect all</code>.</p>
+          </div>
+        ) : (
+          <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+              <thead>
+                <tr style="background: #f8fafc; text-align: left; color: #475569;">
+                  <th style="padding: 0.6rem 0.8rem;">Tier</th>
+                  <th style="padding: 0.6rem 0.8rem;">Runs (perf / RISE / SciCode)</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">Gen TPS</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">TTFT (s)</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">ITL (ms)</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">RISE avg</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">SciCode resolve %</th>
+                  <th style="padding: 0.6rem 0.8rem; text-align: right;">SciCode sub-step %</th>
+                  <th style="padding: 0.6rem 0.8rem;">Latest</th>
+                </tr>
+              </thead>
+              <tbody>
+                {baselineTiers.map(t => (
+                  <tr style="border-top: 1px solid #e2e8f0;">
+                    <td style="padding: 0.6rem 0.8rem; font-family: 'JetBrains Mono', monospace; font-weight: 600;">{t.name}<br /><span style="color:#64748b; font-weight: 400;">{t.service}</span></td>
+                    <td style="padding: 0.6rem 0.8rem;">{t.runs.performance} / {t.runs.rise} / {t.runs.scicode}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.genTps)}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.ttft, 2)}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.itl, 2)}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.riseAvg)}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.resolve)}</td>
+                    <td style="padding: 0.6rem 0.8rem; text-align: right; font-family: 'JetBrains Mono', monospace;">{fmtNum(t.substep)}</td>
+                    <td style="padding: 0.6rem 0.8rem; color: #64748b;">{latestDate(t.latest)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </main>
 
     <SiteFooter />

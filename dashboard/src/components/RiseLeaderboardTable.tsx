@@ -4,10 +4,14 @@ import { benchmarkMeta, benchmarkTitle, riseDetailPath } from '../lib/rise';
 import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
+import { BaselineLegend } from './BaselineLegend';
+import { baselineBoundaries, bandColor, bandTooltip } from '../lib/baseline';
+import type { BaselinesFile, Boundary } from '../lib/baseline';
 
 interface RiseLeaderboardProps {
   data: RiseLeaderboardData;
   deprecatedModels?: string[];
+  baselines?: BaselinesFile | null;
 }
 
 type VisionFilter = 'all' | 'vision' | 'text';
@@ -77,10 +81,10 @@ function RankBadge({ rank, sortDir }: { rank: number; sortDir: 'asc' | 'desc' })
 }
 
 // All RISE cells share the same 0-100 normalized scale, so bars are absolute.
-function ScoreBar({ value, color }: { value: number; color: string }) {
+function ScoreBar({ value, color, title }: { value: number; color: string; title?: string }) {
   const pct = Math.max(2, Math.min(100, value));
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+    <div title={title} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span
         style={{
           fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
@@ -252,13 +256,21 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   );
 }
 
-export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels }) => {
+export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels, baselines }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [visionFilter, setVisionFilter] = useState<VisionFilter>('all');
   const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [openKey, setOpenKey] = useState<string | null>(null);
+
+  const bands = useMemo(() => {
+    const perBench: Record<string, Boundary[]> = {};
+    for (const b of data.allBenchmarks) {
+      perBench[b] = baselineBoundaries(baselines, 'rise', 'score', b);
+    }
+    return { avg: baselineBoundaries(baselines, 'rise', 'score', 'avg'), perBench };
+  }, [baselines, data.allBenchmarks]);
 
   const isAllMode = selectedProviders === null;
 
@@ -652,6 +664,7 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
       </div>
 
       {/* Results count */}
+      <BaselineLegend />
       <div
         style={{
           padding: '0.5rem 2rem',
@@ -971,7 +984,11 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                     }}
                   >
                     {row.avg !== null ? (
-                      <ScoreBar value={row.avg} color={ACCENT} />
+                      <ScoreBar
+                        value={row.avg}
+                        color={bandColor(row.avg, bands.avg, true)}
+                        title={bandTooltip(bands.avg, true, v => v.toFixed(1))}
+                      />
                     ) : (
                       <span style={{ color: '#cbd5e1', fontSize: '0.75rem' }}>—</span>
                     )}
@@ -984,7 +1001,11 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                     const isOpen = openKey === detailKey;
                     const cellBody =
                       value !== null && value !== undefined ? (
-                        <ScoreBar value={value} color={isActive ? ACCENT : provColor} />
+                        <ScoreBar
+                          value={value}
+                          color={bandColor(value, bands.perBench[benchmark] ?? [], true)}
+                          title={bandTooltip(bands.perBench[benchmark] ?? [], true, v => v.toFixed(1))}
+                        />
                       ) : (
                         <span
                           title="Not run (text-only model or run not completed)"

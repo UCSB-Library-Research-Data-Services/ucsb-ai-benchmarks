@@ -4,10 +4,14 @@ import { scicodeDetailPath } from '../lib/scicode';
 import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
+import { BaselineLegend } from './BaselineLegend';
+import { baselineBoundaries, bandColor, bandTooltip } from '../lib/baseline';
+import type { BaselinesFile } from '../lib/baseline';
 
 interface ScicodeProps {
   data: ScicodeLeaderboardData;
   deprecatedModels?: string[];
+  baselines?: BaselinesFile | null;
 }
 
 type Measurement =
@@ -103,12 +107,12 @@ function RankBadge({ rank, showMedal }: { rank: number; showMedal: boolean }) {
   );
 }
 
-function ScoreBar({ value, min, max, color }: { value: number; min: number; max: number }) {
+function ScoreBar({ value, min, max, color, title }: { value: number; min: number; max: number; color: string; title?: string }) {
   const range = max - min || 1;
   const pct = ((value - min) / range) * 100;
   const clamped = Math.max(4, Math.min(100, pct));
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+    <div title={title} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       <span
         style={{
           fontFamily: "'JetBrains Mono', 'Fira Mono', 'Courier New', monospace",
@@ -319,7 +323,7 @@ const splitHints: Record<SplitFilter, string> = {
 const TIME_TOOLTIP =
   'Average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.';
 
-export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels }) => {
+export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels, baselines }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [splitFilter, setSplitFilter] = useState<SplitFilter>('all');
   const [showDeprecated, setShowDeprecated] = useState(false);
@@ -774,6 +778,10 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
         )}
       </div>
 
+      <div style={{ padding: '0.5rem 2rem 0' }}>
+        <BaselineLegend />
+      </div>
+
       <div
         style={{
           padding: '0.5rem 2rem',
@@ -1098,7 +1106,8 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
                         value={row.mainResolveRate}
                         min={colStats.mainResolveRate.min}
                         max={colStats.mainResolveRate.max}
-                        color={isActiveCol('mainResolveRate') ? ACCENT : provColor}
+                        color={bandColor(row.mainResolveRate, baselineBoundaries(baselines, 'scicode', 'resolve', row.split), true)}
+                        title={bandTooltip(baselineBoundaries(baselines, 'scicode', 'resolve', row.split), true, v => v.toFixed(1) + '%')}
                       />,
                       `View run details: ${row.logFile}`
                     )}
@@ -1120,7 +1129,8 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
                         value={row.subStepAccuracy}
                         min={colStats.subStepAccuracy.min}
                         max={colStats.subStepAccuracy.max}
-                        color={isActiveCol('subStepAccuracy') ? ACCENT : provColor}
+                        color={bandColor(row.subStepAccuracy, baselineBoundaries(baselines, 'scicode', 'substep', row.split), true)}
+                        title={bandTooltip(baselineBoundaries(baselines, 'scicode', 'substep', row.split), true, v => v.toFixed(1) + '%')}
                       />,
                       `View run details: ${row.logFile}`
                     )}

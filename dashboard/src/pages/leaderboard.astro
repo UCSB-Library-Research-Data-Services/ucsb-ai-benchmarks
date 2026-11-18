@@ -4,10 +4,14 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { parsePerformanceResults, aggregatePerformanceData } from '../lib/leaderboard';
 import type { LeaderboardData } from '../lib/leaderboard';
+import { loadBaselines } from '../lib/baselineData';
+import type { BaselinesFile } from '../lib/baseline';
 import { deprecatedModelKeys } from '../lib/catalog';
 import type { Catalog } from '../lib/catalog';
 import * as fs from 'fs';
 import '../styles/global.css';
+
+const baselines: BaselinesFile | null = loadBaselines();
 
 // Deprecated models come from catalog.json (generated from config.py's
 // deprecated_models lists), keyed as "Service|model".
@@ -119,7 +123,7 @@ try {
       </div>
     ) : leaderboardData ? (
       <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
-        <LeaderboardTable client:load data={leaderboardData} deprecatedModels={deprecatedModels} />
+        <LeaderboardTable client:load data={leaderboardData} deprecatedModels={deprecatedModels} baselines={baselines} />
       </div>
     ) : (
       <div class="error-container">
