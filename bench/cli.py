@@ -13,7 +13,7 @@ import argparse
 import sys
 
 from bench import suites
-from bench.pipeline import all_ok, print_summary, probe_missing, run_pipeline, run_suites
+from bench.pipeline import all_ok, collect_baselines, print_summary, probe_missing, run_pipeline, run_suites
 from bench.runner import REPO_ROOT, run, setup_log
 
 
@@ -27,6 +27,7 @@ def _build_parser():
     p_run.add_argument("--model", default=None, help="exact config.py name or unique substring (case-insensitive)")
     p_run.add_argument("--no-collect", action="store_true", help="skip auto-collect after the run")
     p_run.add_argument("--smoke", action="store_true", help="cheap check: perf --task 3, rise --limit-objects 2 --text-only, scicode --split validation --limit 2")
+    p_run.add_argument("--include-baseline", action="store_true", help="also run baseline services (e.g. DREAMLAB) when no --service is given")
     p_run.add_argument("--dry-run", action="store_true", help="print resolved argv without executing")
 
     p_collect = sub.add_parser("collect", help="collect results into data/*.jsonl (idempotent rewrites)")
@@ -36,6 +37,7 @@ def _build_parser():
     p_pipe.add_argument("--suites", default=None, help="comma-separated subset, e.g. performance,rise (default: all three)")
     p_pipe.add_argument("--service", default=None, help="limit to one service in config.py (case-insensitive)")
     p_pipe.add_argument("--model", default=None, help="exact config.py name or unique substring (case-insensitive)")
+    p_pipe.add_argument("--include-baseline", action="store_true", help="also run baseline services (e.g. DREAMLAB); excluded by default")
     p_pipe.add_argument("--no-collect", action="store_true")
     p_pipe.add_argument("--skip-build", action="store_true", help="skip dashboard build at the end")
     p_pipe.add_argument("--dry-run", action="store_true", help="print resolved argv without executing")
@@ -61,11 +63,11 @@ def _resolve_selection(service_name, model_name, roster):
 def _cmd_run(args, passthrough, roster, log_path):
     try:
         service, model = _resolve_selection(args.service, args.model, roster)
+        targets = list(suites.SUITES) if args.suite == "all" else [args.suite]
+        status = run_suites(targets, service, model, args.smoke, args.no_collect, passthrough, roster, log_path, args.dry_run, args.include_baseline)
     except ValueError as e:
         print("error: %s" % e, file=sys.stderr)
         return 2
-    targets = list(suites.SUITES) if args.suite == "all" else [args.suite]
-    status = run_suites(targets, service, model, args.smoke, args.no_collect, passthrough, roster, log_path, args.dry_run)
     print_summary(status)
     return 0 if all_ok(status) else 1
 
@@ -83,6 +85,7 @@ def _cmd_collect(args, log_path):
             status[key] = "ok" if run(argv, cwd=REPO_ROOT, log_path=log_path) == 0 else "failed"
             if status[key] != "ok":
                 break
+    status["collect baselines"] = collect_baselines(log_path)
     print_summary(status)
     return 0 if all_ok(status) else 1
 
@@ -91,10 +94,10 @@ def _cmd_pipeline(args, roster, log_path):
     try:
         service, model = _resolve_selection(args.service, args.model, roster)
         targets = suites.normalize_suites(args.suites)
+        status = run_pipeline(targets, service, model, args.skip_build, args.no_collect, roster, log_path, args.dry_run, args.include_baseline)
     except ValueError as e:
         print("error: %s" % e, file=sys.stderr)
         return 2
-    status = run_pipeline(targets, service, model, args.skip_build, args.no_collect, roster, log_path, args.dry_run)
     print_summary(status)
     return 0 if all_ok(status) else 1
 
