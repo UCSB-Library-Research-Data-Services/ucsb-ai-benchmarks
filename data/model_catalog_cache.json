@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T16:45:57+00:00",
+  "generated_at": "2026-11-18T18:56:20+00:00",
   "description": "Last-good GET /v1/models responses per service (entries: {id, owned_by}). Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
@@ -116,11 +116,39 @@
         "owned_by": "bedrock"
       },
       {
+        "id": "claude-v5.5-haiku",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "claude-v5.5-opus",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "claude-v5.5-sonnet",
+        "owned_by": "bedrock"
+      },
+      {
         "id": "llama-4-maverick-17b-instruct",
         "owned_by": "bedrock"
       },
       {
         "id": "llama-4-scout-17b-instruct",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "moonshotai-kimi-k3",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "nvidia-nemotron-super-3-120b",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "openai-gpt-6-luna",
+        "owned_by": "bedrock"
+      },
+      {
+        "id": "openai-gpt-6-sol",
         "owned_by": "bedrock"
       },
       {
@@ -158,11 +186,15 @@
     ],
     "NRP": [
       {
-        "id": "deepseek-v4-flash",
+        "id": "gemma-small",
         "owned_by": "NRP"
       },
       {
-        "id": "glm-5",
+        "id": "gemma4-small",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "gemma4-12b",
         "owned_by": "NRP"
       },
       {
@@ -199,18 +231,6 @@
       },
       {
         "id": "service",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "gemma-small",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "gemma4-small",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "gemma4-12b",
         "owned_by": "NRP"
       },
       {
@@ -255,6 +275,22 @@
       },
       {
         "id": "minimax-m2",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-mc",
+        "owned_by": "MassedCompute-mfsada"
+      },
+      {
+        "id": "gemma-mc",
+        "owned_by": "MassedCompute-mfsada"
+      },
+      {
+        "id": "glm-5",
         "owned_by": "NRP"
       }
     ]

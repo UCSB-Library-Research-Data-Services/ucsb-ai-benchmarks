@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T16:45:57+00:00",
+  "generated_at": "2026-11-18T18:56:20+00:00",
   "providers": [
     {
       "id": "AICommons",
@@ -17,7 +17,7 @@
         "Students"
       ],
       "status": "active",
-      "model_count": 18,
+      "model_count": 25,
       "benchmarked_count": 18
     },
     {
@@ -51,7 +51,7 @@
         "Faculty"
       ],
       "status": "active",
-      "model_count": 23,
+      "model_count": 25,
       "benchmarked_count": 11
     },
     {
@@ -227,6 +227,63 @@
     },
     {
       "service": "AICommons",
+      "model": "claude-v5.5-haiku",
+      "slug": "aicommons--claude-v5.5-haiku",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5.5-opus",
+      "slug": "aicommons--claude-v5.5-opus",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5.5-sonnet",
+      "slug": "aicommons--claude-v5.5-sonnet",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
       "model": "gpt-3.5-turbo",
       "slug": "aicommons--gpt-3.5-turbo",
       "in_api": true,
@@ -355,6 +412,82 @@
         "performance": true,
         "scicode": false,
         "rise": true
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "moonshotai-kimi-k3",
+      "slug": "aicommons--moonshotai-kimi-k3",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "nvidia-nemotron-super-3-120b",
+      "slug": "aicommons--nvidia-nemotron-super-3-120b",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-6-luna",
+      "slug": "aicommons--openai-gpt-6-luna",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-6-sol",
+      "slug": "aicommons--openai-gpt-6-sol",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "bedrock",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
       },
       "rise_flagged": false
     },
@@ -949,6 +1082,25 @@
     },
     {
       "service": "NRP",
+      "model": "gemma-mc",
+      "slug": "nrp--gemma-mc",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "MassedCompute-mfsada",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
       "model": "gemma-small",
       "slug": "nrp--gemma-small",
       "in_api": true,
@@ -1210,6 +1362,25 @@
         "performance": true,
         "scicode": false,
         "rise": true
+      },
+      "rise_flagged": false
+    },
+    {
+      "service": "NRP",
+      "model": "qwen3-mc",
+      "slug": "nrp--qwen3-mc",
+      "in_api": true,
+      "in_roster": false,
+      "deprecated": false,
+      "owned_by": "MassedCompute-mfsada",
+      "vision": null,
+      "vision_status": null,
+      "max_output_tokens": null,
+      "max_output_tokens_source": null,
+      "benchmarked": {
+        "performance": false,
+        "scicode": false,
+        "rise": false
       },
       "rise_flagged": false
     },
