@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # run_scicode_evals.sh — fresh SciCode eval batch over the services listed in
-# config.py (every service with a `models` roster; services without
-# one, e.g. dreamlab, are skipped).
+# config.py (every service with a `models` roster, except role "baseline"
+# services such as DREAMLAB, which run only when named with --service).
 #
 # Default (full batch): test split (65 problems), with_background=True,
 # temperature 0, one `inspect eval` per (service, model).
@@ -113,7 +113,8 @@ from config import SERVICES
 
 svc_filter = os.environ.get("_SCICODE_SERVICE_FILTER", "")
 model_filter = os.environ.get("_SCICODE_MODEL_FILTER", "")
-roster = [(name, info) for name, info in SERVICES.items() if info.get("models")]
+roster = [(name, info) for name, info in SERVICES.items()
+          if info.get("models") and (svc_filter or info.get("role") != "baseline")]
 if svc_filter:
     want = svc_filter.lower()
     if not any(name.lower() == want for name, _ in roster):
