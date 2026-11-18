@@ -16,6 +16,8 @@ SCICODE_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_scicode_details.p
 PERF_DETAILS_ARGV = ["uv", "run", "python", "scripts/export_performance_details.py"]
 PROBE_ARGV = ["uv", "run", "python", "scripts/check_model_vision.py"]
 BUILD_ARGV = ["npm", "run", "build"]
+BASELINES_ARGV = ["uv", "run", "python", "scripts/export_baselines.py"]
+BASELINE_ROLE = "baseline"
 
 CAPABILITIES_PATH = REPO_ROOT / "data" / "model_capabilities.json"
 DASHBOARD_DIR = REPO_ROOT / "dashboard"
@@ -38,6 +40,27 @@ def resolve_service(name, roster):
         if svc.lower() == name.lower():
             return svc
     raise ValueError("unknown --service %r (available: %s)" % (name, ", ".join(roster)))
+
+
+def is_baseline(info):
+    return (info or {}).get("role") == BASELINE_ROLE
+
+
+def plan_services(roster, service=None, model=None, include_baseline=False):
+    """Explicit service list for a run. Baseline services only run when named or included."""
+    if service:
+        return [service]
+    names = [
+        svc for svc, info in roster.items()
+        if (info or {}).get("models") and (include_baseline or not is_baseline(info))
+    ]
+    if model:
+        names = [svc for svc in names if model in (roster[svc].get("models") or [])]
+        if not names:
+            raise ValueError(
+                "--model %r belongs only to baseline services; pass --service or --include-baseline" % (model,)
+            )
+    return names
 
 
 def _distinct(names):

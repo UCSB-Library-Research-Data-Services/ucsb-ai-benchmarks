@@ -79,12 +79,13 @@ def probe_missing(missing, log_path=None, dry_run=False):
     return probed, ok
 
 
-def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, log_path, dry_run):
+def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, log_path, dry_run, include_baseline=False):
+    services = suites.plan_services(roster, service, model, include_baseline)
     status = {}
     for suite in targets:
         if suite == "rise":
             cap_table, _ = suites.load_capabilities()
-            missing = suites.find_missing(roster, cap_table, service, model)
+            missing = [m for svc in services for m in suites.find_missing(roster, cap_table, svc, model)]
             if missing:
                 print("probing %d model(s) missing from capabilities..." % len(missing))
                 probed, ok = probe_missing(missing, log_path, dry_run)
@@ -94,9 +95,13 @@ def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, 
                     status["capabilities"] = "ok (%d probed)" % probed
                 else:
                     status["capabilities"] = "failed"
-        argv = suites.build_run_argv(suite, service, model, smoke, passthrough, roster)
-        rc = run_subprocess(argv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
-        status["run " + suite] = _rc_status(rc, dry_run)
+        if not services:
+            status["run " + suite] = "no-op (no services selected)"
+        for svc in services:
+            argv = suites.build_run_argv(suite, svc, model, smoke, passthrough, roster)
+            rc = run_subprocess(argv, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
+            key = "run " + suite if len(services) == 1 else "run %s (%s)" % (suite, svc)
+            status[key] = _rc_status(rc, dry_run)
         if not no_collect:
             cargvs = suites.build_collect_argvs(suite)
             if not cargvs:
@@ -108,11 +113,18 @@ def run_suites(targets, service, model, smoke, no_collect, passthrough, roster, 
                     status[key] = _rc_status(rc2, dry_run)
                     if rc2 != 0 and not dry_run:
                         break
+    if not no_collect:
+        status["collect baselines"] = collect_baselines(log_path, dry_run)
     return status
 
 
-def run_pipeline(targets, service, model, skip_build, no_collect, roster, log_path, dry_run):
-    status = run_suites(targets, service, model, False, no_collect, [], roster, log_path, dry_run)
+def collect_baselines(log_path=None, dry_run=False):
+    rc = run_subprocess(suites.BASELINES_ARGV, cwd=REPO_ROOT, log_path=log_path, dry_run=dry_run)
+    return _rc_status(rc, dry_run)
+
+
+def run_pipeline(targets, service, model, skip_build, no_collect, roster, log_path, dry_run, include_baseline=False):
+    status = run_suites(targets, service, model, False, no_collect, [], roster, log_path, dry_run, include_baseline)
     if skip_build:
         status["build"] = "skipped"
     else:
