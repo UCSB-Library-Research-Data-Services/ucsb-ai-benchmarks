@@ -1,19 +1,142 @@
 {
-  "generated_at": "2026-11-19T04:03:32+00:00",
+  "generated_at": "2026-11-19T04:13:34+00:00",
   "tiers": {
+    "gemini-3.5-flash-lite": {
+      "latest": {
+        "performance": "2026-11-19T04:13:30Z",
+        "rise": null,
+        "scicode": null
+      },
+      "runs": {
+        "performance": 15,
+        "rise": 0,
+        "scicode": 0
+      },
+      "service": "DREAMLAB",
+      "values": {
+        "performance": {
+          "generation_tps": {
+            "advanced_math": 253.8,
+            "chemistry": 308.62,
+            "computational_law": 211.67,
+            "computer_science": 356.81,
+            "digital_humanities": 289.505,
+            "mathematics": 332.85,
+            "neurobiology": 216.01999999999998,
+            "overall": 286.684,
+            "philosophy": 198.93,
+            "scientific_coding": 371.69,
+            "signal_processing": 342.98
+          },
+          "itl_ms_per_token": {
+            "advanced_math": 3.94,
+            "chemistry": 3.24,
+            "computational_law": 4.72,
+            "computer_science": 2.8,
+            "digital_humanities": 3.58,
+            "mathematics": 3.01,
+            "neurobiology": 4.625,
+            "overall": 3.662,
+            "philosophy": 5.03,
+            "scientific_coding": 2.69,
+            "signal_processing": 2.92
+          },
+          "total_tps": {
+            "advanced_math": 402.27,
+            "chemistry": 302.31,
+            "computational_law": 468.13,
+            "computer_science": 352.83,
+            "digital_humanities": 322.985,
+            "mathematics": 331.34000000000003,
+            "neurobiology": 192.685,
+            "overall": 321.652,
+            "philosophy": 233.28,
+            "scientific_coding": 391.06,
+            "signal_processing": 334.91
+          },
+          "ttft_sec": {
+            "advanced_math": 0.997,
+            "chemistry": 0.805,
+            "computational_law": 0.741,
+            "computer_science": 0.674,
+            "digital_humanities": 0.897,
+            "mathematics": 0.6945,
+            "neurobiology": 1.0274999999999999,
+            "overall": 0.8626,
+            "philosophy": 1.0,
+            "scientific_coding": 0.895,
+            "signal_processing": 0.795
+          }
+        }
+      }
+    },
     "gemini-3.7-flash": {
       "latest": {
-        "performance": null,
+        "performance": "2026-11-19T04:13:07Z",
         "rise": null,
         "scicode": "2026-11-19T02:12:48+00:00"
       },
       "runs": {
-        "performance": 0,
+        "performance": 15,
         "rise": 0,
         "scicode": 1
       },
       "service": "DREAMLAB",
       "values": {
+        "performance": {
+          "generation_tps": {
+            "advanced_math": 237.03,
+            "chemistry": 249.1,
+            "computational_law": 190.12,
+            "computer_science": 114.0,
+            "digital_humanities": 286.28749999999997,
+            "mathematics": 164.68,
+            "neurobiology": 232.86,
+            "overall": 235.27133333333333,
+            "philosophy": 223.35,
+            "scientific_coding": 484.16,
+            "signal_processing": 91.08
+          },
+          "itl_ms_per_token": {
+            "advanced_math": 4.22,
+            "chemistry": 4.01,
+            "computational_law": 5.26,
+            "computer_science": 8.77,
+            "digital_humanities": 4.375,
+            "mathematics": 6.085,
+            "neurobiology": 4.33,
+            "overall": 5.208,
+            "philosophy": 4.48,
+            "scientific_coding": 2.07,
+            "signal_processing": 10.98
+          },
+          "total_tps": {
+            "advanced_math": 101.84,
+            "chemistry": 155.03,
+            "computational_law": 115.78,
+            "computer_science": 82.47,
+            "digital_humanities": 147.0675,
+            "mathematics": 101.775,
+            "neurobiology": 90.215,
+            "overall": 110.53466666666667,
+            "philosophy": 84.5,
+            "scientific_coding": 99.71,
+            "signal_processing": 46.44
+          },
+          "ttft_sec": {
+            "advanced_math": 19.255,
+            "chemistry": 7.395,
+            "computational_law": 12.116,
+            "computer_science": 18.212,
+            "digital_humanities": 14.84975,
+            "mathematics": 15.3295,
+            "neurobiology": 14.4525,
+            "overall": 20.424066666666665,
+            "philosophy": 18.022,
+            "scientific_coding": 71.261,
+            "signal_processing": 41.137
+          }
+        },
         "scicode": {
           "resolve": {
             "test": 20.0
@@ -26,17 +149,71 @@
     },
     "gemini-4-hydrogen": {
       "latest": {
-        "performance": null,
+        "performance": "2026-11-19T04:10:07Z",
         "rise": null,
         "scicode": "2026-11-18T22:45:43+00:00"
       },
       "runs": {
-        "performance": 0,
+        "performance": 15,
         "rise": 0,
         "scicode": 1
       },
       "service": "DREAMLAB",
       "values": {
+        "performance": {
+          "generation_tps": {
+            "advanced_math": 715.2,
+            "chemistry": 245.42,
+            "computational_law": 903.49,
+            "computer_science": 441.52,
+            "digital_humanities": 603.3325,
+            "mathematics": 257.175,
+            "neurobiology": 419.71000000000004,
+            "overall": 537.898,
+            "philosophy": 704.17,
+            "scientific_coding": 970.51,
+            "signal_processing": 321.06
+          },
+          "itl_ms_per_token": {
+            "advanced_math": 1.4,
+            "chemistry": 4.07,
+            "computational_law": 1.11,
+            "computer_science": 2.26,
+            "digital_humanities": 1.81,
+            "mathematics": 3.91,
+            "neurobiology": 2.415,
+            "overall": 2.286,
+            "philosophy": 1.42,
+            "scientific_coding": 1.03,
+            "signal_processing": 3.11
+          },
+          "total_tps": {
+            "advanced_math": 175.74,
+            "chemistry": 56.71,
+            "computational_law": 86.2,
+            "computer_science": 121.96,
+            "digital_humanities": 139.5375,
+            "mathematics": 72.05,
+            "neurobiology": 64.975,
+            "overall": 112.546,
+            "philosophy": 165.46,
+            "scientific_coding": 164.39,
+            "signal_processing": 85.53
+          },
+          "ttft_sec": {
+            "advanced_math": 22.231,
+            "chemistry": 41.496,
+            "computational_law": 42.952,
+            "computer_science": 53.629,
+            "digital_humanities": 43.412,
+            "mathematics": 51.417500000000004,
+            "neurobiology": 39.567,
+            "overall": 45.0312,
+            "philosophy": 14.306,
+            "scientific_coding": 107.311,
+            "signal_processing": 37.926
+          }
+        },
         "scicode": {
           "resolve": {
             "test": 24.6154

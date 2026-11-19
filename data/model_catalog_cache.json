@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T04:03:34+00:00",
+  "generated_at": "2026-11-19T04:13:37+00:00",
   "description": "Last-good GET /v1/models responses per service (entries: {id, owned_by}). Fallback for export_catalog.py --offline.",
   "services": {
     "CIT": [
@@ -198,16 +198,8 @@
         "owned_by": "NRP"
       },
       {
-        "id": "deepseek-v4-flash",
-        "owned_by": "NRP"
-      },
-      {
         "id": "gemma-small-e4b",
         "owned_by": "MassedCompute-mfsada"
-      },
-      {
-        "id": "glm-5",
-        "owned_by": "NRP"
       },
       {
         "id": "service",
@@ -254,22 +246,6 @@
         "owned_by": "MassedCompute-mfsada"
       },
       {
-        "id": "qwen3",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "qwen3-vl",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "qwen3-embedding",
-        "owned_by": "NRP"
-      },
-      {
-        "id": "qwen3-small",
-        "owned_by": "NRP"
-      },
-      {
         "id": "gpt-oss",
         "owned_by": "SDSC"
       },
@@ -291,6 +267,30 @@
       },
       {
         "id": "minimax-m2",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "glm-5",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "deepseek-v4-flash",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-vl",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-embedding",
+        "owned_by": "NRP"
+      },
+      {
+        "id": "qwen3-small",
         "owned_by": "NRP"
       }
     ]
