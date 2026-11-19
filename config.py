@@ -84,7 +84,17 @@ SERVICES = {
         ],
         "excluded_models": [
             "qwen3-embedding",
-            "service"   
+            "service",
+            "agents",
+            "coding",
+            "cuda",
+            "general",
+            "kubernetes",
+            "long-context",
+            "reasoning",
+            "vision",
+            "qwen3-mc",
+            "gemma-mc"
         ]
         },
     "GRIT": {
