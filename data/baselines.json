@@ -1,4 +1,28 @@
 {
-  "generated_at": "2026-11-18T22:09:34+00:00",
-  "tiers": {}
+  "generated_at": "2026-11-19T00:39:38+00:00",
+  "tiers": {
+    "gemini-4-hydrogen": {
+      "latest": {
+        "performance": null,
+        "rise": null,
+        "scicode": "2026-11-18T22:45:43+00:00"
+      },
+      "runs": {
+        "performance": 0,
+        "rise": 0,
+        "scicode": 1
+      },
+      "service": "DREAMLAB",
+      "values": {
+        "scicode": {
+          "resolve": {
+            "test": 24.6154
+          },
+          "substep": {
+            "test": 60.4811
+          }
+        }
+      }
+    }
+  }
 }
