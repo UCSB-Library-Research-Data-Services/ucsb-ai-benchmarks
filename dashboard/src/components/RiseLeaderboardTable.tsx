@@ -14,8 +14,6 @@ interface RiseLeaderboardProps {
   baselines?: BaselinesFile | null;
 }
 
-type VisionFilter = 'all' | 'vision';
-
 // Provider color map — stable hues per provider name
 const PROVIDER_PALETTE = [
   '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
@@ -168,67 +166,6 @@ function StatCard({
   );
 }
 
-function VisionBadge({ vision }: { vision: boolean | null }) {
-  if (vision === true) {
-    return (
-      <span
-        title="Vision-capable (probed via fixture transcription)"
-        style={{
-          display: 'inline-block',
-          padding: '0.1rem 0.45rem',
-          borderRadius: '4px',
-          fontSize: '0.65rem',
-          fontWeight: 700,
-          background: '#ecfdf5',
-          color: '#047857',
-          border: '1px solid #6ee7b7',
-          flexShrink: 0,
-        }}
-      >
-        👁️ vision
-      </span>
-    );
-  }
-  if (vision === false) {
-    return (
-      <span
-        title="Not vision-capable (probed); excluded from the leaderboard"
-        style={{
-          display: 'inline-block',
-          padding: '0.1rem 0.45rem',
-          borderRadius: '4px',
-          fontSize: '0.65rem',
-          fontWeight: 700,
-          background: '#f1f5f9',
-          color: '#64748b',
-          border: '1px solid #cbd5e1',
-          flexShrink: 0,
-        }}
-      >
-        text-only
-      </span>
-    );
-  }
-  return (
-    <span
-      title="Vision capability untested"
-      style={{
-        display: 'inline-block',
-        padding: '0.1rem 0.45rem',
-        borderRadius: '4px',
-        fontSize: '0.65rem',
-        fontWeight: 700,
-        background: '#fffbeb',
-        color: '#b45309',
-        border: '1px solid #fcd34d',
-        flexShrink: 0,
-      }}
-    >
-      ⚠️ untested
-    </span>
-  );
-}
-
 type SortDir = 'asc' | 'desc';
 type SortState = { col: string; dir: SortDir };
 
@@ -258,7 +195,6 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
 
 export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels, baselines }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
-  const [visionFilter, setVisionFilter] = useState<VisionFilter>('all');
   const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
   const [isDescExpanded, setIsDescExpanded] = useState(false);
@@ -315,11 +251,8 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
     if (!showDeprecated && deprecatedSet.size > 0) {
       rows = rows.filter(row => !deprecatedSet.has(`${row.service}|${row.model}`));
     }
-    if (visionFilter === 'vision') {
-      rows = rows.filter(row => row.vision === true);
-    }
     return rows;
-  }, [data.rows, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
+  }, [data.rows, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
 
   const filteredFlaggedModels = useMemo(() => {
     let rows =
@@ -329,11 +262,8 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
     if (!showDeprecated && deprecatedSet.size > 0) {
       rows = rows.filter(row => !deprecatedSet.has(`${row.service}|${row.model}`));
     }
-    if (visionFilter === 'vision') {
-      rows = rows.filter(row => row.vision === true);
-    }
     return rows;
-  }, [data.flaggedModels, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
+  }, [data.flaggedModels, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
 
   const sortedRows = useMemo(() => {
     const scoreOf = (row: (typeof filteredRows)[number], col: string): number | null => {
@@ -566,51 +496,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                     }}
                   />
                   {provider}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Vision filter chips */}
-        <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: '#64748b',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Vision
-          </div>
-          <div style={{ display: 'flex', gap: '0.375rem' }}>
-            {(
-              [
-                ['all', 'All'],
-                ['vision', 'Vision 👁️'],
-              ] as [VisionFilter, string][]
-            ).map(([value, label]) => {
-              const active = visionFilter === value;
-              return (
-                <button
-                  key={value}
-                  onClick={() => setVisionFilter(value)}
-                  style={{
-                    padding: '0.3rem 0.75rem',
-                    borderRadius: '999px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    border: active ? `1.5px solid ${ACCENT}` : '1.5px solid #cbd5e1',
-                    background: active ? ACCENT : '#fff',
-                    color: active ? '#fff' : '#475569',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {label}
                 </button>
               );
             })}
@@ -952,7 +837,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                       >
                         {row.model}
                       </a>
-                      <VisionBadge vision={row.vision} />
                     </div>
                   </td>
                   <td
