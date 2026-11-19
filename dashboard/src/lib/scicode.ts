@@ -93,7 +93,9 @@ export function parseScicodeResults(filePath: string): ScicodeResult[] {
 }
 
 export function aggregateScicodeData(results: ScicodeResult[]): ScicodeLeaderboardData {
-  const filteredResults = results.filter(r => !r.service?.toLowerCase().includes('dreamlab'));
+  const filteredResults = results.filter(
+    r => r.split === 'test' && !r.service?.toLowerCase().includes('dreamlab')
+  );
 
   const providersSet = new Set<string>();
   for (const result of filteredResults) {

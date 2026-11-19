@@ -306,26 +306,11 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   );
 }
 
-type SplitFilter = 'all' | 'test' | 'validation';
-
-const splitLabels: Record<SplitFilter, string> = {
-  all: 'All',
-  test: 'Test',
-  validation: 'Validation',
-};
-
-const splitHints: Record<SplitFilter, string> = {
-  all: 'Show all splits',
-  test: 'Test split — 65 problems',
-  validation: 'Validation split — 15 problems',
-};
-
 const TIME_TOOLTIP =
   'Average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.';
 
 export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels, baselines }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
-  const [splitFilter, setSplitFilter] = useState<SplitFilter>('all');
   const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<{ key: Measurement; dir: SortDir }>({
     key: 'mainResolveRate',
@@ -364,35 +349,16 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
     if (!showDeprecated && deprecatedSet.size > 0) {
       rows = rows.filter(row => !deprecatedSet.has(`${row.provider}|${row.model}`));
     }
-    if (splitFilter !== 'all') {
-      rows = rows.filter(row => row.split === splitFilter);
-    } else {
-      const byPair = new Map<string, ScicodeRow>();
-      const counts = new Map<string, number>();
-      for (const row of rows) {
-        const pair = `${row.provider}|${row.model}`;
-        counts.set(pair, (counts.get(pair) ?? 0) + row.runCount);
-        const prev = byPair.get(pair);
-        if (!prev || row.latestTimestamp > prev.latestTimestamp) {
-          byPair.set(pair, row);
-        }
-      }
-      rows = Array.from(byPair.values()).map(row => ({
-        ...row,
-        runCount: counts.get(`${row.provider}|${row.model}`) ?? row.runCount,
-      }));
-    }
     if (!isAllMode) {
       rows = rows.filter(row => selectedProviders!.has(row.provider));
     }
     return rows;
-  }, [data.rows, splitFilter, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
+  }, [data.rows, selectedProviders, isAllMode, showDeprecated, deprecatedSet]);
 
-  const totalVisiblePairs = useMemo(() => {
-    const source =
-      splitFilter === 'all' ? data.rows : data.rows.filter(row => row.split === splitFilter);
-    return new Set(source.map(row => `${row.provider}|${row.model}`)).size;
-  }, [data.rows, splitFilter]);
+  const totalVisiblePairs = useMemo(
+    () => new Set(data.rows.map(row => `${row.provider}|${row.model}`)).size,
+    [data.rows]
+  );
 
   const colStats = useMemo(() => {
     const maxOf = (f: (r: ScicodeRow) => number) =>
@@ -536,11 +502,8 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
                     <li><strong>Time / Task:</strong> average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.</li>
                     <li><strong>Steps:</strong> steps passed out of steps attempted in the most recent run.</li>
                   </ul>
-                  Each row shows the most recent run per model, provider, and split. Use the
-                  Split filter to compare within one split only — the test (65 problems) and
-                  validation (15 problems) sets differ in difficulty and scores are not
-                  directly comparable across them. Runs use
-                  with_background=True and temperature 0.{' '}
+                  Each row shows the most recent test run per model and provider (65 problems).
+                  Runs use with_background=True and temperature 0.{' '}
                   <button
                     onClick={() => setIsDescExpanded(false)}
                     style={{ background: 'none', border: 'none', color: '#93c5fd', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
@@ -671,46 +634,6 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
               marginBottom: '0.5rem',
             }}
           >
-            Split
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-            {(Object.keys(splitLabels) as SplitFilter[]).map(sf => {
-              const active = splitFilter === sf;
-              return (
-                <button
-                  key={sf}
-                  onClick={() => setSplitFilter(sf)}
-                  title={splitHints[sf]}
-                  style={{
-                    padding: '0.3rem 0.75rem',
-                    borderRadius: '999px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    border: active ? `1.5px solid ${ACCENT}` : '1.5px solid #cbd5e1',
-                    background: active ? ACCENT : '#fff',
-                    color: active ? '#fff' : '#475569',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {splitLabels[sf]}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: '#64748b',
-              marginBottom: '0.5rem',
-            }}
-          >
             Metric
           </div>
           <select
@@ -796,7 +719,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
       >
         Showing <strong style={{ color: '#475569' }}>{sortedRows.length}</strong> of{' '}
         <strong style={{ color: '#475569' }}>{totalVisiblePairs}</strong> models
-        {splitFilter !== 'all' ? ` (${splitLabels[splitFilter]} split)` : ''} &mdash; sorted by{' '}
+        &mdash; sorted by{' '}
         <strong style={{ color: ACCENT }}>{measurementLabels[sort.key]}</strong>{' '}
         ({higherIsBetter[sort.key]
           ? sort.dir === 'desc' ? 'higher is better' : 'lower is better'
@@ -1057,7 +980,9 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
                         {row.model}
                       </a>
                       <span
-                        title={`Most recent run: ${row.split} split (${row.numProblems} problems), with_background=${row.withBackground}`}
+                        onClick={e => e.preventDefault()}
+                        aria-hidden="true"
+                        title={`Test split (${row.numProblems} problems), with_background=${row.withBackground}`}
                         style={{
                           display: 'inline-block',
                           padding: '0.05rem 0.35rem',
@@ -1247,7 +1172,7 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
         }}
       >
         Score bars show relative standing within the visible selection; token and time bars show
-        magnitude. Each row reflects the most recent run per model, provider, and split.
+        magnitude. Each row reflects the most recent test run per model and provider.
         Click a score cell to expand run details.
       </div>
     </div>
