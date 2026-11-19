@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T23:24:17+00:00",
+  "generated_at": "2026-11-19T20:28:50+00:00",
   "fixture": "tests/vision/CCundinamarca_page_1.png",
   "description": "Model tool capabilities. Only 'vision' is probed (fixture transcription test); other tools are placeholders (false). Benchmark scripts should skip a model when a required tool is not true.",
   "models": [
@@ -340,6 +340,45 @@
       },
       "status": "sees",
       "note": "matched 10/11 keywords (91% char coverage)"
+    },
+    {
+      "service": "DREAMLAB",
+      "model": "gemini-3.5-flash-lite",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "DREAMLAB",
+      "model": "gemini-3.7-flash",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "DREAMLAB",
+      "model": "gemini-4-hydrogen",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
     },
     {
       "service": "GRIT",

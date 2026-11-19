@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-11-19T19:44:08+00:00",
+  "generated_at": "2026-11-19T21:31:44+00:00",
   "tiers": {
     "gemini-3.5-flash-lite": {
       "latest": {
         "performance": "2026-11-19T04:13:30Z",
-        "rise": null,
+        "rise": "2026-11-19",
         "scicode": "2026-11-19T18:36:49+00:00"
       },
       "runs": {
         "performance": 15,
-        "rise": 0,
+        "rise": 6,
         "scicode": 1
       },
       "service": "DREAMLAB",
@@ -68,6 +68,17 @@
             "signal_processing": 0.795
           }
         },
+        "rise": {
+          "score": {
+            "avg": 60.71710620237693,
+            "bibliographic_data": 67.246239850769,
+            "book_advert_xml": 96.05376391052464,
+            "fraktur_adverts": 75.5,
+            "general_meeting_minutes": 54.302633452967996,
+            "magazine_pages": 0.0,
+            "medieval_manuscripts": 71.2
+          }
+        },
         "scicode": {
           "resolve": {
             "test": 6.1538
@@ -81,12 +92,12 @@
     "gemini-3.7-flash": {
       "latest": {
         "performance": "2026-11-19T04:13:07Z",
-        "rise": null,
+        "rise": "2026-11-19",
         "scicode": "2026-11-19T02:12:48+00:00"
       },
       "runs": {
         "performance": 15,
-        "rise": 0,
+        "rise": 6,
         "scicode": 1
       },
       "service": "DREAMLAB",
@@ -145,6 +156,17 @@
             "signal_processing": 41.137
           }
         },
+        "rise": {
+          "score": {
+            "avg": 83.50261340411322,
+            "bibliographic_data": 67.16279313303627,
+            "book_advert_xml": 98.75554626223234,
+            "fraktur_adverts": 95.6,
+            "general_meeting_minutes": 90.39734102941068,
+            "magazine_pages": 68.89999999999999,
+            "medieval_manuscripts": 80.2
+          }
+        },
         "scicode": {
           "resolve": {
             "test": 20.0
@@ -158,12 +180,12 @@
     "gemini-4-hydrogen": {
       "latest": {
         "performance": "2026-11-19T04:10:07Z",
-        "rise": null,
+        "rise": "2026-11-19",
         "scicode": "2026-11-18T22:45:43+00:00"
       },
       "runs": {
         "performance": 15,
-        "rise": 0,
+        "rise": 6,
         "scicode": 1
       },
       "service": "DREAMLAB",
@@ -220,6 +242,17 @@
             "philosophy": 14.306,
             "scientific_coding": 107.311,
             "signal_processing": 37.926
+          }
+        },
+        "rise": {
+          "score": {
+            "avg": 87.92531407327141,
+            "bibliographic_data": 69.08297414094618,
+            "book_advert_xml": 98.51400796064523,
+            "fraktur_adverts": 78.4,
+            "general_meeting_minutes": 95.85490233803705,
+            "magazine_pages": 97.2,
+            "medieval_manuscripts": 88.5
           }
         },
         "scicode": {
