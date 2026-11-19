@@ -174,6 +174,7 @@ export function parseRiseResults(filePath: string): RiseResult[] {
 }
 
 export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
+  results = results.filter(r => r.vision !== false);
   // Keep the latest run per (service, model, benchmark) by date.
   const latestByKey = new Map<string, RiseResult>();
   for (const result of results) {

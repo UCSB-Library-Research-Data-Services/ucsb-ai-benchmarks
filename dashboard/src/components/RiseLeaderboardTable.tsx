@@ -14,7 +14,7 @@ interface RiseLeaderboardProps {
   baselines?: BaselinesFile | null;
 }
 
-type VisionFilter = 'all' | 'vision' | 'text';
+type VisionFilter = 'all' | 'vision';
 
 // Provider color map — stable hues per provider name
 const PROVIDER_PALETTE = [
@@ -192,7 +192,7 @@ function VisionBadge({ vision }: { vision: boolean | null }) {
   if (vision === false) {
     return (
       <span
-        title="Not vision-capable (probed); text-only benchmarks only"
+        title="Not vision-capable (probed); excluded from the leaderboard"
         style={{
           display: 'inline-block',
           padding: '0.1rem 0.45rem',
@@ -317,8 +317,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
     }
     if (visionFilter === 'vision') {
       rows = rows.filter(row => row.vision === true);
-    } else if (visionFilter === 'text') {
-      rows = rows.filter(row => row.vision === false);
     }
     return rows;
   }, [data.rows, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
@@ -333,8 +331,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
     }
     if (visionFilter === 'vision') {
       rows = rows.filter(row => row.vision === true);
-    } else if (visionFilter === 'text') {
-      rows = rows.filter(row => row.vision === false);
     }
     return rows;
   }, [data.flaggedModels, selectedProviders, isAllMode, visionFilter, showDeprecated, deprecatedSet]);
@@ -434,10 +430,8 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                   <strong>Scoring:</strong> each benchmark's ranking metric is normalized to
                   0-100 (fuzzy match scores of 0-100 are used as-is; 0-1 metrics like F1 are
                   multiplied by 100; error metrics like CER are inverted to 100 - CER x 100).
-                  <strong> Avg</strong> is the mean over completed benchmarks, so a text-only
-                  model is averaged over fewer columns — compare models on the benchmarks they
-                  ran. <strong>Vision gating:</strong> image benchmarks only run for models
-                  probed as vision-capable; text-only models never appear in image columns.
+                  <strong> Avg</strong> is the mean over completed benchmarks. <strong>Vision gating:</strong> image benchmarks only run for models
+                  probed as vision-capable; text-only models are excluded from the leaderboard.
                   <br />
                   <button
                     onClick={() => setIsDescExpanded(false)}
@@ -597,7 +591,6 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
               [
                 ['all', 'All'],
                 ['vision', 'Vision 👁️'],
-                ['text', 'Text-only'],
               ] as [VisionFilter, string][]
             ).map(([value, label]) => {
               const active = visionFilter === value;
@@ -1008,7 +1001,7 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
                         />
                       ) : (
                         <span
-                          title="Not run (text-only model or run not completed)"
+                          title="Not run (run not completed)"
                           style={{ color: '#cbd5e1', fontSize: '0.75rem' }}
                         >
                           —
