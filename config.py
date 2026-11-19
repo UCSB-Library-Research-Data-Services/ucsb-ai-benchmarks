@@ -44,15 +44,15 @@ SERVICES = {
         "key": os.getenv("CIT_KEY"),
         "models": [
             "gpt-oss-120b",
-            "Qwen3-Coder-Next",
-            "gemma-4-31b"
+            "qwen3.8-27b",
+            "gemma-4-26b-a4b-it"
             ],
         "deprecated_models": [
             "mistral-small-4-119b-2603",
             "granite-4.1-30b",
             "qwen3.6-35b-a3b",
-            "qwen3.8-27b",
-            "gemma-4-26b-a4b-it"
+            "Qwen3-Coder-Next",
+            "gemma-4-31b"
         ],
         "excluded_models": [
             "bge-reranker",
