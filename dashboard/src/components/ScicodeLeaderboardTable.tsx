@@ -979,26 +979,6 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
                       >
                         {row.model}
                       </a>
-                      <span
-                        onClick={e => e.preventDefault()}
-                        aria-hidden="true"
-                        title={`Test split (${row.numProblems} problems), with_background=${row.withBackground}`}
-                        style={{
-                          display: 'inline-block',
-                          padding: '0.05rem 0.35rem',
-                          borderRadius: '4px',
-                          fontSize: '0.6rem',
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          background: '#f1f5f9',
-                          color: '#64748b',
-                          border: '1px solid #e2e8f0',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {row.split}
-                      </span>
                     </div>
                   </td>
                   <td
