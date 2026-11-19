@@ -1,6 +1,29 @@
 {
-  "generated_at": "2026-11-19T00:39:38+00:00",
+  "generated_at": "2026-11-19T04:03:32+00:00",
   "tiers": {
+    "gemini-3.7-flash": {
+      "latest": {
+        "performance": null,
+        "rise": null,
+        "scicode": "2026-11-19T02:12:48+00:00"
+      },
+      "runs": {
+        "performance": 0,
+        "rise": 0,
+        "scicode": 1
+      },
+      "service": "DREAMLAB",
+      "values": {
+        "scicode": {
+          "resolve": {
+            "test": 20.0
+          },
+          "substep": {
+            "test": 54.9828
+          }
+        }
+      }
+    },
     "gemini-4-hydrogen": {
       "latest": {
         "performance": null,
