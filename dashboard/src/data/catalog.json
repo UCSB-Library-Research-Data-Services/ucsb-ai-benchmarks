@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T21:36:17+00:00",
+  "generated_at": "2026-11-19T22:20:38+00:00",
   "providers": [
     {
       "id": "AICommons",
@@ -18,7 +18,7 @@
       ],
       "status": "active",
       "model_count": 25,
-      "benchmarked_count": 18
+      "benchmarked_count": 25
     },
     {
       "id": "CIT",
@@ -230,7 +230,7 @@
       "model": "claude-v5.5-haiku",
       "slug": "aicommons--claude-v5.5-haiku",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -238,7 +238,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -249,7 +249,7 @@
       "model": "claude-v5.5-opus",
       "slug": "aicommons--claude-v5.5-opus",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -257,7 +257,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -268,7 +268,7 @@
       "model": "claude-v5.5-sonnet",
       "slug": "aicommons--claude-v5.5-sonnet",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -276,7 +276,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -420,7 +420,7 @@
       "model": "moonshotai-kimi-k3",
       "slug": "aicommons--moonshotai-kimi-k3",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -428,7 +428,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -439,7 +439,7 @@
       "model": "nvidia-nemotron-super-3-120b",
       "slug": "aicommons--nvidia-nemotron-super-3-120b",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -447,7 +447,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -458,7 +458,7 @@
       "model": "openai-gpt-6-luna",
       "slug": "aicommons--openai-gpt-6-luna",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -466,7 +466,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
@@ -477,7 +477,7 @@
       "model": "openai-gpt-6-sol",
       "slug": "aicommons--openai-gpt-6-sol",
       "in_api": true,
-      "in_roster": false,
+      "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
       "vision": null,
@@ -485,7 +485,7 @@
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
-        "performance": false,
+        "performance": true,
         "scicode": false,
         "rise": false
       },
