@@ -23,6 +23,13 @@ SERVICES = {
             "claude-v4.6-sonnet",
             "claude-v5-opus",
             "claude-v4.6-opus",
+            "claude-v5.5-haiku",
+            "claude-v5.5-opus",
+            "claude-v5.5-sonnet",
+            "moonshotai-kimi-k3",
+            "nvidia-nemotron-super-3-120b",
+            "openai-gpt-6-luna",
+            "openai-gpt-6-sol"
         ],
         "deprecated_models": [
             "gpt-4o",
