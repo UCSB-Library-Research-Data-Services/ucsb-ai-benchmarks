@@ -40,8 +40,8 @@ const measurementShort: Record<Measurement, string> = {
 
 // Provider color map — stable hues per provider name
 const PROVIDER_PALETTE = [
-  '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
-  '#8b5cf6', '#06b6d4', '#f97316', '#84cc16',
+  '#2b5c8f', '#0d9488', '#6d59a3', '#d97706',
+  '#3d8b6e', '#4a7c9b', '#9a6b4f', '#52658f',
 ];
 function providerColor(providers: string[], name: string): string {
   const idx = providers.indexOf(name);
