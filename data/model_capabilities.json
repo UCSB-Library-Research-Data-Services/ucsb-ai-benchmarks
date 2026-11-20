@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T20:28:50+00:00",
+  "generated_at": "2026-11-20T04:16:40+00:00",
   "fixture": "tests/vision/CCundinamarca_page_1.png",
   "description": "Model tool capabilities. Only 'vision' is probed (fixture transcription test); other tools are placeholders (false). Benchmark scripts should skip a model when a required tool is not true.",
   "models": [
@@ -109,6 +109,45 @@
     },
     {
       "service": "AICommons",
+      "model": "claude-v5.5-haiku",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5.5-opus",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "claude-v5.5-sonnet",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
       "model": "gpt-3.5-turbo",
       "tools": {
         "vision": true,
@@ -188,6 +227,58 @@
     {
       "service": "AICommons",
       "model": "llama-4-scout-17b-instruct",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "moonshotai-kimi-k3",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "nvidia-nemotron-super-3-120b",
+      "tools": {
+        "vision": false,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "rejects",
+      "note": "HTTP 400: {\"error\":{\"message\":\"Invalid request for model 'nvidia-nemotron-super-3-120b': This model doesn't support the image content block that you provided. Update the "
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-6-luna",
+      "tools": {
+        "vision": true,
+        "web_search": false,
+        "agent": false,
+        "image_generation": false,
+        "video_generation": false
+      },
+      "status": "sees",
+      "note": "matched 11/11 keywords (100% char coverage)"
+    },
+    {
+      "service": "AICommons",
+      "model": "openai-gpt-6-sol",
       "tools": {
         "vision": true,
         "web_search": false,
@@ -287,7 +378,7 @@
         "video_generation": false
       },
       "status": "rejects",
-      "note": "model says it cannot see images: I\u2019m unable to view the image, so I can\u2019t provide a transcription. The user asks to transcribe all printed text in this image. There's an image attached presumab"
+      "note": "model says it cannot see images: I\u2019m unable to see the image. Could you please provide the image again so I can transcribe the text for you? The user requests transcription of printed text in a"
     },
     {
       "service": "CIT",
@@ -410,118 +501,118 @@
       "service": "GRIT",
       "model": "gemma4:31b",
       "tools": {
-        "vision": true,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "sees",
-      "note": "matched 11/11 keywords (100% char coverage)"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "gpt-oss:120b",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "rejects",
-      "note": "HTTP 400: {\"detail\":\"{\\\"error\\\":{\\\"code\\\":400,\\\"message\\\":\\\"Multimodal data provided, but model does not support multimodal requests.\\\",\\\"type\\\":\\\"invalid_request_error\\\""
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "gpt-oss:20b",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "rejects",
-      "note": "model says it cannot see images: I\u2019m sorry, but I can\u2019t view images. The user provided a reference to an image: \"[img-0]\". I need to transcribe all printed text in the image. But I cannot see t"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "llama3.1:8b",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "rejects",
-      "note": "model says it cannot see images: There is no image provided. If you provide the image, I'll be happy to transcribe the printed text for you."
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "llama3:latest",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "rejects",
-      "note": "model says it cannot see images: **No image provided**\n\nPlease provide the image, and I'll be happy to transcribe the printed text for you!"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "llava:7b",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "hallucinates",
-      "note": "matched 1/11 (11% char coverage); answer: The text in the image is written in French and reads:\n\nCONSTITUCI\u00d3N DE LA REPUBLICA DE CUBA\n\nCUBA\n\nPRE\u00c1MIOS\n\nLa presente Constituci\u00f3n de la Rep\u00fablica de Cuba se"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "mistral:latest",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "hallucinates",
-      "note": "matched 0/11 (0% char coverage); answer: \"THE FIVE PILLARS OF ISLAM\n\n1. Shahada (Faith)\nThere is no god but Allah and Muhammad is the Messenger of Allah.\n2. Salat (Prayer)\nFive daily prayers in Arabic,"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "phi4:latest",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "rejects",
-      "note": "model says it cannot see images: I'm unable to view or transcribe images directly. If you can describe the content of the image or provide the text in a different format, I'd be happy to help!"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
       "model": "qwen3-coder-next:latest",
       "tools": {
-        "vision": false,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "hallucinates",
-      "note": "matched 0/11 (0% char coverage); answer: \u201cWelcome to our new caf\u00e9!  \nOpen 7 days a week, 7am\u20139pm  \nSpecialty coffee, fresh pastries & light meals  \nFree Wi-Fi & charging stations  \n\ud83d\udccd 123 Main Street, D"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
@@ -553,14 +644,14 @@
       "service": "GRIT",
       "model": "qwen3.8:latest",
       "tools": {
-        "vision": true,
+        "vision": null,
         "web_search": false,
         "agent": false,
         "image_generation": false,
         "video_generation": false
       },
-      "status": "sees",
-      "note": "matched 11/11 keywords (100% char coverage)"
+      "status": "error",
+      "note": "request failed: HTTPSConnectionPool(host='llm.grit.ucsb.edu', port=443): Read timed out. (read timeout=240)"
     },
     {
       "service": "GRIT",
@@ -612,7 +703,7 @@
         "video_generation": false
       },
       "status": "sees",
-      "note": "matched 11/11 keywords (100% char coverage)"
+      "note": "matched 10/11 keywords (91% char coverage)"
     },
     {
       "service": "NRP",
@@ -651,7 +742,7 @@
         "video_generation": false
       },
       "status": "sees",
-      "note": "matched 11/11 keywords (100% char coverage)"
+      "note": "matched 10/11 keywords (91% char coverage)"
     },
     {
       "service": "NRP",
@@ -664,7 +755,7 @@
         "video_generation": false
       },
       "status": "rejects",
-      "note": "HTTP 400: {\"error\":{\"code\":400,\"message\":\"Inferact/GLM-5.3-NVFP4 is not a multimodal model\",\"param\":null,\"type\":\"BadRequestError\"}}"
+      "note": "HTTP 400: {\"error\":{\"message\":\"Inferact/GLM-5.3-NVFP4 is not a multimodal model\",\"type\":\"BadRequestError\",\"param\":null,\"code\":400}}"
     },
     {
       "service": "NRP",
@@ -677,7 +768,7 @@
         "video_generation": false
       },
       "status": "rejects",
-      "note": "model says it cannot see images: I\u2019m unable to view images, so I can\u2019t transcribe the text from the picture you mentioned."
+      "note": "model says it cannot see images: I\u2019m unable to view images, so I can\u2019t transcribe the text they contain."
     },
     {
       "service": "NRP",
@@ -755,7 +846,7 @@
         "video_generation": false
       },
       "status": "sees",
-      "note": "matched 11/11 keywords (100% char coverage)"
+      "note": "matched 10/11 keywords (95% char coverage)"
     }
   ]
 }
