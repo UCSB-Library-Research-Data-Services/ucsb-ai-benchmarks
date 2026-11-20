@@ -5,6 +5,8 @@ import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 import { BaselineLegend } from './BaselineLegend';
+import { ScoreVsTimeChart } from './ScoreVsTimeChart';
+import type { ScatterPoint } from '../lib/chart';
 import { baselineBoundaries, bandColor, bandTooltip } from '../lib/baseline';
 import type { BaselinesFile } from '../lib/baseline';
 
@@ -12,6 +14,7 @@ interface ScicodeProps {
   data: ScicodeLeaderboardData;
   deprecatedModels?: string[];
   baselines?: BaselinesFile | null;
+  baselinePoints?: ScatterPoint[];
 }
 
 type Measurement =
@@ -309,7 +312,7 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
 const TIME_TOOLTIP =
   'Average model API time per task in minutes. Includes time-to-first-token (not separable from gateway logs); excludes solver overhead between calls.';
 
-export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels, baselines }) => {
+export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecatedModels, baselines, baselinePoints }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<{ key: Measurement; dir: SortDir }>({
@@ -1154,6 +1157,28 @@ export const ScicodeLeaderboardTable: React.FC<ScicodeProps> = ({ data, deprecat
         Score bars show relative standing within the visible selection; token and time bars show
         magnitude. Each row reflects the most recent test run per model and provider.
         Click a score cell to expand run details.
+      </div>
+
+      <div style={{ marginTop: '1.5rem' }}>
+        <ScoreVsTimeChart
+          title="SciCode — Resolve Rate vs Time"
+          points={sortedRows.map(r => ({
+            provider: r.provider,
+            model: r.model,
+            score: r.mainResolveRate,
+            time: r.avgModelTimeMin,
+            tokens: r.avgOutputTokensPerTask,
+          }))}
+          baselinePoints={baselinePoints ?? []}
+          providers={data.stats.providers}
+          xLabel="Avg model time / task (min)"
+          xTooltip="avg model API time/task incl. TTFT, excl. solver overhead"
+          yLabel="Main resolve rate (%)"
+          xUnit="m"
+          yUnit="%"
+          allowLogX={false}
+          paretoLabel="Leaderboard Pareto (fastest → best)"
+        />
       </div>
     </div>
   );

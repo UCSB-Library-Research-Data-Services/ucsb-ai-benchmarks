@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import { withBase } from './paths';
+import { BASELINE_TIERS } from './chart';
+import type { ScatterPoint } from './chart';
 
 export interface RiseResult {
   service: string;
@@ -33,6 +35,8 @@ export interface RiseRow {
   runRefs: Record<string, { test_id: string; date: string }>;
   avg: number | null;
   lastRun: string;
+  meanResponseS: number | null;
+  avgTokens: number | null;
 }
 
 export interface RiseStats {
@@ -170,11 +174,65 @@ export function parseRiseResults(filePath: string): RiseResult[] {
     }
   }
 
-  return results.filter(r => !r.service?.toLowerCase().includes('dreamlab'));
+  return results;
+}
+
+export function extractRiseBaselines(results: RiseResult[]): ScatterPoint[] {
+  const tierSet = new Set<string>(BASELINE_TIERS as readonly string[]);
+  const filtered = results.filter(
+    r => r.service?.toLowerCase() === 'dreamlab' && r.vision !== false && tierSet.has(r.model)
+  );
+  const latestByKey = new Map<string, RiseResult>();
+  for (const result of filtered) {
+    const key = `${result.model}|${result.benchmark}`;
+    const existing = latestByKey.get(key);
+    if (
+      !existing ||
+      result.date > existing.date ||
+      (result.date === existing.date && result.test_id > existing.test_id)
+    ) {
+      latestByKey.set(key, result);
+    }
+  }
+  const runsByModel = new Map<string, RiseResult[]>();
+  for (const result of latestByKey.values()) {
+    if (!runsByModel.has(result.model)) {
+      runsByModel.set(result.model, []);
+    }
+    runsByModel.get(result.model)!.push(result);
+  }
+  const points: ScatterPoint[] = [];
+  for (const [model, runs] of runsByModel.entries()) {
+    if (runs.length < 6) continue;
+    const scores = runs
+      .map(r => r.normalized_score)
+      .filter((v): v is number => v !== null && v !== undefined);
+    if (scores.length === 0) continue;
+    const score = scores.reduce((s, v) => s + v, 0) / scores.length;
+    const times = runs
+      .map(r => r.timing?.mean_response_s)
+      .filter((v): v is number => v !== null && v !== undefined);
+    if (times.length === 0) continue;
+    const time = times.reduce((s, v) => s + v, 0) / times.length;
+    const tokens = runs
+      .map(r => r.tokens?.total)
+      .filter((v): v is number => v !== null && v !== undefined);
+    points.push({
+      provider: 'Baseline',
+      model,
+      score,
+      time,
+      tokens: tokens.length > 0 ? tokens.reduce((s, v) => s + v, 0) / tokens.length : null,
+      isBaseline: true,
+    });
+  }
+  return points.sort((a, b) => a.score - b.score || a.time - b.time);
 }
 
 export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
-  results = results.filter(r => r.vision !== false);
+  results = results.filter(
+    r => r.vision !== false && !r.service?.toLowerCase().includes('dreamlab')
+  );
   // Keep the latest run per (service, model, benchmark) by date.
   const latestByKey = new Map<string, RiseResult>();
   for (const result of results) {
@@ -214,6 +272,12 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
     const scores = Object.values(benchmarks).filter(
       (v): v is number => v !== null && v !== undefined
     );
+    const times = runs
+      .map(run => run.timing?.mean_response_s)
+      .filter((v): v is number => v !== null && v !== undefined);
+    const tokenVals = runs
+      .map(run => run.tokens?.total)
+      .filter((v): v is number => v !== null && v !== undefined);
     allRows.push({
       service: runs[0].service,
       model: runs[0].model,
@@ -223,6 +287,8 @@ export function aggregateRiseData(results: RiseResult[]): RiseLeaderboardData {
       runRefs,
       avg: scores.length > 0 ? scores.reduce((s, v) => s + v, 0) / scores.length : null,
       lastRun,
+      meanResponseS: times.length > 0 ? times.reduce((s, v) => s + v, 0) / times.length : null,
+      avgTokens: tokenVals.length > 0 ? tokenVals.reduce((s, v) => s + v, 0) / tokenVals.length : null,
     });
   }
 

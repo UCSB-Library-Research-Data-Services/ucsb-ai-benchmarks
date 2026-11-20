@@ -2,8 +2,9 @@
 import { ScicodeLeaderboardTable } from '../components/ScicodeLeaderboardTable';
 import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { parseScicodeResults, aggregateScicodeData } from '../lib/scicode';
+import { parseScicodeResults, aggregateScicodeData, extractScicodeBaselines } from '../lib/scicode';
 import type { ScicodeLeaderboardData } from '../lib/scicode';
+import type { ScatterPoint } from '../lib/chart';
 import { loadBaselines } from '../lib/baselineData';
 import type { BaselinesFile } from '../lib/baseline';
 import { deprecatedModelKeys } from '../lib/catalog';
@@ -23,6 +24,7 @@ try {
 }
 
 let scicodeData: ScicodeLeaderboardData | null = null;
+let baselinePoints: ScatterPoint[] = [];
 let error: string | null = null;
 
 try {
@@ -34,6 +36,7 @@ try {
 
   const results = parseScicodeResults(dataPath);
   scicodeData = aggregateScicodeData(results);
+  baselinePoints = extractScicodeBaselines(results);
 } catch (e) {
   error = `Error loading SciCode leaderboard: ${e instanceof Error ? e.message : 'Unknown error'}`;
   console.error(error, e);
@@ -115,7 +118,7 @@ try {
       </div>
     ) : scicodeData ? (
       <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
-        <ScicodeLeaderboardTable client:load data={scicodeData} deprecatedModels={deprecatedModels} baselines={baselines} />
+        <ScicodeLeaderboardTable client:load data={scicodeData} deprecatedModels={deprecatedModels} baselines={baselines} baselinePoints={baselinePoints} />
       </div>
     ) : (
       <div class="error-container">

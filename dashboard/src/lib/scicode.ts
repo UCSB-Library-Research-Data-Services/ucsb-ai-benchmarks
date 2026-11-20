@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { withBase } from './paths';
+import { BASELINE_TIERS } from './chart';
+import type { ScatterPoint } from './chart';
 
 export interface ScicodeProblem {
   problem_id: string;
@@ -169,6 +171,30 @@ export function aggregateScicodeData(results: ScicodeResult[]): ScicodeLeaderboa
     stats,
     rows: rows.sort((a, b) => b.mainResolveRate - a.mainResolveRate),
   };
+}
+
+export function extractScicodeBaselines(results: ScicodeResult[]): ScatterPoint[] {
+  const tierSet = new Set<string>(BASELINE_TIERS as readonly string[]);
+  const filtered = results.filter(
+    r => r.split === 'test' && r.service?.toLowerCase() === 'dreamlab' && tierSet.has(r.model)
+  );
+  const latestByModel = new Map<string, ScicodeResult>();
+  for (const r of filtered) {
+    const existing = latestByModel.get(r.model);
+    if (!existing || new Date(r.timestamp).getTime() > new Date(existing.timestamp).getTime()) {
+      latestByModel.set(r.model, r);
+    }
+  }
+  return Array.from(latestByModel.values())
+    .map(r => ({
+      provider: 'Baseline',
+      model: r.model,
+      score: r.main_resolve_rate * 100,
+      time: r.avg_model_time_min_per_task,
+      tokens: r.avg_output_tokens_per_task,
+      isBaseline: true,
+    }))
+    .sort((a, b) => a.score - b.score || a.time - b.time);
 }
 
 export function getScicodeDataPath(): string {

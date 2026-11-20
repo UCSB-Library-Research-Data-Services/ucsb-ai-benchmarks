@@ -2,8 +2,9 @@
 import { RiseLeaderboardTable } from '../components/RiseLeaderboardTable';
 import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { parseRiseResults, aggregateRiseData, getRiseDataPath } from '../lib/rise';
+import { parseRiseResults, aggregateRiseData, getRiseDataPath, extractRiseBaselines } from '../lib/rise';
 import type { RiseLeaderboardData } from '../lib/rise';
+import type { ScatterPoint } from '../lib/chart';
 import { loadBaselines } from '../lib/baselineData';
 import type { BaselinesFile } from '../lib/baseline';
 import { deprecatedModelKeys } from '../lib/catalog';
@@ -24,6 +25,7 @@ try {
 
 // Load data at build time
 let riseData: RiseLeaderboardData | null = null;
+let baselinePoints: ScatterPoint[] = [];
 let error: string | null = null;
 
 try {
@@ -33,6 +35,7 @@ try {
 
   const results = parseRiseResults(dataPath);
   riseData = aggregateRiseData(results);
+  baselinePoints = extractRiseBaselines(results);
 } catch (e) {
   error = `Error loading RISE leaderboard: ${e instanceof Error ? e.message : 'Unknown error'}`;
   console.error(error, e);
@@ -114,7 +117,7 @@ try {
       </div>
     ) : riseData ? (
       <div style="max-width: 90rem; margin: 2rem auto; padding: 0 1.5rem 2rem;">
-        <RiseLeaderboardTable client:load data={riseData} deprecatedModels={deprecatedModels} baselines={baselines} />
+        <RiseLeaderboardTable client:load data={riseData} deprecatedModels={deprecatedModels} baselines={baselines} baselinePoints={baselinePoints} />
       </div>
     ) : (
       <div class="error-container">

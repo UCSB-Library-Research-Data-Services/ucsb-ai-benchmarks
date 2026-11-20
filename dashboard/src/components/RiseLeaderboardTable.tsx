@@ -5,6 +5,8 @@ import { modelAnchor, providerAnchor } from '../lib/catalog';
 import { withBase } from '../lib/paths';
 import { RunDetailPanel } from './RunDetailPanel';
 import { BaselineLegend } from './BaselineLegend';
+import { ScoreVsTimeChart } from './ScoreVsTimeChart';
+import type { ScatterPoint } from '../lib/chart';
 import { baselineBoundaries, bandColor, bandTooltip } from '../lib/baseline';
 import type { BaselinesFile, Boundary } from '../lib/baseline';
 
@@ -12,6 +14,7 @@ interface RiseLeaderboardProps {
   data: RiseLeaderboardData;
   deprecatedModels?: string[];
   baselines?: BaselinesFile | null;
+  baselinePoints?: ScatterPoint[];
 }
 
 // Provider color map — stable hues per provider name
@@ -193,7 +196,7 @@ function SortIcon({ dir, active }: { dir: SortDir; active: boolean }) {
   );
 }
 
-export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels, baselines }) => {
+export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, deprecatedModels, baselines, baselinePoints }) => {
   const [selectedProviders, setSelectedProviders] = useState<Set<string> | null>(null);
   const [showDeprecated, setShowDeprecated] = useState(false);
   const [sort, setSort] = useState<SortState>({ col: 'avg', dir: 'desc' });
@@ -1086,6 +1089,31 @@ export const RiseLeaderboardTable: React.FC<RiseLeaderboardProps> = ({ data, dep
       >
         All cells share the 0-100 normalized scale; bars are absolute. &mdash; means the
         benchmark was not run for that model.
+      </div>
+
+      <div style={{ marginTop: '1.5rem' }}>
+        <ScoreVsTimeChart
+          title="RISE — Score vs Time"
+          points={filteredRows
+            .filter(r => r.runs >= 6 && r.avg !== null && r.meanResponseS !== null && r.meanResponseS > 0)
+            .map(r => ({
+              provider: r.service,
+              model: r.model,
+              score: r.avg!,
+              time: r.meanResponseS!,
+              tokens: r.avgTokens,
+              runs: r.runs,
+            }))}
+          baselinePoints={baselinePoints ?? []}
+          providers={data.stats.providers}
+          xLabel="Mean response time / document (s)"
+          xTooltip="mean response s/document"
+          yLabel="RISE mean score (0-100)"
+          xUnit="s"
+          yUnit=""
+          allowLogX={true}
+          paretoLabel="Leaderboard Pareto (fastest → best)"
+        />
       </div>
     </div>
   );
