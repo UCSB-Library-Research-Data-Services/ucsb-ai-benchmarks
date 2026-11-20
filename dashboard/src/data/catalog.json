@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T22:56:41+00:00",
+  "generated_at": "2026-11-20T02:26:10+00:00",
   "providers": [
     {
       "id": "AICommons",
@@ -1228,7 +1228,7 @@
       "benchmarked": {
         "performance": true,
         "scicode": false,
-        "rise": true
+        "rise": false
       },
       "rise_flagged": false
     },
