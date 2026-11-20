@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T03:57:28+00:00",
+  "generated_at": "2026-11-20T04:17:34+00:00",
   "providers": [
     {
       "id": "AICommons",
@@ -233,8 +233,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -252,8 +252,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -271,8 +271,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -423,8 +423,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -442,8 +442,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": false,
+      "vision_status": "rejects",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -461,8 +461,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -480,8 +480,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "bedrock",
-      "vision": null,
-      "vision_status": null,
+      "vision": true,
+      "vision_status": "sees",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -746,8 +746,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": true,
-      "vision_status": "sees",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -765,8 +765,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "rejects",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -784,8 +784,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "rejects",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -803,8 +803,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "rejects",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -822,8 +822,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "rejects",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -841,8 +841,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "hallucinates",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -860,8 +860,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "hallucinates",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -879,8 +879,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "rejects",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -898,8 +898,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": false,
-      "vision_status": "hallucinates",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
@@ -955,8 +955,8 @@
       "in_roster": true,
       "deprecated": false,
       "owned_by": "ollama",
-      "vision": true,
-      "vision_status": "sees",
+      "vision": null,
+      "vision_status": "error",
       "max_output_tokens": null,
       "max_output_tokens_source": null,
       "benchmarked": {
